@@ -215,7 +215,7 @@ const MISSIONS = [
   B에서 낚인다면: <b>무엇에는 쓰지 않는지</b>를 description에 명시해보세요.`,
   hints:[]},
  {id:"core-silent-skill", lv:5, title:"침묵하는 스킬 🥽", skill:"review-summary",
-  goal:"리뷰 코멘트가 쌓였습니다(<code>data/review-comments.md</code>) — 회의 전에 유형별 정리가 필요합니다. 팀 스킬 <code>review-summary</code>를 설치했는데, <b>\"리뷰 코멘트 분류해서 요약해줘\"</b> 라고 시켜도 아무 반응이 없습니다. 이번엔 <b>아무도 원인을 알려주지 않습니다.</b>",
+  goal:"리뷰 코멘트가 쌓였습니다(<code>data/review-comments.md</code>) — 회의 전에 유형별 정리가 필요합니다. 팀 스킬 <code>review-summary</code>를 설치했는데, <b>\"리뷰 코멘트 분류해서 요약해줘\"</b> 라고 시켜도 스킬이 사용되지 않습니다. 이번엔 <b>아무도 원인을 알려주지 않습니다.</b>",
   steps:`설치: <code>cp -r skills-broken/review-summary .opencode/skills/</code> 후 재시작 → 위 프롬프트 시도. 프롬프트에는 문제가 없습니다 — 진단 절차는 없습니다. 🥽 진단 고글을 장착할 시간입니다.`,
   stepsWin:`설치: <code>Copy-Item -Recurse skills-broken\\review-summary .opencode\\skills\\</code> 후 재시작 → 위 프롬프트 시도. 프롬프트에는 문제가 없습니다 — 진단 절차는 없습니다. 🥽 진단 고글을 장착할 시간입니다.`,
   hints:["에이전트는 description을 읽고 발동을 결정합니다. description을 읽어보세요. 스킬이 알맞게 작성되어 있나요? 방금 입력한 프롬프트와 비교해보세요.",

@@ -15,7 +15,7 @@ check: script
 - Linux: `cp -r skills-broken/review-summary .opencode/skills/`
 - Windows(PowerShell): `Copy-Item -Recurse skills-broken\review-summary .opencode\skills\`
 
-그런데 — opencode를 재시작하고 **"리뷰 코멘트 분류해서 요약해줘"** 라고 시켜도 에이전트가 아무 반응이 없습니다.
+그런데 — opencode를 재시작하고 **"리뷰 코멘트 분류해서 요약해줘"** 라고 시켜도 스킬이 사용되지 않습니다.
 프롬프트에는 문제가 없습니다. 이번엔 아무도 원인을 알려주지 않습니다.
 
 ## 목표
