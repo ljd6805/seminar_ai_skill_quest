@@ -69,9 +69,17 @@ case "$ID" in
     pass 4 ;;
 
   core-silent-skill)
-    need_file output/review-summary.md
+    [ -f output/review-summary.md ] \
+      || fail "산출물(output/review-summary.md)이 없습니다. 스킬이 로드는 되고 있나요? 스킬 목록부터 확인하세요."
     grep -q "GENERATED-BY: review-summary-skill" output/review-summary.md \
-      || fail "스킬 서명이 없습니다. description은 본문과 같은 이야기를 하고 있나요?"
+      || fail "스킬 서명이 없습니다 — 스킬이 아닌 에이전트의 즉흥 답변일 수 있습니다. description은 본문과 같은 이야기를 하고 있나요?"
+    SUM=0
+    for k in TYPE_BUG TYPE_STYLE TYPE_QUESTION TYPE_SUGGEST; do
+      n=$(grep -oE "$k:[[:space:]]*[0-9]+" output/review-summary.md | head -1 | grep -oE "[0-9]+$")
+      [ -n "$n" ] || fail "형식 라인($k:)이 없습니다. 본문이 출력 형식을 지시하고 있나요? (Lv.3의 출력 못박기)"
+      SUM=$((SUM+n))
+    done
+    [ "$SUM" -eq 10 ] || fail "TYPE_ 4줄의 합계가 10이 아닙니다(현재 $SUM). 코멘트 10개가 모두 분류됐는지 확인하세요."
     pass 5 ;;
 
   core-my-first-skill)

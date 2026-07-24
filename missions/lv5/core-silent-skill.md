@@ -2,39 +2,50 @@
 id: core-silent-skill
 level: 5
 track: core
-title: "침묵하는 스킬 — 원인 불명 고장"
+title: "침묵하는 스킬 — 승급 시험"
 check: script
 ---
 
-# Lv.5 침묵하는 스킬 🥽
+# Lv.5 침묵하는 스킬 — 승급 시험 🥽
 
 ## 상황
-리뷰 코멘트가 잔뜩 쌓였습니다 (`data/review-comments.md`). 회의 전에 유형별로 정리해야 합니다.
-팀 레포에 마침 그런 일을 해주는 스킬이 있다고 합니다.
+전임자가 리뷰 코멘트(`data/review-comments.md`)를 정리해주던 스킬을 남기고 떠났습니다.
+팀 레포의 `skills-broken/review-summary`에 있다고 합니다. 인수인계 문서에는 한 줄뿐이네요 —
 
-설치하고 **"리뷰 코멘트 분류해서 요약해줘"** 라고 시켜봤지만 — 스킬이 사용되지 않습니다.
-프롬프트에는 문제가 없습니다.
+> "몇 군데 손볼 곳이 있음. — 전임자"
+
+설치하고 **"리뷰 코멘트 분류해서 요약해줘"** 라고 시켜보세요.
+지금까지 배운 **모든 것이 시험 범위**입니다.
 
 스킬 위치: `skills-broken/review-summary` — 절차 안내는 여기까지입니다.
 
-## 목표
-스킬을 진단하고 고쳐서, 에이전트가 리뷰 코멘트 요약(`output/review-summary.md`)을 만들게 하세요.
+💭 description을 다시 쓰게 된다면 — "요약"이라는 단어, `log-digest`와 겹치지 않을까요? 방어선을 기억하세요.
 
 ## 성공 조건
-- `output/review-summary.md`가 review-summary 스킬에 의해 생성될 것
+- `output/review-summary.md`가 review-summary 스킬로 생성될 것
+- 리포트 끝에 아래 4줄이 포함될 것 (개수 포함):
+
+```
+TYPE_BUG: <개수>
+TYPE_STYLE: <개수>
+TYPE_QUESTION: <개수>
+TYPE_SUGGEST: <개수>
+```
 
 ## 검증
 - Linux&nbsp;&nbsp;&nbsp;: `./check.sh core-silent-skill`
 - Windows: `check.bat core-silent-skill`  (또는 `check.bat` 더블클릭 후 id 입력 — 창은 결과 확인 후 닫으면 됩니다)
 
 <details><summary>힌트 ① (편하게 여세요)</summary>
-에이전트는 description을 읽고 발동을 결정합니다. description을 읽어보세요. 스킬이 알맞게 작성되어 있나요? 방금 입력한 프롬프트와 비교해보세요.
+이론의 진단 체크리스트를 순서대로 밟으세요. 첫 항목은 **위치와 파일명**입니다 — 스킬이 목록에 보이기는 하나요?
 </details>
 
 <details><summary>힌트 ② (원리 리마인드)</summary>
-description과 본문이 서로 다른 스킬을 설명하고 있다면, 에이전트는 description 쪽을 믿습니다. 그리고 한글로 일하는 팀이라면 — 사용자가 실제로 칠 한글 표현이 description에 있으면 훨씬 안정적으로 발동합니다.
+목록에는 있는데 침묵한다면, 이제 description 차례입니다. description을 읽어보세요 — 본문과 같은 일을, 사용자가 실제로 칠 표현(한글 포함)으로 말하고 있나요?
 </details>
 
 <details><summary>힌트 ③ (거의 정답)</summary>
-description이 영어로 "회의록(meeting minutes)" 얘기를 하고 있습니다. 이 스킬의 본문은 "리뷰 코멘트 분류·요약"이고요. description을 본문이 하는 일에 맞게, 한/영 표현을 함께 넣어 다시 쓰세요. 예: "코드 리뷰 코멘트를 유형별로 분류·요약. 리뷰 코멘트, review comment 정리 요청 시 사용."
+발동은 되는데 채점에서 탈락한다면 — 성공 조건의 TYPE_ 4줄을 **본문이 지시**하고 있는지 보세요. 출력 형식은 확률에 맡기지 않고, 본문에 직접 못박는 것이었죠 (Lv.3).
 </details>
+
+> 💡 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.

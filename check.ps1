@@ -88,9 +88,17 @@ switch ($Id) {
     Pass 4 }
 
   "core-silent-skill" {
-    Need-File "output/review-summary.md"
+    if (-not (Test-Path "output/review-summary.md")) {
+      Fail "산출물(output/review-summary.md)이 없습니다. 스킬이 로드는 되고 있나요? 스킬 목록부터 확인하세요." }
     if (-not (Has "output/review-summary.md" "GENERATED-BY: review-summary-skill")) {
-      Fail "스킬 서명이 없습니다. description은 본문과 같은 이야기를 하고 있나요?" }
+      Fail "스킬 서명이 없습니다 - 스킬이 아닌 에이전트의 즉흥 답변일 수 있습니다. description은 본문과 같은 이야기를 하고 있나요?" }
+    $sum = 0
+    foreach ($k in @("TYPE_BUG","TYPE_STYLE","TYPE_QUESTION","TYPE_SUGGEST")) {
+      $m = Select-String -Path "output/review-summary.md" -Pattern ($k + ":\s*(\d+)") | Select-Object -First 1
+      if (-not $m) { Fail ("형식 라인(" + $k + ":)이 없습니다. 본문이 출력 형식을 지시하고 있나요? (Lv.3의 출력 못박기)") }
+      $sum += [int]$m.Matches[0].Groups[1].Value
+    }
+    if ($sum -ne 10) { Fail "TYPE_ 4줄의 합계가 10이 아닙니다(현재 $sum). 코멘트 10개가 모두 분류됐는지 확인하세요." }
     Pass 5 }
 
   "core-my-first-skill" {
