@@ -76,7 +76,7 @@ switch ($Id) {
     if (-not (Test-Path ".opencode/skills/test-report/SKILL.md")) { Fail "test-report 스킬이 설치되어 있지 않습니다." }
     Write-Host "  [Lv.4 확인] 두 프롬프트를 에이전트에게 실제로 시험해보고 답해주세요."
     Ask '"테스트 결과 리포트 만들어줘" 에 test-report 스킬이 발동했나요?'
-    Ask '"지난 분기 실적 리포트 초안 써줘" 에는 발동하지 않았나요?'
+    Ask '"오늘 일정을 리포트로 정리해줘" 에 test-report가 발동하지 않았나요? (daily-report가 처리하는 게 정상)'
     Pass 4 }
 
   "core-silent-skill" {
