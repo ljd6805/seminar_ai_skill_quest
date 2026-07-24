@@ -55,6 +55,12 @@ button:active{transform:translateY(3px);box-shadow:none}
 button.ghost{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none}
 .osbtn{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none;padding:9px 16px;font-size:13.5px}
 .osbtn.sel{background:#EAF3FB;border-color:var(--sky);color:#33607F}
+.lvbadge{display:inline-flex;align-items:center;justify-content:center;min-width:66px;height:36px;
+  border-radius:10px;color:#FFF;font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:1px;
+  padding:0 13px;margin-right:11px;vertical-align:middle;box-shadow:0 3px 0 rgba(62,58,51,.2)}
+#missionCard{border-width:3px}
+body{transition:background .5s ease}
+@media (prefers-reduced-motion:reduce){body{transition:none}}
 .msg{margin-top:10px;font-size:14px;min-height:20px}
 .msg.ok{color:#3E8A67;font-weight:700}
 .msg.no{color:#C75548;font-weight:700}
@@ -165,7 +171,7 @@ const FALLBACK = { // crypto.subtle 미지원 환경용 (check.sh 산출값과 �
 /* ===== 미션 데이터 (core 트랙) — md 카드와 동일 내용 요약 ===== */
 const MISSIONS = [
  {id:"core-daily-report", lv:1, title:"부팅 — 첫 스킬 장착", skill:"daily-report",
-  goal:"제공된 <code>daily-report</code> 스킬을 설치하고, 에이전트가 일일 리포트를 만들게 하세요.",
+  goal:"제공된 <code>daily-report</code> 스킬을 설치하고, 에이전트가 <b>오늘의 작업 기록</b>(<code>data/today-worklog.md</code>, 데모용)을 일일 리포트로 요약하게 하세요.",
   steps:`1. <code>mkdir -p .opencode/skills && cp -r skills-given/daily-report .opencode/skills/</code><br>
   2. opencode <b>재시작</b> (스킬은 시작 시 로드됩니다)<br>
   3. 에이전트에게: <b>"오늘 작업 요약해줘"</b><br>4. <code>output/daily-report.md</code> 확인`,
@@ -253,6 +259,10 @@ function drawRobot(lv){
   document.getElementById("robot").innerHTML=s;
 }
 
+/* ===== 레벨별 테마 (0=시작, 1~7=도전 중인 레벨) ===== */
+const ACC=["#8C8578","#6FBFA0","#7FAED8","#F2B84B","#F27D5C","#9B7FD8","#4FB3A5","#E0A030"];
+const BGT=["#FAF3E7","#EDF6F1","#ECF3FA","#FBF4E2","#FBEEE9","#F2EDFA","#E9F5F3","#FAF0D8"];
+
 /* ===== 렌더 ===== */
 function fmt(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 function render(){
@@ -260,7 +270,12 @@ function render(){
   document.getElementById("regCard").classList.toggle("hidden",reg);
   for(const id of["sheetCard","codeCard","missionCard","dogamCard"])
     document.getElementById(id).classList.toggle("hidden",!reg);
-  if(!reg) return;
+  if(!reg){ document.body.style.background="var(--bg)"; return; }
+  const cur=Math.min(ST.level+1,7), acc=ACC[cur];
+  document.body.style.background=BGT[cur];
+  document.getElementById("missionCard").style.borderColor=acc;
+  document.querySelector(".stage").style.borderColor=acc;
+  document.getElementById("lvNum").parentElement.style.color=acc;
   drawRobot(ST.level);
   document.getElementById("lvNum").textContent=ST.level;
   document.getElementById("lvRank").textContent=RANKS[ST.level]+" "+fmt(ST.name);
@@ -276,10 +291,10 @@ function render(){
     : `Linux: <span class="cmd">./check.sh &lt;mission-id&gt;</span>`;
   const m=MISSIONS[ST.level];
   document.getElementById("missionBody").innerHTML = ST.level>=7
-    ? `<h3>🎓 온보딩 완료!</h3><p class="goal">당신의 에이전트는 이제 <b>마스터</b>입니다.
+    ? `<h3><span class="lvbadge" style="background:${ACC[7]}">LV 7</span>🎓 온보딩 완료!</h3><p class="goal">당신의 에이전트는 이제 <b>마스터</b>입니다.
        다음 단계: 오늘 만든 Lv.6 스킬을 팀 스킬 레포에 공유하고, 자기학습 트랙(self)의 미션을 만들어보세요 —
        미션 제작은 마스터의 특권입니다.</p>`
-    : `<h3>Lv.${m.lv} ${fmt(m.title)}</h3>
+    : `<h3><span class="lvbadge" style="background:${ACC[Math.min(ST.level+1,7)]}">LV ${m.lv}</span>${fmt(m.title)}</h3>
        <p class="goal">${m.goal}</p>
        <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>

@@ -12,7 +12,7 @@ check: script
 첫 스킬을 장착시켜 봅시다.
 
 ## 목표
-제공된 `daily-report` 스킬을 설치하고, 에이전트가 이 스킬로 일일 리포트를 만들게 하세요.
+제공된 `daily-report` 스킬을 설치하고, 에이전트가 **오늘의 작업 기록**(`data/today-worklog.md`, 데모용)을 일일 리포트로 요약하게 하세요.
 
 ## 절차 (레시피)
 1. 이 레포 최상위에서 스킬을 설치합니다:
@@ -24,6 +24,7 @@ check: script
 
 ## 성공 조건
 - `output/daily-report.md` 파일이 존재하고, 스킬이 남긴 서명 문구가 포함되어 있을 것
+- 리포트 내용이 작업 기록 요약일 것 (git 상태 같은 엉뚱한 정보가 아니라)
 
 ## 검증
 - Linux&nbsp;&nbsp;&nbsp;: `./check.sh core-daily-report`
