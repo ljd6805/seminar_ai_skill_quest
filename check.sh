@@ -93,7 +93,8 @@ case "$ID" in
     desc=$(grep -m1 "^description:" ".opencode/skills/$FOUND/SKILL.md" | cut -d: -f2-)
     [ "${#desc}" -ge 20 ] || fail "'$FOUND'의 description이 너무 짧습니다. 실제로 할 말(트리거 표현)을 담아 조금 더 구체적으로 써보세요."
     echo "  [Lv.6 확인] 발견된 스킬: $FOUND"
-    ask "이 스킬을 실제 프롬프트로 발동시키는 데 성공했나요?"
+    grep -rq "GENERATED-BY: $FOUND" output/ 2>/dev/null \
+      || fail "'$FOUND'의 서명(GENERATED-BY: $FOUND)이 담긴 산출물이 output/ 아래에 없습니다. 스킬이 output/ 파일과 서명을 남기도록 본문에 지시했나요? 그리고 실제로 발동시켰나요?"
     pass 6 ;;
 
   core-power-up)
