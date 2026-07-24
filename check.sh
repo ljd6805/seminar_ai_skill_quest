@@ -51,13 +51,21 @@ case "$ID" in
       || fail "스킬이 .opencode/skills/test-report/SKILL.md 위치에 없습니다. (이름은 test-report로 통일해주세요)"
     grep -q "TOTAL_PASS: 12" output/test-report.md || fail "TOTAL_PASS 값이 없거나 틀렸습니다. 스킬이 CSV를 제대로 집계했는지 확인하세요."
     grep -q "TOTAL_FAIL: 5"  output/test-report.md || fail "TOTAL_FAIL 값이 없거나 틀렸습니다."
+    sha1sum .opencode/skills/test-report/SKILL.md | cut -d' ' -f1 > .quest-state
     pass 3 ;;
 
   core-scope-guard)
     [ -f .opencode/skills/test-report/SKILL.md ] || fail "test-report 스킬이 설치되어 있지 않습니다."
-    echo "  [Lv.4 확인] 두 프롬프트를 에이전트에게 실제로 시험해보고 답해주세요."
-    ask "A. \"테스트 결과 리포트 만들어줘\" 에 test-report 스킬이 발동했나요?"
-    ask "B. \"오늘 일정을 리포트로 정리해줘\" 에 test-report가 발동하지 않았나요? (daily-report가 처리하는 게 정상)"
+    if [ -f .quest-state ]; then
+      cur=$(sha1sum .opencode/skills/test-report/SKILL.md | cut -d' ' -f1)
+      [ "$cur" != "$(cat .quest-state)" ] \
+        || fail "test-report가 Lv.3 이후 수정되지 않았습니다. description에 '무엇에는 쓰지 않는지'(방어선)를 추가해보세요."
+    else
+      echo "  (참고: Lv.3 기록이 없어 수정 여부 검증은 건너뜁니다)"
+    fi
+    echo "  [Lv.4 확인] 두 요청을 에이전트에게 실제로 시험해보고 답해주세요."
+    ask "A. \"테스트 결과 리포트 만들어줘\" 는 test-report가 처리했나요?"
+    ask "B. \"오늘 일정을 리포트로 정리해줘\" 는 daily-report가 처리했나요? (test-report가 아니라)"
     pass 4 ;;
 
   core-silent-skill)

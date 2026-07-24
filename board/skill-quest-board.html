@@ -206,8 +206,8 @@ const MISSIONS = [
   steps:`미션 카드(<code>missions/lv3/</code>)의 템플릿에서 빈칸 두 개만 채우면 됩니다.<br>
   리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄을 포함시키는 걸 잊지 마세요.`,
   hints:[]},
- {id:"core-scope-guard", lv:4, title:"범위 조절 — 오발동 막기", skill:null,
-  goal:"test-report가 <b>엉뚱한 요청에는 발동하지 않게</b> description을 다듬으세요. 마지막 레시피 미션입니다.",
+ {id:"core-scope-guard", lv:4, title:"범위 조절 — 관찰과 방어선", skill:null,
+  goal:"스킬이 여럿이면 에이전트는 description을 비교해 <b>누가 맡을 일인지</b> 정합니다. 라우팅을 관찰하고, test-report에 오발동 방어선을 치세요. 마지막 레시피 미션입니다.",
   steps:`A. "테스트 결과 리포트 만들어줘" → 발동해야 함 ✅<br>
   B. "오늘 일정을 리포트로 정리해줘" → test-report는 발동하면 안 됨 ❌ (이 요청의 주인은 daily-report)<br>
   B에서 낚인다면: <b>무엇에는 쓰지 않는지</b>를 description에 명시해보세요.`,
