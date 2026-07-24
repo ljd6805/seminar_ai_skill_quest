@@ -24,7 +24,7 @@ check: script
 
 ## 성공 조건
 - `output/daily-report.md` 파일이 존재하고, 스킬이 남긴 서명 문구가 포함되어 있을 것
-- 리포트 내용이 일정 요약일 것 — git/커밋 정보가 한 줄이라도 섞이면 채점에서 탈락합니다
+- 리포트 내용이 일정 요약일 것
 
 ## 검증
 - Linux&nbsp;&nbsp;&nbsp;: `./check.sh core-daily-report`

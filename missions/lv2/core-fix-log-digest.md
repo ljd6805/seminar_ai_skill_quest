@@ -19,7 +19,7 @@ check: script
    - Linux: `cp -r skills-broken/log-digest .opencode/skills/`
    - Windows(PowerShell): `Copy-Item -Recurse skills-broken\log-digest .opencode\skills\`
 2. 에이전트에게: **"리그레션 로그 요약해줘"** → 아마 스킬이 발동하지 않을 겁니다
-3. `.opencode/skills/log-digest/SKILL.md`를 열어 **frontmatter의 description을 소리 내어 읽어보세요.** 이 스킬이 실제로 하는 일(본문)과 같은 얘기를 하고 있나요?
+3. `.opencode/skills/log-digest/SKILL.md`를 열어 **frontmatter의 description을 읽어보세요.** 스킬이 알맞게 작성되어 있나요? 실제로 하는 일(본문)과 같은 얘기를 하고 있나요?
 4. description을 고치고, opencode 재시작 후 다시 시켜보세요.
 
 ## 성공 조건

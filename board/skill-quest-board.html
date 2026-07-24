@@ -198,7 +198,7 @@ const MISSIONS = [
  {id:"core-fix-log-digest", lv:2, title:"첫 수리 — 고장난 스킬", skill:"log-digest",
   goal:"전임자가 남긴 <code>skills-broken/log-digest</code>가 발동하지 않습니다. 고쳐서 regression 로그를 요약시키세요.",
   steps:`1. 스킬 설치 후 재시작 → <b>"리그레션 로그 요약해줘"</b> → 발동 안 됨을 확인<br>
-  2. SKILL.md의 <b>description을 소리 내어 읽어보세요.</b> 본문과 같은 얘기를 하고 있나요?<br>
+  2. SKILL.md의 <b>description을 읽어보세요.</b> 스킬이 알맞게 작성되어 있나요? 본문과 같은 얘기를 하고 있나요?<br>
   3. description 수정 → 재시작 → 다시 요청`,
   hints:[]},
  {id:"core-build-report", lv:3, title:"첫 제작 — 템플릿 채우기", skill:"test-report",
@@ -215,7 +215,7 @@ const MISSIONS = [
  {id:"core-silent-skill", lv:5, title:"침묵하는 스킬 🥽", skill:"fail-summary",
   goal:"<code>skills-broken/fail-summary</code>가 아무 반응이 없습니다. 이번엔 <b>아무도 원인을 알려주지 않습니다.</b> 진단하고 고치세요.",
   steps:`절차 없음. 지금까지 배운 원리로 스스로. (진단 고글을 장착할 시간입니다)`,
-  hints:["에이전트는 description을 읽고 발동을 결정합니다. description을 소리 내어 읽고, 방금 친 프롬프트와 비교해보세요. 같은 것에 대해 말하고 있나요?",
+  hints:["에이전트는 description을 읽고 발동을 결정합니다. description을 읽어보세요. 스킬이 알맞게 작성되어 있나요? 방금 입력한 프롬프트와 비교해보세요.",
    "description과 본문이 서로 다른 스킬을 설명하면 에이전트는 description을 믿습니다. 그리고 한글로 일하는 팀이라면 — 한글 표현이 있으면 훨씬 안정적으로 발동합니다.",
    "description이 'coverage 분석' 얘기를 합니다. 본문은 'regression 실패 원인 요약'이고요. 본문에 맞게, 한/영 표현을 함께 넣어 다시 쓰세요."]},
  {id:"core-my-first-skill", lv:6, title:"백지 설계 — 내 업무를 스킬로", skill:"(당신의 스킬)",

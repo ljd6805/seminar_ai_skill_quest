@@ -22,7 +22,7 @@ check: script
 - Windows: `check.bat core-silent-skill`  (또는 `check.bat` 더블클릭 후 id 입력 — 창은 결과 확인 후 닫으면 됩니다)
 
 <details><summary>힌트 ① (편하게 여세요)</summary>
-에이전트는 description을 읽고 발동을 결정합니다. description을 소리 내어 읽고, 당신이 방금 입력한 프롬프트와 비교해보세요. 같은 것에 대해 말하고 있나요?
+에이전트는 description을 읽고 발동을 결정합니다. description을 읽어보세요. 스킬이 알맞게 작성되어 있나요? 방금 입력한 프롬프트와 비교해보세요.
 </details>
 
 <details><summary>힌트 ② (원리 리마인드)</summary>

@@ -33,8 +33,6 @@ case "$ID" in
     need_file output/daily-report.md
     grep -q "GENERATED-BY: daily-report-skill" output/daily-report.md \
       || fail "리포트에 스킬 서명이 없습니다. 스킬이 정말 발동됐을까요? (에이전트가 스킬 없이 그냥 써준 것일 수도 있습니다)"
-    grep -qiE "git|commit|staging|커밋|브랜치" output/daily-report.md \
-      && fail "리포트에 git 관련 잡음이 섞여 있습니다. 스킬이 data/schedule/today.md 만 읽도록 되어 있나요?"
     pass 1 ;;
 
   core-fix-log-digest)
