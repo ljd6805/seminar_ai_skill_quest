@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKILL QUEST — 에이전트 온보딩 보드</title>
+<style>
+:root{
+  --bg:#FAF3E7; --panel:#FFFDF8; --ink:#3E3A33; --muted:#8C8578;
+  --line:#E8DFCE; --coral:#F27D5C; --mint:#6FBFA0; --sky:#7FAED8;
+  --sun:#F2B84B; --shadow:0 6px 0 rgba(62,58,51,.08);
+  --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+  --sans:"Pretendard",-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+  display:flex;justify-content:center;padding:26px 14px 70px}
+.wrap{width:100%;max-width:760px}
+header{text-align:center;margin-bottom:20px}
+h1{font-family:var(--mono);font-size:26px;letter-spacing:3px;color:var(--coral)}
+h1 .q{color:var(--sun)}
+.tag{font-size:13px;color:var(--muted);margin-top:4px}
+
+.card{background:var(--panel);border:2px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);padding:20px 22px;margin-bottom:16px}
+.card h2{font-size:14px;letter-spacing:1.5px;color:var(--muted);font-family:var(--mono);
+  text-transform:uppercase;margin-bottom:12px}
+
+/* 캐릭터 시트 */
+.sheet{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.stage{flex:0 0 auto;background:#FFF6E3;border:2px solid var(--line);border-radius:14px;
+  padding:10px;position:relative;overflow:hidden}
+.stage svg{display:block;image-rendering:pixelated}
+.sheet .info{flex:1;min-width:220px}
+.lvname{font-size:22px;font-weight:800}
+.lvtitle{color:var(--coral);font-weight:700;font-size:15px;margin:2px 0 10px}
+.dots{display:flex;gap:7px;margin:10px 0 14px}
+.dot{width:22px;height:10px;border-radius:6px;background:var(--line);position:relative}
+.dot.on{background:var(--mint)}
+.dot.now{background:var(--sun);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+.skills-line{font-size:13px;color:var(--muted);line-height:1.7}
+.chip{display:inline-block;background:#F0F7EF;border:1.5px solid #CFE3D3;border-radius:8px;
+  padding:2px 9px;font-family:var(--mono);font-size:12px;color:#4C7A63;margin:2px 3px 2px 0}
+
+/* 코드 입력 */
+.coderow{display:flex;gap:10px;flex-wrap:wrap}
+input[type=text]{flex:1;min-width:180px;background:#FFF;border:2px solid var(--line);
+  border-radius:12px;padding:12px 14px;font-family:var(--mono);font-size:15px;color:var(--ink)}
+input:focus{outline:none;border-color:var(--sun)}
+button{font-family:var(--sans);font-weight:700;font-size:14.5px;border:2px solid var(--ink);
+  border-radius:12px;padding:11px 20px;cursor:pointer;background:var(--sun);color:var(--ink);
+  box-shadow:0 4px 0 rgba(62,58,51,.25);transition:transform .08s}
+button:active{transform:translateY(3px);box-shadow:none}
+button.ghost{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none}
+.osbtn{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none;padding:9px 16px;font-size:13.5px}
+.osbtn.sel{background:#EAF3FB;border-color:var(--sky);color:#33607F}
+.msg{margin-top:10px;font-size:14px;min-height:20px}
+.msg.ok{color:#3E8A67;font-weight:700}
+.msg.no{color:#C75548;font-weight:700}
+
+/* 미션 카드 */
+.mission h3{font-size:18px;margin-bottom:8px}
+.mission .goal{font-size:14.5px;line-height:1.75;margin-bottom:12px}
+.steps{font-size:14px;line-height:1.8;color:#5A5347;background:#FBF7EE;border-radius:10px;
+  padding:12px 16px;margin-bottom:12px}
+.steps b{color:var(--ink)}
+code,.cmd{font-family:var(--mono);font-size:13px;background:#33302A;color:#F5E9C9;
+  border-radius:6px;padding:2px 7px}
+.cmd{display:inline-block;margin-top:4px;padding:7px 12px}
+details{margin-top:8px;border:1.5px dashed var(--line);border-radius:10px;padding:9px 13px;font-size:13.5px}
+details summary{cursor:pointer;font-weight:700;color:var(--sky)}
+details p{margin-top:7px;line-height:1.7;color:#5A5347}
+.freehint{font-size:12.5px;color:var(--muted);margin-top:12px}
+
+/* 도감 */
+.dogam-list{display:flex;flex-wrap:wrap;gap:6px}
+.dogam-empty{font-size:13px;color:var(--muted)}
+
+/* 레벨업 오버레이 */
+.burst{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(62,58,51,.45);z-index:50}
+.burst .box{background:var(--panel);border:3px solid var(--sun);border-radius:20px;
+  padding:30px 40px;text-align:center;animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.burst .big{font-size:26px;font-weight:800;color:var(--coral);margin:8px 0 4px}
+.burst .part{font-size:14.5px;color:#5A5347;margin-bottom:16px}
+.spark{font-size:30px}
+@media (prefers-reduced-motion:reduce){.dot.now{animation:none}.burst .box{animation:none}}
+.hidden{display:none}
+footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>SKILL <span class="q">QUEST</span></h1>
+    <div class="tag">opencode 에이전트를 신입에서 고참 동료로 성장시키는 7단계 온보딩 게임</div>
+  </header>
+
+  <!-- 등록 -->
+  <div class="card" id="regCard">
+    <h2>Agent Registration</h2>
+    <p style="font-size:14px;line-height:1.7;margin-bottom:12px">
+      신입 에이전트가 당신의 팀에 합류했습니다. 아직 우리 팀의 일하는 방식은 모르지만, 스킬을 하나씩 가르치면 든든한 동료가 됩니다.<br>
+      멘토 닉네임을 등록하고 온보딩을 시작하세요.</p>
+    <div style="margin-bottom:12px">
+      <span style="font-size:13px;color:var(--muted);margin-right:6px">작업 환경:</span>
+      <button class="osbtn sel" data-os="linux">🐧 Linux / SSH</button>
+      <button class="osbtn" data-os="windows">🪟 Windows</button>
+    </div>
+    <div class="coderow">
+      <input type="text" id="nick" maxlength="12" placeholder="멘토 닉네임 (예: verif_kim)">
+      <button id="regBtn">온보딩 시작</button>
+    </div>
+  </div>
+
+  <!-- 캐릭터 시트 -->
+  <div class="card hidden" id="sheetCard">
+    <h2>Character Sheet</h2>
+    <div class="sheet">
+      <div class="stage"><svg id="robot" width="180" height="180" viewBox="0 0 30 30" shape-rendering="crispEdges"></svg></div>
+      <div class="info">
+        <div class="lvname">Lv.<span id="lvNum">0</span> <span id="lvRank">신입</span></div>
+        <div class="lvtitle" id="lvDesc">아직 아무 스킬도 모릅니다</div>
+        <div class="dots" id="dots"></div>
+        <div class="skills-line"><b>장착 스킬</b><br><span id="equip"><span class="dogam-empty">없음 (텅 빈 공구벨트)</span></span></div>
+        <div class="skills-line" style="margin-top:8px"><b>환경</b> <a href="#" id="osToggle" style="color:var(--sky);text-decoration:none;font-family:var(--mono);font-size:12px"></a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 성장 코드 -->
+  <div class="card hidden" id="codeCard">
+    <h2>Growth Code</h2>
+    <p style="font-size:13.5px;color:var(--muted);margin-bottom:10px">
+      채점 통과 시 출력되는 코드를 입력하세요. <span id="checkHint"></span></p>
+    <div class="coderow">
+      <input type="text" id="codeInput" placeholder="GROW-L1-XXXX">
+      <button id="codeBtn">레벨업!</button>
+    </div>
+    <div class="msg" id="codeMsg"></div>
+  </div>
+
+  <!-- 현재 미션 -->
+  <div class="card hidden" id="missionCard"><h2>Current Mission</h2><div class="mission" id="missionBody"></div></div>
+
+  <!-- 도감 -->
+  <div class="card hidden" id="dogamCard">
+    <h2>스킬 도감 — 이 워크숍에서 만들어진 스킬들</h2>
+    <div class="dogam-list" id="dogamList"><span class="dogam-empty">아직 등록된 스킬이 없습니다</span></div>
+  </div>
+
+  <footer><button class="ghost" id="resetBtn">처음부터 다시 시작</button></footer>
+</div>
+
+<script>
+/* ===== 설정: check.sh 와 동일한 솔트 ===== */
+const SALT = "skill-quest-2026-hbd";
+const FALLBACK = { // crypto.subtle 미지원 환경용 (check.sh 산출값과 동일)
+  "core-daily-report":"CBFC","core-fix-log-digest":"6BFC","core-build-report":"EFDF",
+  "core-scope-guard":"B168","core-silent-skill":"204E","core-my-first-skill":"91BF","core-power-up":"9223"
+};
+
+/* ===== 미션 데이터 (core 트랙) — md 카드와 동일 내용 요약 ===== */
+const MISSIONS = [
+ {id:"core-daily-report", lv:1, title:"부팅 — 첫 스킬 장착", skill:"daily-report",
+  goal:"제공된 <code>daily-report</code> 스킬을 설치하고, 에이전트가 일일 리포트를 만들게 하세요.",
+  steps:`1. <code>mkdir -p .opencode/skills && cp -r skills-given/daily-report .opencode/skills/</code><br>
+  2. opencode <b>재시작</b> (스킬은 시작 시 로드됩니다)<br>
+  3. 에이전트에게: <b>"오늘 작업 요약해줘"</b><br>4. <code>output/daily-report.md</code> 확인`,
+  stepsWin:`1. PowerShell: <code>New-Item -Type Directory -Force .opencode\\skills | Out-Null; Copy-Item -Recurse skills-given\\daily-report .opencode\\skills\\</code><br>
+  2. opencode <b>재시작</b> (스킬은 시작 시 로드됩니다)<br>
+  3. 에이전트에게: <b>"오늘 작업 요약해줘"</b><br>4. <code>output\\daily-report.md</code> 확인`,
+  hints:[]},
+ {id:"core-fix-log-digest", lv:2, title:"첫 수리 — 고장난 스킬", skill:"log-digest",
+  goal:"전임자가 남긴 <code>skills-broken/log-digest</code>가 발동하지 않습니다. 고쳐서 regression 로그를 요약시키세요.",
+  steps:`1. 스킬 설치 후 재시작 → <b>"리그레션 로그 요약해줘"</b> → 발동 안 됨을 확인<br>
+  2. SKILL.md의 <b>description을 소리 내어 읽어보세요.</b> 본문과 같은 얘기를 하고 있나요?<br>
+  3. description 수정 → 재시작 → 다시 요청`,
+  hints:[]},
+ {id:"core-build-report", lv:3, title:"첫 제작 — 템플릿 채우기", skill:"test-report",
+  goal:"<code>data/test_results.csv</code>를 집계하는 스킬 <b>test-report</b>를 직접 만드세요. (이름 고정 — 나중에 업그레이드합니다)",
+  steps:`미션 카드(<code>missions/lv3/</code>)의 템플릿에서 빈칸 두 개만 채우면 됩니다.<br>
+  리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄을 포함시키는 걸 잊지 마세요.`,
+  hints:[]},
+ {id:"core-scope-guard", lv:4, title:"범위 조절 — 오발동 막기", skill:null,
+  goal:"test-report가 <b>엉뚱한 요청에는 발동하지 않게</b> description을 다듬으세요. 마지막 레시피 미션입니다.",
+  steps:`A. "테스트 결과 리포트 만들어줘" → 발동해야 함 ✅<br>
+  B. "지난 분기 실적 리포트 초안 써줘" → 발동하면 안 됨 ❌<br>
+  B에서 낚인다면: <b>무엇에는 쓰지 않는지</b>를 description에 명시해보세요.`,
+  hints:[]},
+ {id:"core-silent-skill", lv:5, title:"침묵하는 스킬 🥽", skill:"fail-summary",
+  goal:"<code>skills-broken/fail-summary</code>가 아무 반응이 없습니다. 이번엔 <b>아무도 원인을 알려주지 않습니다.</b> 진단하고 고치세요.",
+  steps:`절차 없음. 지금까지 배운 원리로 스스로. (진단 고글을 장착할 시간입니다)`,
+  hints:["에이전트는 description을 읽고 발동을 결정합니다. description을 소리 내어 읽고, 방금 친 프롬프트와 비교해보세요. 같은 것에 대해 말하고 있나요?",
+   "description과 본문이 서로 다른 스킬을 설명하면 에이전트는 description을 믿습니다. 그리고 한글로 일하는 팀이라면 — 한글 표현이 있으면 훨씬 안정적으로 발동합니다.",
+   "description이 'coverage 분석' 얘기를 합니다. 본문은 'regression 실패 원인 요약'이고요. 본문에 맞게, 한/영 표현을 함께 넣어 다시 쓰세요."]},
+ {id:"core-my-first-skill", lv:6, title:"백지 설계 — 내 업무를 스킬로", skill:"(당신의 스킬)",
+  goal:"당신의 실제 반복 업무 하나를 스킬로 만드세요. 템플릿 없음. 심사 기준: <b>트리거 명확성 · 범위 제한 · 실행 구체성</b>.",
+  steps:`소재 예시: 회의록 정리, 코드 리뷰 체크리스트, 커밋 규칙, 주간 보고 형식...<br>"매번 똑같이 설명하는 것"이 최고의 후보입니다.`,
+  hints:[]},
+ {id:"core-power-up", lv:7, title:"장인의 한 수 — 스크립트 번들링 ⭐", skill:"test-report v2",
+  goal:"LLM은 셈을 실수합니다. test-report가 <code>aggregate.py</code>를 <b>실행해서</b> 집계하도록 업그레이드하세요.",
+  steps:`스크립트를 <code>.opencode/skills/test-report/scripts/</code>로 복사하고,<br>
+  SKILL.md에 "반드시 실행 결과를 사용하라"고 지시. 출력의 <code>AGG-TOKEN</code>까지 리포트에 포함시키세요.`,
+  stepsWin:`스크립트를 <code>.opencode\\skills\\test-report\\scripts\\</code>로 복사하고,<br>
+  SKILL.md에 "반드시 실행 결과를 사용하라"고 지시 (Windows는 <code>python</code>). 출력의 <code>AGG-TOKEN</code>까지 리포트에 포함시키세요.`,
+  hints:["에이전트가 실행하지 않고 지어내려 할 수 있습니다. '추정 금지, 반드시 실행 결과 사용'을 명시하는 것도 스킬 작성 기술입니다."]},
+];
+const RANKS=["신입","견습","수습","정식","숙련","베테랑","전문가","마스터"];
+const RANKDESC=["아직 아무 스킬도 모릅니다","첫 스킬 장착 완료! 가슴 램프 점등","고장 수리 성공! 드라이버 획득",
+ "첫 제작 완료! 공구벨트 장착","오발동을 막는 법을 압니다","스스로 진단합니다 — 고글 장착",
+ "자기 업무를 스킬로 만드는 사람","이제 남을 가르칠 수 있습니다 ⭐"];
+const PARTNAMES=["","🌱 새싹 안테나가 반짝!","💡 가슴 램프 점등 + 🪛 드라이버","🧰 공구벨트 + 첫 카트리지",
+ "🛡️ 오발동 방지 배지","🥽 진단 고글","🎒 자작 스킬 배낭 + 작업모","⭐ 별 안테나 + 🏅 훈장 + 미니 제자"];
+
+/* ===== 상태 ===== */
+let ST = { name:"", level:0, skills:[], os:"linux" };
+
+/* ===== 픽셀 로봇 ===== */
+function px(x,y,w,h,c){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;}
+function drawRobot(lv){
+  const B="#5A6B7C", BL="#43525F", FACE="#DCE8F0", EYE="#33404C",
+        G="#6FBFA0", Y="#F2B84B", R="#F27D5C", S="#7FAED8", W="#FFFDF8";
+  let s="";
+  /* 그림자 */ s+=px(8,27,14,1,"#E8DFCE");
+  /* 다리 */ s+=px(11,24,3,3,BL)+px(16,24,3,3,BL);
+  /* 몸통 */ s+=px(9,16,12,8,B)+px(9,16,12,1,BL);
+  /* 팔 */ s+=px(7,17,2,5,BL)+px(21,17,2,5,BL);
+  /* 머리 */ s+=px(8,7,14,8,B)+px(10,9,10,4,FACE);
+  /* 눈 (레벨 낮으면 점, 높으면 반짝) */
+  s+= lv>=3 ? px(12,10,2,2,EYE)+px(17,10,2,2,EYE)+px(12,10,1,1,W)+px(17,10,1,1,W)
+            : px(12,11,2,1,EYE)+px(17,11,2,1,EYE);
+  /* 입 */ s+= lv>=1 ? px(14,13,3,1,EYE) : px(14,13,2,1,"#9AA9B5");
+  /* Lv0+: 새싹 안테나 (Lv7이면 별로 교체) */
+  if(lv<7){ s+=px(14,4,1,3,"#8C8578")+px(13,3,1,1,G)+px(15,3,1,1,G)+px(14,2,1,1,G); }
+  /* Lv1+: 가슴 램프 */
+  if(lv>=1){ s+=px(14,18,2,2,Y)+px(13,18,1,1,"#FBE3A8")+px(16,19,1,1,"#FBE3A8"); }
+  /* Lv2+: 드라이버 (오른손) */
+  if(lv>=2){ s+=px(22,15,1,4,"#C75548")+px(22,19,1,2,"#9AA9B5"); }
+  /* Lv3+: 공구벨트 + 카트리지 */
+  if(lv>=3){ s+=px(9,22,12,1,"#8A6B4C")+px(11,21,2,2,G); }
+  if(lv>=4){ s+=px(14,21,2,2,S); }          /* Lv4: 배지 카트리지 */
+  /* Lv5+: 진단 고글 */
+  if(lv>=5){ s+=px(9,9,12,1,"#33404C")+px(11,8,3,2,S)+px(16,8,3,2,S)+px(11,8,1,1,W)+px(16,8,1,1,W); }
+  /* Lv6+: 배낭 + 작업모 */
+  if(lv>=6){ s+=px(5,16,3,6,R)+px(5,16,3,1,"#C75548")+px(8,5,14,2,Y)+px(12,4,6,1,Y); }
+  /* Lv7: 별 안테나 + 훈장 + 미니 제자 */
+  if(lv>=7){ s+=px(14,4,1,2,"#8C8578")+px(13,2,3,1,Y)+px(14,1,1,3,Y);
+    s+=px(17,18,2,2,Y)+px(17,18,1,1,W); /* 훈장 */
+    s+=px(24,22,4,3,B)+px(25,20,2,2,B)+px(25,21,2,1,FACE)+px(26,19,1,1,G)+px(24,25,1,2,BL)+px(27,25,1,2,BL); }
+  document.getElementById("robot").innerHTML=s;
+}
+
+/* ===== 렌더 ===== */
+function fmt(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function render(){
+  const reg=!!ST.name;
+  document.getElementById("regCard").classList.toggle("hidden",reg);
+  for(const id of["sheetCard","codeCard","missionCard","dogamCard"])
+    document.getElementById(id).classList.toggle("hidden",!reg);
+  if(!reg) return;
+  drawRobot(ST.level);
+  document.getElementById("lvNum").textContent=ST.level;
+  document.getElementById("lvRank").textContent=RANKS[ST.level]+" "+fmt(ST.name);
+  document.getElementById("lvDesc").textContent=RANKDESC[ST.level];
+  document.getElementById("dots").innerHTML=[1,2,3,4,5,6,7].map(i=>
+    `<div class="dot ${i<=ST.level?"on":(i===ST.level+1?"now":"")}"></div>`).join("");
+  document.getElementById("equip").innerHTML = ST.skills.length
+    ? ST.skills.map(x=>`<span class="chip">${fmt(x)}</span>`).join("")
+    : `<span class="dogam-empty">없음 (텅 빈 공구벨트)</span>`;
+  document.getElementById("osToggle").textContent = ST.os==="windows" ? "🪟 Windows (클릭해서 변경)" : "🐧 Linux / SSH (클릭해서 변경)";
+  document.getElementById("checkHint").innerHTML = ST.os==="windows"
+    ? `Windows: <span class="cmd">check.bat</span> 더블클릭 → id 입력 → 결과 확인 후 창 닫기`
+    : `Linux: <span class="cmd">./check.sh &lt;mission-id&gt;</span>`;
+  const m=MISSIONS[ST.level];
+  document.getElementById("missionBody").innerHTML = ST.level>=7
+    ? `<h3>🎓 온보딩 완료!</h3><p class="goal">당신의 에이전트는 이제 <b>마스터</b>입니다.
+       다음 단계: 오늘 만든 Lv.6 스킬을 팀 스킬 레포에 공유하고, 자기학습 트랙(self)의 미션을 만들어보세요 —
+       미션 제작은 마스터의 특권입니다.</p>`
+    : `<h3>Lv.${m.lv} ${fmt(m.title)}</h3>
+       <p class="goal">${m.goal}</p>
+       <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
+       <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
+       ${m.hints.map((h,i)=>`<details><summary>힌트 ${"①②③"[i]}</summary><p>${fmt(h)}</p></details>`).join("")}
+       <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
+}
+
+/* ===== 성장 코드 검증 (check.sh 와 동일 해시) ===== */
+async function expectedCode(id){
+  try{
+    const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(id+SALT));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,4).toUpperCase();
+  }catch(e){ return FALLBACK[id]||null; }
+}
+async function submitCode(){
+  const $m=document.getElementById("codeMsg");
+  if(ST.level>=7){$m.className="msg ok";$m.textContent="이미 최고 단계입니다 🎓";return;}
+  const m=MISSIONS[ST.level];
+  const raw=document.getElementById("codeInput").value.trim().toUpperCase();
+  const tail=(raw.match(/([0-9A-F]{4})$/)||[])[1];
+  const exp=await expectedCode(m.id);
+  if(!tail || tail!==exp){
+    $m.className="msg no";
+    $m.textContent="코드가 맞지 않습니다. 지금 미션("+m.id+")의 채점을 통과했는지 확인해주세요.";
+    return;
+  }
+  ST.level++;
+  if(m.skill) ST.skills.push(m.skill);
+  document.getElementById("codeInput").value=""; $m.textContent="";
+  if(m.id==="core-my-first-skill"){
+    const nm=prompt("방금 만든 스킬의 이름을 도감에 등록해주세요! (모두에게 공개됩니다)");
+    if(nm&&nm.trim()) registerDogam(nm.trim());
+  }
+  await saveState();
+  render(); levelBurst();
+}
+function levelBurst(){
+  const d=document.createElement("div"); d.className="burst";
+  d.innerHTML=`<div class="box"><div class="spark">✦ ✦ ✦</div>
+    <div class="big">LEVEL UP! Lv.${ST.level} ${RANKS[ST.level]}</div>
+    <div class="part">${PARTNAMES[ST.level]}</div>
+    <button id="burstOk">다음 미션으로</button></div>`;
+  document.body.appendChild(d);
+  d.querySelector("#burstOk").onclick=()=>d.remove();
+}
+
+/* ===== 저장 (개인) & 도감 (공유) ===== */
+async function saveState(){ try{ await window.storage.set("trainer-v1",JSON.stringify(ST)); }catch(e){} }
+async function loadState(){ try{ const g=await window.storage.get("trainer-v1"); if(g&&g.value) ST=JSON.parse(g.value); }catch(e){} }
+async function registerDogam(skillName){
+  try{
+    let list=[]; try{ const g=await window.storage.get("dogam-v1",true); if(g&&g.value) list=JSON.parse(g.value);}catch(e){}
+    list.push({s:skillName,by:ST.name}); list=list.slice(-60);
+    await window.storage.set("dogam-v1",JSON.stringify(list),true);
+  }catch(e){}
+  loadDogam();
+}
+async function loadDogam(){
+  let list=null;
+  try{ const g=await window.storage.get("dogam-v1",true); list=g&&g.value?JSON.parse(g.value):[]; }catch(e){ list=[]; }
+  document.getElementById("dogamList").innerHTML = list.length
+    ? list.map(x=>`<span class="chip">${fmt(x.s)} <span style="color:#9AA79C">· ${fmt(x.by)}</span></span>`).join("")
+    : `<span class="dogam-empty">아직 등록된 스킬이 없습니다 — Lv.6에서 첫 스킬이 등록됩니다</span>`;
+}
+
+/* ===== 이벤트 ===== */
+let selOS="linux";
+document.querySelectorAll(".osbtn").forEach(b=>b.onclick=()=>{
+  selOS=b.dataset.os;
+  document.querySelectorAll(".osbtn").forEach(x=>x.classList.toggle("sel",x===b));
+});
+document.getElementById("regBtn").onclick=async()=>{
+  const v=document.getElementById("nick").value.trim();
+  if(!v) return;
+  ST={name:v,level:0,skills:[],os:selOS};
+  await saveState(); render();
+};
+document.getElementById("osToggle").onclick=async(e)=>{
+  e.preventDefault();
+  ST.os = ST.os==="windows" ? "linux" : "windows";
+  await saveState(); render();
+};
+document.getElementById("codeBtn").onclick=submitCode;
+document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitCode();});
+document.getElementById("resetBtn").onclick=async()=>{
+  if(!confirm("정말 처음부터 다시 시작할까요? 레벨이 0으로 돌아갑니다.")) return;
+  ST={name:"",level:0,skills:[],os:"linux"}; try{ await window.storage.delete("trainer-v1"); }catch(e){}
+  render();
+};
+
+/* ===== 시작 ===== */
+(async()=>{ await loadState(); if(!ST.os) ST.os="linux"; render(); loadDogam(); })();
+</script>
+</body>
+</html>
