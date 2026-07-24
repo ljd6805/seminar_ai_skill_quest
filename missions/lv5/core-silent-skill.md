@@ -10,13 +10,12 @@ check: script
 
 ## 상황
 리뷰 코멘트가 잔뜩 쌓였습니다 (`data/review-comments.md`). 회의 전에 유형별로 정리해야 합니다.
-팀 레포에 마침 그런 일을 해주는 스킬이 있다고 해서 설치했습니다:
+팀 레포에 마침 그런 일을 해주는 스킬이 있다고 합니다.
 
-- Linux: `cp -r skills-broken/review-summary .opencode/skills/`
-- Windows(PowerShell): `Copy-Item -Recurse skills-broken\review-summary .opencode\skills\`
+설치하고 **"리뷰 코멘트 분류해서 요약해줘"** 라고 시켜봤지만 — 스킬이 사용되지 않습니다.
+프롬프트에는 문제가 없습니다.
 
-그런데 — opencode를 재시작하고 **"리뷰 코멘트 분류해서 요약해줘"** 라고 시켜도 스킬이 사용되지 않습니다.
-프롬프트에는 문제가 없습니다. 이번엔 아무도 원인을 알려주지 않습니다.
+스킬 위치: `skills-broken/review-summary` — 절차 안내는 여기까지입니다.
 
 ## 목표
 스킬을 진단하고 고쳐서, 에이전트가 리뷰 코멘트 요약(`output/review-summary.md`)을 만들게 하세요.
