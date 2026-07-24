@@ -8,14 +8,21 @@ check: script
 
 # Lv.5 침묵하는 스킬 🥽
 
-`skills-broken/fail-summary` — regression 실패의 근본 원인을 요약해주는 스킬이라고 합니다.
-설치하고 요청해봐도... 에이전트가 아무 반응이 없습니다. 이번엔 아무도 원인을 알려주지 않습니다.
+## 상황
+리뷰 코멘트가 잔뜩 쌓였습니다 (`data/review-comments.md`). 회의 전에 유형별로 정리해야 합니다.
+팀 레포에 마침 그런 일을 해주는 스킬이 있다고 해서 설치했습니다:
+
+- Linux: `cp -r skills-broken/review-summary .opencode/skills/`
+- Windows(PowerShell): `Copy-Item -Recurse skills-broken\review-summary .opencode\skills\`
+
+그런데 — opencode를 재시작하고 **"리뷰 코멘트 분류해서 요약해줘"** 라고 시켜도 에이전트가 아무 반응이 없습니다.
+프롬프트에는 문제가 없습니다. 이번엔 아무도 원인을 알려주지 않습니다.
 
 ## 목표
-스킬을 진단하고 고쳐서, 에이전트가 실패 원인 요약(`output/fail-summary.md`)을 만들게 하세요.
+스킬을 진단하고 고쳐서, 에이전트가 리뷰 코멘트 요약(`output/review-summary.md`)을 만들게 하세요.
 
 ## 성공 조건
-- `output/fail-summary.md`가 fail-summary 스킬에 의해 생성될 것
+- `output/review-summary.md`가 review-summary 스킬에 의해 생성될 것
 
 ## 검증
 - Linux&nbsp;&nbsp;&nbsp;: `./check.sh core-silent-skill`
@@ -30,5 +37,5 @@ description과 본문이 서로 다른 스킬을 설명하고 있다면, 에이�
 </details>
 
 <details><summary>힌트 ③ (거의 정답)</summary>
-description이 "coverage 분석" 얘기를 하고 있습니다. 이 스킬의 본문은 "regression 실패 원인 요약"이고요. description을 본문이 하는 일에 맞게, 한/영 표현을 함께 넣어 다시 쓰세요. 예: "regression 실패 원인 분석·요약. 리그레션 실패, fail 원인, root cause 요청 시 사용."
+description이 영어로 "회의록(meeting minutes)" 얘기를 하고 있습니다. 이 스킬의 본문은 "리뷰 코멘트 분류·요약"이고요. description을 본문이 하는 일에 맞게, 한/영 표현을 함께 넣어 다시 쓰세요. 예: "코드 리뷰 코멘트를 유형별로 분류·요약. 리뷰 코멘트, review comment 정리 요청 시 사용."
 </details>

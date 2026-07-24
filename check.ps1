@@ -88,8 +88,8 @@ switch ($Id) {
     Pass 4 }
 
   "core-silent-skill" {
-    Need-File "output/fail-summary.md"
-    if (-not (Has "output/fail-summary.md" "GENERATED-BY: fail-summary-skill")) {
+    Need-File "output/review-summary.md"
+    if (-not (Has "output/review-summary.md" "GENERATED-BY: review-summary-skill")) {
       Fail "스킬 서명이 없습니다. description은 본문과 같은 이야기를 하고 있나요?" }
     Pass 5 }
 
@@ -97,7 +97,7 @@ switch ($Id) {
     $found = ""
     if (Test-Path ".opencode/skills") {
       foreach ($d in (Get-ChildItem ".opencode/skills" -Directory)) {
-        if (@("daily-report","log-digest","fail-summary","test-report") -contains $d.Name) { continue }
+        if (@("daily-report","log-digest","review-summary","test-report") -contains $d.Name) { continue }
         if (Test-Path (Join-Path $d.FullName "SKILL.md")) { $found = $d.Name }
       }
     }

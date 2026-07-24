@@ -69,8 +69,8 @@ case "$ID" in
     pass 4 ;;
 
   core-silent-skill)
-    need_file output/fail-summary.md
-    grep -q "GENERATED-BY: fail-summary-skill" output/fail-summary.md \
+    need_file output/review-summary.md
+    grep -q "GENERATED-BY: review-summary-skill" output/review-summary.md \
       || fail "스킬 서명이 없습니다. description은 본문과 같은 이야기를 하고 있나요?"
     pass 5 ;;
 
@@ -78,7 +78,7 @@ case "$ID" in
     FOUND=""
     for d in .opencode/skills/*/; do
       name=$(basename "$d")
-      case "$name" in daily-report|log-digest|fail-summary|test-report) continue ;; esac
+      case "$name" in daily-report|log-digest|review-summary|test-report) continue ;; esac
       [ -f "$d/SKILL.md" ] && FOUND="$name"
     done
     [ -n "$FOUND" ] || fail "새로 만든 스킬이 보이지 않습니다. .opencode/skills/<이름>/SKILL.md 로 만들어주세요."
