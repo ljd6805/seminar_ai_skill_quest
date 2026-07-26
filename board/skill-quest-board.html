@@ -374,28 +374,41 @@ async function submitCode(){
 }
 function levelBurst(){
   const d=document.createElement("div"); d.className="burst";
-  d.innerHTML=`<div class="box"><div class="spark">✦ ✦ ✦</div>
-    <div class="big">LEVEL UP! Lv.${ST.level} ${RANKS[ST.level]}</div>
-    <div class="part">${PARTNAMES[ST.level]}</div>
-    <button id="burstOk">다음 미션으로</button></div>`;
+  d.innerHTML = ST.level>=7
+    ? `<div class="box"><div class="spark">🎉 ✦ 🎓 ✦ 🎉</div>
+      <div class="big">QUEST COMPLETE!</div>
+      <div class="part">Lv.7 ${RANKS[7]} 달성 — ${PARTNAMES[7]}</div>
+      <div class="part">모든 퀘스트를 완료했습니다. 축하합니다! 만든 스킬을 팀과 공유해주세요.</div>
+      <button id="burstOk">완료 🎉</button></div>`
+    : `<div class="box"><div class="spark">✦ ✦ ✦</div>
+      <div class="big">LEVEL UP! Lv.${ST.level} ${RANKS[ST.level]}</div>
+      <div class="part">${PARTNAMES[ST.level]}</div>
+      <button id="burstOk">다음 미션으로</button></div>`;
   document.body.appendChild(d);
   d.querySelector("#burstOk").onclick=()=>d.remove();
 }
 
 /* ===== 저장 (개인) & 도감 (공유) ===== */
-async function saveState(){ try{ await window.storage.set("trainer-v1",JSON.stringify(ST)); }catch(e){} }
-async function loadState(){ try{ const g=await window.storage.get("trainer-v1"); if(g&&g.value) ST=JSON.parse(g.value); }catch(e){} }
+/* window.storage(공유 스토리지)가 없는 환경(GitHub Pages 등 정적 서빙)에서는 localStorage로 대체합니다.
+   이 경우 도감은 브라우저별(개인) 저장입니다. */
+const store={
+  async get(k,shared){ if(window.storage) return await window.storage.get(k,shared); const v=localStorage.getItem(k); return v==null?null:{value:v}; },
+  async set(k,v,shared){ if(window.storage) return await window.storage.set(k,v,shared); localStorage.setItem(k,v); },
+  async del(k){ if(window.storage) return await window.storage.delete(k); localStorage.removeItem(k); }
+};
+async function saveState(){ try{ await store.set("trainer-v1",JSON.stringify(ST)); }catch(e){} }
+async function loadState(){ try{ const g=await store.get("trainer-v1"); if(g&&g.value) ST=JSON.parse(g.value); }catch(e){} }
 async function registerDogam(skillName){
   try{
-    let list=[]; try{ const g=await window.storage.get("dogam-v1",true); if(g&&g.value) list=JSON.parse(g.value);}catch(e){}
+    let list=[]; try{ const g=await store.get("dogam-v1",true); if(g&&g.value) list=JSON.parse(g.value);}catch(e){}
     list.push({s:skillName,by:ST.name}); list=list.slice(-60);
-    await window.storage.set("dogam-v1",JSON.stringify(list),true);
+    await store.set("dogam-v1",JSON.stringify(list),true);
   }catch(e){}
   loadDogam();
 }
 async function loadDogam(){
   let list=null;
-  try{ const g=await window.storage.get("dogam-v1",true); list=g&&g.value?JSON.parse(g.value):[]; }catch(e){ list=[]; }
+  try{ const g=await store.get("dogam-v1",true); list=g&&g.value?JSON.parse(g.value):[]; }catch(e){ list=[]; }
   document.getElementById("dogamList").innerHTML = list.length
     ? list.map(x=>`<span class="chip">${fmt(x.s)} <span style="color:#9AA79C">· ${fmt(x.by)}</span></span>`).join("")
     : `<span class="dogam-empty">아직 등록된 스킬이 없습니다 — Lv.7(졸업 후 추가 도전)에서 첫 스킬이 등록됩니다</span>`;
@@ -422,7 +435,7 @@ document.getElementById("codeBtn").onclick=submitCode;
 document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitCode();});
 document.getElementById("resetBtn").onclick=async()=>{
   if(!confirm("정말 처음부터 다시 시작할까요? 레벨이 0으로 돌아갑니다.")) return;
-  ST={name:"",level:0,skills:[],os:"linux"}; try{ await window.storage.delete("trainer-v1"); }catch(e){}
+  ST={name:"",level:0,skills:[],os:"linux"}; try{ await store.del("trainer-v1"); }catch(e){}
   render();
 };
 
