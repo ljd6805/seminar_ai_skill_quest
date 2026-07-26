@@ -82,6 +82,10 @@ details p{margin-top:7px;line-height:1.7;color:#5A5347}
 /* 도감 */
 .dogam-list{display:flex;flex-wrap:wrap;gap:6px}
 .dogam-empty{font-size:13px;color:var(--muted)}
+.chip .dogam-del{border:none;background:none;box-shadow:none;padding:0 0 0 6px;margin:0;
+  font-size:13px;font-weight:800;color:#B0A99A;cursor:pointer;line-height:1;vertical-align:baseline}
+.chip .dogam-del:hover{color:#C75548}
+.chip .dogam-del:active{transform:none;box-shadow:none}
 
 /* 레벨업 오버레이 */
 .burst{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
@@ -412,9 +416,19 @@ async function registerDogam(skillName){
 async function loadDogam(){
   let list=null;
   try{ const g=await store.get("dogam-v1",true); list=g&&g.value?JSON.parse(g.value):[]; }catch(e){ list=[]; }
-  document.getElementById("dogamList").innerHTML = list.length
-    ? list.map(x=>`<span class="chip">${fmt(x.s)} <span style="color:#9AA79C">· ${fmt(x.by)}</span></span>`).join("")
+  const el=document.getElementById("dogamList");
+  el.innerHTML = list.length
+    ? list.map((x,i)=>`<span class="chip">${fmt(x.s)} <span style="color:#9AA79C">· ${fmt(x.by)}</span><button class="dogam-del" data-i="${i}" title="도감에서 삭제">×</button></span>`).join("")
     : `<span class="dogam-empty">아직 등록된 스킬이 없습니다 — Lv.7(졸업 후 추가 도전)에서 첫 스킬이 등록됩니다</span>`;
+  el.querySelectorAll(".dogam-del").forEach(b=>b.onclick=()=>removeDogam(+b.dataset.i));
+}
+async function removeDogam(i){
+  let list=[]; try{ const g=await store.get("dogam-v1",true); if(g&&g.value) list=JSON.parse(g.value);}catch(e){}
+  const it=list[i]; if(!it) return;
+  if(!confirm(`도감에서 '${it.s}' (${it.by}) 스킬을 삭제할까요?`)) return;
+  list.splice(i,1);
+  try{ await store.set("dogam-v1",JSON.stringify(list),true); }catch(e){}
+  loadDogam();
 }
 
 /* ===== 이벤트 ===== */
