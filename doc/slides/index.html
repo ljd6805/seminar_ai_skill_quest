@@ -1479,15 +1479,16 @@ footer, header, hgroup, main, menu, nav, section {
       <div><span class="chip">이론 ① · 스킬 스코프</span> <span class="pill">→ 실습 Lv.1</span></div>
       <h2>같은 스킬도, 놓인 경로에 따라 적용 범위가 다릅니다</h2>
       <div class="autoshow fade-up" style="display:flex; gap:1.0rem; margin-top:0.9rem; align-items:stretch">
-        <div class="term" style="flex:1">
+        <div class="term" style="flex:1.25">
           <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">전역 스코프 — 홈 폴더</span></div>
-          <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.92rem; line-height:1.7">~/.config/opencode/skills/&lt;이름&gt;/<br>└─ SKILL.md <span class="faint">← 어느 프로젝트에서든 로드</span></div>
+          <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.84rem; line-height:1.75">Linux&nbsp;&nbsp;: ~/.config/opencode/skills/&lt;이름&gt;/SKILL.md<br>Windows: C:\Users\&lt;사용자&gt;\.config\opencode\skills\&lt;이름&gt;\SKILL.md<br><span class="faint">← 어느 프로젝트에서든 로드</span></div>
         </div>
         <div class="term" style="flex:1">
           <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">프로젝트 스코프 — 레포 안</span></div>
-          <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.92rem; line-height:1.7">&lt;레포&gt;/.opencode/skills/&lt;이름&gt;/<br>└─ SKILL.md <span class="faint">← 이 레포에서 실행할 때만</span></div>
+          <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.84rem; line-height:1.75">&lt;레포&gt;/.opencode/skills/&lt;이름&gt;/SKILL.md<br><span class="faint">← OS 무관 · 이 레포에서 실행할 때만</span></div>
         </div>
       </div>
+      <p class="dim autoshow fade-up" style="font-size:0.95rem; margin-top:0.7rem">호환 경로 <span class="mono">~/.agents/skills/</span> · <span class="mono">~/.claude/skills/</span> 도 인식됩니다 — 단 Windows는 <span class="mono">.agents</span> 경로 미인식 버그가 있어 <span class="mono">.config</span> 경로를 권장합니다 <span class="mono tiny faint">(공식 문서·이슈 확인 2026-07)</span>.</p>
       <div class="term autoshow fade-up" style="margin-top:1.0rem">
         <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">무엇이 달라지나</span></div>
         <div class="term-body" style="padding:0.5rem 0.9rem">
