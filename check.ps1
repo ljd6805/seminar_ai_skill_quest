@@ -87,6 +87,16 @@ switch ($Id) {
     Ask '"오늘 일정을 리포트로 정리해줘" 는 daily-report가 처리했나요? (test-report가 아니라)'
     Pass 4 }
 
+  "core-power-up" {
+    if (-not (Test-Path ".opencode/skills/test-report/references/quality-bar.md")) {
+      Fail "기준서가 .opencode/skills/test-report/references/quality-bar.md 위치에 없습니다. 스킬 폴더에 번들해주세요." }
+    Need-File "output/test-report-v2.md"
+    if (-not (Has "output/test-report-v2.md" "GRADE: RISK")) {
+      Fail "GRADE 판정이 없거나 기준서와 다릅니다. FAIL 개수를 기준표에 직접 대조해보세요." }
+    if (-not (Has "output/test-report-v2.md" "REF-VERSION: QB-2026-07")) {
+      Fail "REF-VERSION이 없거나 틀렸습니다. 에이전트가 기준서를 '진짜로' 읽었을까요? SKILL.md 지시를 다듬어보세요." }
+    Pass 5 }
+
   "core-silent-skill" {
     if (-not (Test-Path "output/review-summary.md")) {
       Fail "산출물(output/review-summary.md)이 없습니다. 스킬이 로드는 되고 있나요? 스킬 목록부터 확인하세요." }
@@ -99,7 +109,11 @@ switch ($Id) {
       $sum += [int]$m.Matches[0].Groups[1].Value
     }
     if ($sum -ne 10) { Fail "TYPE_ 4줄의 합계가 10이 아닙니다(현재 $sum). 코멘트 10개가 모두 분류됐는지 확인하세요." }
-    Pass 5 }
+    if (-not (Has "output/review-summary.md" "REF-VERSION: CT-2026-07")) {
+      Fail "기준서 버전(REF-VERSION)이 리포트에 없습니다. 본문이 참조하는 분류 기준서를 스킬이 정말 읽었을까요? (힌트 ④)" }
+    if (-not (Test-Path ".opencode/skills/review-summary/references/comment-types.md")) {
+      Fail "분류 기준서가 스킬 폴더에 동봉되어 있지 않습니다 (references/comment-types.md). 번들을 기억하세요 (Lv.5)." }
+    Pass 6 }
 
   "core-my-first-skill" {
     $found = ""
@@ -114,7 +128,7 @@ switch ($Id) {
     $desc = ""
     if ($descLine) { $desc = $descLine.Line.Substring("description:".Length).Trim() }
     if ($desc.Length -lt 20) { Fail "'$found'의 description이 너무 짧습니다. 실제로 할 말(트리거 표현)을 담아 조금 더 구체적으로 써보세요." }
-    Write-Host "  [Lv.6 확인] 발견된 스킬: $found"
+    Write-Host "  [Lv.7 확인] 발견된 스킬: $found"
     $sig = "GENERATED-BY: " + $found
     $hit = $false
     if (Test-Path "output") {
@@ -122,15 +136,6 @@ switch ($Id) {
     }
     if (-not $hit) {
       Fail ("'" + $found + "'의 서명(" + $sig + ")이 담긴 산출물이 output/ 아래에 없습니다. 스킬이 output/ 파일과 서명을 남기도록 본문에 지시했나요? 그리고 실제로 발동시켰나요?") }
-    Pass 6 }
-
-  "core-power-up" {
-    if (-not (Test-Path ".opencode/skills/test-report/scripts/aggregate.py")) {
-      Fail "스크립트가 .opencode/skills/test-report/scripts/aggregate.py 위치에 없습니다." }
-    Need-File "output/test-report-v2.md"
-    $token = (Get-FileHash "data/test_results.csv" -Algorithm SHA1).Hash.Substring(0,6).ToLower()
-    if (-not (Has "output/test-report-v2.md" ("AGG-TOKEN: " + $token))) {
-      Fail "AGG-TOKEN이 없거나 틀렸습니다. 에이전트가 스크립트를 '진짜로' 실행했을까요? SKILL.md 지시를 다듬어보세요." }
     Pass 7 }
 
   default { Fail "알 수 없는 미션 id 입니다: $Id (인자 없이 실행하면 목록이 표시됩니다)" }

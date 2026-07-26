@@ -217,30 +217,31 @@ const MISSIONS = [
   B. "오늘 일정을 리포트로 정리해줘" → test-report는 발동하면 안 됨 ❌ (이 요청의 주인은 daily-report)<br>
   B에서 낚인다면: <b>무엇에는 쓰지 않는지</b>를 description에 명시해보세요.`,
   hints:[]},
- {id:"core-silent-skill", lv:5, title:"침묵하는 스킬 — 승급 시험 🥽", skill:"review-summary",
-  goal:"전임자가 리뷰 코멘트(<code>data/review-comments.md</code>)를 정리해주던 스킬을 남기고 떠났습니다. 팀 레포의 <code>skills-broken/review-summary</code>에 있다고 합니다. 인수인계 메모는 한 줄뿐 — <i>\"몇 군데 손볼 곳이 있음.\"</i><br>설치하고 <b>\"리뷰 코멘트 분류해서 요약해줘\"</b> 라고 시켜보세요. 지금까지 배운 <b>모든 것이 시험 범위</b>입니다.",
-  steps:`스킬 위치: <code>skills-broken/review-summary</code> — 절차 안내는 여기까지입니다.<br>성공 조건: 리포트 끝에 <code>TYPE_BUG:</code> <code>TYPE_STYLE:</code> <code>TYPE_QUESTION:</code> <code>TYPE_SUGGEST:</code> 4줄(개수 포함).<br>💭 description을 다시 쓰게 된다면 — "요약"이라는 단어, log-digest와 겹치지 않을까요? 방어선을 기억하세요.`,
+ {id:"core-power-up", lv:5, title:"장인의 한 수 — 레퍼런스 번들링 ⭐", skill:"test-report v2",
+  goal:"판정 기준은 자주 바뀝니다 — 기준을 본문에 박지 말고 <b>레퍼런스로 분리</b>하세요. test-report가 팀 품질 기준서(<code>reference-given/quality-bar.md</code>)를 <b>읽고 판정</b>하도록 업그레이드합니다. 번들 자료는 기준표·템플릿·체크리스트 등 무엇이든 될 수 있습니다.",
+  steps:`기준서를 <code>.opencode/skills/test-report/references/</code>로 복사하고,<br>
+  SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
+  stepsWin:`기준서를 <code>.opencode\\skills\\test-report\\references\\</code>로 복사하고,<br>
+  SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
+  hints:["에이전트가 기준서를 읽지 않고 판정을 지어낼 수 있습니다. '추정 금지, 반드시 기준서를 읽고 따를 것'을 명시하는 것도 스킬 작성 기술입니다."]},
+ {id:"core-silent-skill", lv:6, title:"침묵하는 스킬 — 승급 시험 🥽", skill:"review-summary",
+  goal:"전임자가 리뷰 코멘트(<code>data/review-comments.md</code>)를 정리해주던 스킬을 남기고 떠났습니다. 팀 레포의 <code>skills-broken/review-summary</code>에 있다고 합니다. 인수인계 메모는 한 줄뿐 — <i>\"몇 군데 손볼 곳이 있음.\"</i><br>설치하고 <b>\"리뷰 코멘트 분류해서 요약해줘\"</b> 라고 시켜보세요. 지금까지 배운 <b>모든 것이 시험 범위</b>입니다. 수업의 마지막 관문 — 통과하면 수료입니다 🎓",
+  steps:`스킬 위치: <code>skills-broken/review-summary</code> — 절차 안내는 없습니다.<br>성공 조건: 리포트 끝에 <code>TYPE_BUG:</code> <code>TYPE_STYLE:</code> <code>TYPE_QUESTION:</code> <code>TYPE_SUGGEST:</code> 4줄(개수 포함) + 본문이 참조하는 <b>분류 기준서</b>가 스킬 폴더에 동봉되고 <code>REF-VERSION</code> 줄이 리포트에 포함될 것.<br>💭 description을 다시 쓰게 된다면 — "요약"이라는 단어, log-digest와 겹치지 않을까요? 방어선을 기억하세요.`,
   hints:["이론의 진단 체크리스트를 순서대로 밟으세요. 첫 항목은 위치와 파일명입니다 — 스킬이 목록에 보이기는 하나요?",
    "목록에는 있는데 침묵한다면 description 차례입니다. 본문과 같은 일을, 사용자가 실제로 칠 표현(한글 포함)으로 말하고 있나요?",
-   "발동은 되는데 채점 탈락이라면 — 성공 조건의 TYPE_ 4줄을 본문이 지시하고 있는지 보세요. 출력 형식은 본문에 직접 못박는 것이었죠 (Lv.3)."]},
- {id:"core-my-first-skill", lv:6, title:"백지 설계 — 내 업무를 스킬로", skill:"(당신의 스킬)",
-  goal:"지금까지는 준비된 미션을 풀었습니다 — 이제 <b>당신의 반복 업무</b> 차례입니다. 이 레벨의 연습: ① 매번 똑같이 설명하던 일을 절차로 옮겨 적기 ② 검증 가능성을 설계해 넣기(산출물과 서명) ③ 팀의 자산으로 남기기. <b>오늘의 진짜 산출물이 여기서 나옵니다.</b>",
+   "발동은 되는데 채점 탈락이라면 — 성공 조건의 TYPE_ 4줄을 본문이 지시하고 있는지 보세요. 출력 형식은 본문에 직접 못박는 것이었죠 (Lv.3).",
+   "본문이 참조하는 파일이 정말 그 자리에 있나요? 전임자는 분류 기준서를 팀 공용 서랍(reference-given/)에 두고 갔습니다 — 번들을 기억하세요 (Lv.5)."]},
+ {id:"core-my-first-skill", lv:7, title:"졸업 후 추가 도전 — 내 업무를 스킬로 🎒", skill:"(당신의 스킬)",
+  goal:"<b>수업은 Lv.6에서 수료했습니다.</b> 이 레벨은 세미나 후 각자의 자리에서 도전하는 자율 퀘스트 — 이제 <b>당신의 반복 업무</b> 차례입니다. 연습: ① 매번 똑같이 설명하던 일을 절차로 옮겨 적기 ② 검증 가능성을 설계해 넣기(산출물과 서명) ③ 팀의 자산으로 남기기.",
   steps:`소재 예시(파일이 남는 일): 회의 메모 → 회의록 파일 · 로그 → 요약 파일 · 주간 보고 초안 파일… "매번 똑같이 설명하는 일"이 최고의 후보.<br>제약(채점기 확인): 결과를 <code>output/</code> 아래 파일로 + 마지막 줄 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명 — 둘 다 SKILL.md 본문에 직접 지시하세요. 발동의 근거를 스스로 남기는 스킬이 좋은 스킬입니다.<br>스스로 점검: 트리거 명확성 · 범위 제한 · 실행 구체성`,
   hints:[]},
- {id:"core-power-up", lv:7, title:"장인의 한 수 — 스크립트 번들링 ⭐", skill:"test-report v2",
-  goal:"LLM은 셈을 실수합니다. test-report가 <code>aggregate.py</code>를 <b>실행해서</b> 집계하도록 업그레이드하세요.",
-  steps:`스크립트를 <code>.opencode/skills/test-report/scripts/</code>로 복사하고,<br>
-  SKILL.md에 "반드시 실행 결과를 사용하라"고 지시. 출력의 <code>AGG-TOKEN</code>까지 리포트에 포함시키세요.`,
-  stepsWin:`스크립트를 <code>.opencode\\skills\\test-report\\scripts\\</code>로 복사하고,<br>
-  SKILL.md에 "반드시 실행 결과를 사용하라"고 지시 (Windows는 <code>python</code>). 출력의 <code>AGG-TOKEN</code>까지 리포트에 포함시키세요.`,
-  hints:["에이전트가 실행하지 않고 지어내려 할 수 있습니다. '추정 금지, 반드시 실행 결과 사용'을 명시하는 것도 스킬 작성 기술입니다."]},
 ];
 const RANKS=["신입","견습","수습","정식","숙련","베테랑","전문가","마스터"];
 const RANKDESC=["아직 아무 스킬도 모릅니다","첫 스킬 장착 완료! 가슴 램프 점등","고장 수리 성공! 드라이버 획득",
- "첫 제작 완료! 공구벨트 장착","오발동을 막는 법을 압니다","스스로 진단합니다 — 고글 장착",
- "자기 업무를 스킬로 만드는 사람","이제 남을 가르칠 수 있습니다 ⭐"];
+ "첫 제작 완료! 공구벨트 장착","오발동을 막는 법을 압니다","절차와 기준을 분리합니다 — 기준서 번들",
+ "스스로 진단합니다 — 수료! 🎓 고글 장착","자기 업무를 스킬로 — 이제 남을 가르칠 수 있습니다 ⭐"];
 const PARTNAMES=["","🌱 새싹 안테나가 반짝!","💡 가슴 램프 점등 + 🪛 드라이버","🧰 공구벨트 + 첫 카트리지",
- "🛡️ 오발동 방지 배지","🥽 진단 고글","🎒 자작 스킬 배낭 + 작업모","⭐ 별 안테나 + 🏅 훈장 + 미니 제자"];
+ "🛡️ 오발동 방지 배지","📘 기준서 카트리지","🥽 진단 고글 + 🎓 수료","🎒 자작 스킬 배낭 + ⭐ 별 안테나 + 🏅 훈장 + 미니 제자"];
 
 /* ===== 상태 ===== */
 let ST = { name:"", level:0, skills:[], os:"linux" };
@@ -276,8 +277,9 @@ function drawRobot(lv, leveled){
   if(lv>=2) c+=`<g${NP(2)}>`+px(22,15,1,4,RD)+px(22,19,1,2,GRY)+`</g>`;   /* 드라이버 */
   if(lv>=3) c+=`<g${NP(3)}>`+px(9,22,12,1,BR)+px(11,21,2,2,G)+`</g>`;     /* 벨트+카트리지 */
   if(lv>=4) c+=`<g${NP(4)}>`+px(14,21,2,2,S)+`</g>`;                       /* 방지 배지 */
-  if(lv>=5) c+=`<g${NP(5)}>`+px(9,9,12,1,EYE)+px(11,8,3,2,S)+px(16,8,3,2,S)+px(11,8,1,1,W)+px(16,8,1,1,W)+`</g>`; /* 고글 */
-  if(lv>=6) c+=`<g${NP(6)}>`+px(5,16,3,6,R)+px(5,16,3,1,RD)+px(5,17,1,2,Y)+px(6,19,1,2,G)
+  if(lv>=5) c+=`<g${NP(5)}>`+px(18,20,2,3,W)+px(18,20,1,3,S)+`</g>`;       /* 기준서(책) */
+  if(lv>=6) c+=`<g${NP(6)}>`+px(9,9,12,1,EYE)+px(11,8,3,2,S)+px(16,8,3,2,S)+px(11,8,1,1,W)+px(16,8,1,1,W)+`</g>`; /* 고글 */
+  if(lv>=7) c+=`<g${NP(7)}>`+px(5,16,3,6,R)+px(5,16,3,1,RD)+px(5,17,1,2,Y)+px(6,19,1,2,G)
       +px(8,5,14,2,Y)+px(12,4,6,1,Y)+`</g>`;                               /* 배낭+작업모 */
   if(lv>=7) c+=`<g${NP(7)}>`+px(17,18,2,2,GD)+px(17,18,1,1,W)+`</g>`;      /* 훈장 */
 
@@ -330,13 +332,13 @@ function render(){
   const m=MISSIONS[ST.level];
   document.getElementById("missionBody").innerHTML = ST.level>=7
     ? `<h3><span class="lvbadge" style="background:${ACC[7]}">LV 7</span>🎓 온보딩 완료!</h3><p class="goal">당신의 에이전트는 이제 <b>마스터</b>입니다.
-       다음 단계: 오늘 만든 Lv.6 스킬을 팀 스킬 레포에 공유하고, 자기학습 트랙(self)의 미션을 만들어보세요 —
+       다음 단계: Lv.7에서 만든 스킬을 팀 스킬 레포에 공유하고, 자기학습 트랙(self)의 미션을 만들어보세요 —
        미션 제작은 마스터의 특권입니다.</p>`
     : `<h3><span class="lvbadge" style="background:${ACC[Math.min(ST.level+1,7)]}">LV ${m.lv}</span>${fmt(m.title)}</h3>
        <p class="goal">${m.goal}</p>
        <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
-       ${m.hints.map((h,i)=>`<details><summary>힌트 ${"①②③"[i]}</summary><p>${fmt(h)}</p></details>`).join("")}
+       ${m.hints.map((h,i)=>`<details><summary>힌트 ${"①②③④"[i]}</summary><p>${fmt(h)}</p></details>`).join("")}
        <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
 }
 
@@ -396,7 +398,7 @@ async function loadDogam(){
   try{ const g=await window.storage.get("dogam-v1",true); list=g&&g.value?JSON.parse(g.value):[]; }catch(e){ list=[]; }
   document.getElementById("dogamList").innerHTML = list.length
     ? list.map(x=>`<span class="chip">${fmt(x.s)} <span style="color:#9AA79C">· ${fmt(x.by)}</span></span>`).join("")
-    : `<span class="dogam-empty">아직 등록된 스킬이 없습니다 — Lv.6에서 첫 스킬이 등록됩니다</span>`;
+    : `<span class="dogam-empty">아직 등록된 스킬이 없습니다 — Lv.7(졸업 후 추가 도전)에서 첫 스킬이 등록됩니다</span>`;
 }
 
 /* ===== 이벤트 ===== */

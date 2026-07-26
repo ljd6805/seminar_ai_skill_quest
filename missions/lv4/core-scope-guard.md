@@ -33,4 +33,4 @@ check: interactive
 - Linux&nbsp;&nbsp;&nbsp;: `./check.sh core-scope-guard`
 - Windows: `check.bat core-scope-guard`  (또는 `check.bat` 더블클릭 후 id 입력 — 창은 결과 확인 후 닫으면 됩니다)
 
-> 💡 다음 레벨부터는 절차 안내가 없습니다. 지금까지 배운 원리로 스스로 진단하세요.
+> 💡 다음 레벨(Lv.5)은 단서만 드리는 마지막 가이드입니다. Lv.6 승급 시험부터는 절차 안내가 없습니다 — 지금까지 배운 원리로 스스로 진단하세요.

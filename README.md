@@ -14,9 +14,11 @@
 ## 게임 루프
 미션 수행(터미널) → 채점 → 성장 코드 획득 → 웹 보드에 입력 → 레벨업
 
+세미나 수업은 **Lv.6 승급 시험까지** 진행하며(통과하면 수료 🎓), **Lv.7은 세미나 후 각자의 업무로 도전하는 자율 퀘스트**입니다.
+
 ## 채점기 실행 (환경별)
 - **Linux / SSH**: `./check.sh <mission-id>`
-- **Windows**: `check.bat <mission-id>` — 또는 `check.bat`를 **더블클릭**하면 미션 목록이 나오고 id를 입력해 채점합니다. 결과 확인 후 아무 키나 누르면 창이 닫힙니다. (PowerShell 내장 기능만 사용하므로 별도 설치 불필요, Lv.7만 Python 필요)
+- **Windows**: `check.bat <mission-id>` — 또는 `check.bat`를 **더블클릭**하면 미션 목록이 나오고 id를 입력해 채점합니다. 결과 확인 후 아무 키나 누르면 창이 닫힙니다. (PowerShell 내장 기능만 사용하므로 별도 설치 불필요)
 - 웹 보드에서 자신의 환경(Linux/Windows)을 선택하면 미션 명령어가 그 환경에 맞게 표시됩니다.
 
 ## 폴더 구성
@@ -25,8 +27,8 @@
 - `missions/` — 레벨별 미션 카드. `core-*`는 세미나 공통 트랙이며, 세미나 후 자기학습용 미션을 자유롭게 추가할 수 있습니다 (md 파일 하나 추가 = 미션 추가).
 - `data/` — 미션용 가짜 데이터 (regression 로그, 테스트 결과 CSV)
 - `skills-given/` — Lv.1용 완성 스킬
-- `skills-broken/` — 수리 대상 고장 스킬 (Lv.2, Lv.5)
-- `scripts-given/` — Lv.7 번들링용 집계 스크립트
+- `skills-broken/` — 수리 대상 고장 스킬 (Lv.2, Lv.6)
+- `reference-given/` — 번들링용 팀 공용 기준서 (Lv.5 품질 판정 기준, Lv.6 코멘트 분류 기준)
 - `check.sh` / `check.bat`+`check.ps1` — 미션 채점기, Linux/Windows용 (통과 시 성장 코드 발급)
 
 ## 규칙 아닌 규칙
