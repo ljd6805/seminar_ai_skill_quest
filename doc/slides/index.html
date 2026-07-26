@@ -1471,7 +1471,35 @@ footer, header, hgroup, main, menu, nav, section {
           <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.92rem; line-height:1.65">---<br>name: daily-report <span class="faint">← 폴더명과 일치</span><br>description: 오늘 일정 요약·일일 브리핑 요청 시 사용… <span class="faint">← 발동 결정</span><br>---<br><span class="faint">## 절차 — 자유 형식 Markdown 절차서 (실행 품질 결정)</span></div>
         </div>
       </div>
-      <p class="note autoshow fade-up" style="margin-top:1.1rem">저장 위치는 두 곳 — <b class="accent">프로젝트</b> <span class="mono">.opencode/skills/</span>(오늘 실습)와 <b>전역</b>(홈 폴더). 사내 opencode는 둘 다 인식합니다 <span class="mono tiny faint">(확인 완료 2026-07)</span>.</p>
+      <p class="note autoshow fade-up" style="margin-top:1.1rem">폴더 이름 = 스킬 이름, 파일 이름은 반드시 <span class="mono">SKILL.md</span> — 그리고 이 폴더를 <b class="accent">어디에 두느냐</b>가 다음 장 이야기입니다.</p>
+    </section>
+
+    <!-- 4b · 이론① 스킬 스코프 -->
+    <section data-sec="이론 ① · Skill의 실체">
+      <div><span class="chip">이론 ① · 스킬 스코프</span> <span class="pill">→ 실습 Lv.1</span></div>
+      <h2>같은 스킬도, 놓인 경로에 따라 적용 범위가 다릅니다</h2>
+      <div class="autoshow fade-up" style="display:flex; gap:1.0rem; margin-top:0.9rem; align-items:stretch">
+        <div class="term" style="flex:1">
+          <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">전역 스코프 — 홈 폴더</span></div>
+          <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.92rem; line-height:1.7">~/.config/opencode/skills/&lt;이름&gt;/<br>└─ SKILL.md <span class="faint">← 어느 프로젝트에서든 로드</span></div>
+        </div>
+        <div class="term" style="flex:1">
+          <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">프로젝트 스코프 — 레포 안</span></div>
+          <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.92rem; line-height:1.7">&lt;레포&gt;/.opencode/skills/&lt;이름&gt;/<br>└─ SKILL.md <span class="faint">← 이 레포에서 실행할 때만</span></div>
+        </div>
+      </div>
+      <div class="term autoshow fade-up" style="margin-top:1.0rem">
+        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">무엇이 달라지나</span></div>
+        <div class="term-body" style="padding:0.5rem 0.9rem">
+          <table class="wr-table">
+            <tr><th></th><th>전역 (홈 폴더)</th><th>프로젝트 (레포 안)</th></tr>
+            <tr class="hl"><td><b>적용 범위</b></td><td>내 컴퓨터의 모든 프로젝트</td><td>그 레포에서 opencode를 실행할 때만</td></tr>
+            <tr class="hl"><td><b>공유</b></td><td>나만 사용 — 개인 세팅</td><td>레포에 커밋 → clone한 팀 전체가 획득</td></tr>
+            <tr class="hl"><td><b>어울리는 스킬</b></td><td>개인 습관 · 범용 도구</td><td>팀 규칙 · 프로젝트 전용 절차</td></tr>
+          </table>
+        </div>
+      </div>
+      <p class="note autoshow fade-up" style="margin-top:1.0rem">오늘 실습은 전부 <b class="accent">프로젝트 스코프</b>(<span class="mono">.opencode/skills/</span>)에 설치합니다 — 여러분의 전역 설정은 건드리지 않고, 만든 스킬은 레포와 함께 팀 자산이 됩니다.</p>
     </section>
 
     <!-- 5 · 이론① 로드 사이클 -->
