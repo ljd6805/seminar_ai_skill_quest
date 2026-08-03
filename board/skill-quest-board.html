@@ -74,10 +74,20 @@ body{transition:background .5s ease}
 code,.cmd{font-family:var(--mono);font-size:13px;background:#33302A;color:#F5E9C9;
   border-radius:6px;padding:2px 7px}
 .cmd{display:inline-block;margin-top:4px;padding:7px 12px}
-details{margin-top:8px;border:1.5px dashed var(--line);border-radius:10px;padding:9px 13px;font-size:13.5px}
-details summary{cursor:pointer;font-weight:700;color:var(--sky)}
-details p{margin-top:7px;line-height:1.7;color:#5A5347}
 .freehint{font-size:12.5px;color:var(--muted);margin-top:12px}
+
+/* 힌트 팝업 */
+#hintBtn{margin-top:12px;padding:8px 16px;font-size:13.5px;color:var(--sky);border-color:#CFE0EE}
+.burst .box.hint-box{max-width:560px;width:calc(100% - 36px);text-align:left;max-height:84vh;overflow-y:auto}
+.hint-box .htop{font-weight:800;font-size:17px;margin-bottom:10px;text-align:center}
+.recap{background:#FBF7EE;border-radius:10px;padding:12px 16px;font-size:13.5px;line-height:1.8;color:#5A5347;margin-bottom:14px}
+.recap b{color:var(--ink)}
+.recap .rtitle{font-weight:800;color:var(--ink);font-size:13px;margin-bottom:5px}
+.hint-item{border:1.5px dashed var(--line);border-radius:10px;padding:10px 14px;font-size:13.5px;line-height:1.75;color:#5A5347;margin-bottom:8px}
+.hint-item .htitle{font-weight:700;color:var(--sky);font-size:13px;margin-bottom:3px}
+.hint-lock{display:block;width:100%;background:var(--panel);border:1.5px dashed #CFE0EE;color:var(--sky);
+  box-shadow:none;font-size:13.5px;padding:10px 14px;margin-bottom:8px}
+.hint-foot{display:flex;justify-content:flex-end;margin-top:8px}
 
 /* 도감 */
 .dogam-list{display:flex;flex-direction:column;gap:7px}
@@ -251,34 +261,50 @@ const MISSIONS = [
   stepsWin:`1. PowerShell: <code>New-Item -Type Directory -Force .opencode\\skills | Out-Null; Copy-Item -Recurse skills-given\\daily-report .opencode\\skills\\</code><br>
   2. opencode <b>재시작</b> (스킬은 시작 시 로드됩니다)<br>
   3. 에이전트에게: <b>"오늘 일정 브리핑해줘"</b><br>4. <code>output\\daily-report.md</code> 확인`,
-  hints:[]},
+  recap:`스킬 = <code>SKILL.md</code>가 든 폴더 하나. frontmatter의 <b>description</b>(언제 발동할지)과 <b>본문</b>(무엇을 할지, 절차)으로 이루어집니다. 이 레포의 <code>.opencode/skills/</code>에 설치하며, opencode <b>시작 시점</b>에 로드됩니다. (이론 슬라이드 요약)`,
+  hints:["스킬은 opencode 시작 시점에만 로드됩니다. 복사한 뒤 재시작하지 않았다면, 에이전트는 스킬이 있는지도 모릅니다.",
+   "발동이 안 되면 요청 문구를 스킬 description과 비슷하게 해보세요 — \"오늘 일정 브리핑해줘\". 에이전트는 요청과 description을 대조해 스킬을 고릅니다.",
+   "<code>output/daily-report.md</code>가 있는데도 채점 탈락이라면, 파일 안에 서명(<code>GENERATED-BY: daily-report-skill</code>) 줄이 있는지 보세요. 서명이 없다면 스킬이 아니라 에이전트의 즉흥 답변입니다."]},
  {id:"core-fix-log-digest", lv:2, title:"첫 수리 — 고장난 스킬", skill:"log-digest",
   goal:"전임자가 남긴 <code>skills-broken/log-digest</code>가 발동하지 않습니다. 고쳐서 regression 로그를 요약시키세요.",
   steps:`1. 스킬 설치 후 재시작 → <b>"리그레션 로그 요약해줘"</b> → 발동 안 됨을 확인<br>
   2. SKILL.md의 <b>description을 읽어보세요.</b> 스킬이 알맞게 작성되어 있나요? 본문과 같은 얘기를 하고 있나요?<br>
   3. description 수정 → 재시작 → 다시 요청`,
-  hints:[]},
+  recap:`Lv.1에서 배운 것 — ① 스킬은 <b>재시작</b> 시점에 로드됩니다 ② 에이전트는 <b>description</b>을 보고 발동을 결정합니다 ③ 산출물의 <b>서명</b>(GENERATED-BY)으로 스킬이 정말 발동했는지 확인할 수 있습니다.`,
+  hints:["스킬이 침묵하면 의심 1순위는 description입니다. 에이전트는 본문을 읽기 전, description만 보고 \"이 일을 맡을지\"를 정합니다.",
+   "log-digest의 description을 소리 내어 읽어보세요. 본문은 regression 로그 요약인데, description은 전혀 다른 이야기를 하고 있지 않나요?",
+   "description에는 사용자가 실제로 할 말(\"리그레션 로그 요약해줘\" 같은 표현)을 담으세요. 고친 뒤에는? — 재시작입니다 (Lv.1)."]},
  {id:"core-build-report", lv:3, title:"첫 제작 — 템플릿 채우기", skill:"test-report",
   goal:"<code>data/test_results.csv</code>를 집계하는 스킬 <b>test-report</b>를 직접 만드세요. (이름 고정 — 나중에 업그레이드합니다)",
   steps:`미션 카드(<code>missions/lv3/</code>)의 템플릿에서 빈칸 두 개만 채우면 됩니다.<br>
   리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄을 포함시키는 걸 잊지 마세요.`,
-  hints:[]},
+  recap:`Lv.2에서 배운 것 — description은 <b>본문과 같은 이야기</b>를, 사용자가 <b>실제로 칠 표현</b>으로 해야 발동합니다. 수정하면 재시작(Lv.1). 이번엔 그 원리로 백지에서 직접 만듭니다.`,
+  hints:["빈칸은 두 개입니다. description에는 \"테스트 결과 리포트 만들어줘\" 같은 실제 요청 표현을, 본문에는 CSV를 읽고 집계하는 절차를 적으세요.",
+   "출력 형식은 본문에 직접 못박아야 합니다 — \"리포트 끝에 TOTAL_PASS: / TOTAL_FAIL: 줄을 포함하라\"고 명시하지 않으면 에이전트는 자유 형식으로 써버립니다.",
+   "집계값이 틀리면 지시가 모호한 것입니다. \"<code>data/test_results.csv</code>에서 PASS인 행 수를 세라\"처럼 파일 경로와 세는 방법을 구체적으로 적어보세요."]},
  {id:"core-scope-guard", lv:4, title:"범위 조절 — 관찰과 방어선", skill:null,
   goal:"스킬이 여럿이면 에이전트는 description을 비교해 <b>누가 맡을 일인지</b> 정합니다. 라우팅을 관찰하고, test-report에 오발동 방어선을 치세요. 마지막 레시피 미션입니다.",
   steps:`A. "테스트 결과 리포트 만들어줘" → 발동해야 함 ✅<br>
   B. "오늘 일정을 리포트로 정리해줘" → test-report는 발동하면 안 됨 ❌ (이 요청의 주인은 daily-report)<br>
   B에서 낚인다면: <b>무엇에는 쓰지 않는지</b>를 description에 명시해보세요.`,
-  hints:[]},
+  recap:`Lv.3까지 배운 것 — 발동은 <b>description</b>이, 출력 형식은 <b>본문</b>이 책임집니다. 그리고 스킬이 여럿이면 에이전트는 <b>description끼리 비교</b>해 담당을 정합니다(라우팅).`,
+  hints:["B 요청에 test-report가 낚인다면 두 스킬의 description을 나란히 놓고 보세요 — \"리포트\"라는 단어가 양쪽에 다 있지 않나요? 겹치는 단어가 오발동의 씨앗입니다.",
+   "방어선은 \"무엇에는 쓰지 않는지\"를 description에 덧붙이는 것입니다. 예: \"테스트 결과 CSV 집계 전용. 일정 브리핑 등 다른 리포트 작성에는 사용하지 않음.\"",
+   "방어선을 친 뒤 재시작하고, A 요청이 여전히 잘 발동하는지 꼭 재확인하세요 — 방어선이 과하면 정상 발동까지 막습니다."]},
  {id:"core-power-up", lv:5, title:"장인의 한 수 — 레퍼런스 번들링 ⭐", skill:"test-report v2",
   goal:"판정 기준은 자주 바뀝니다 — 기준을 본문에 박지 말고 <b>레퍼런스로 분리</b>하세요. test-report가 팀 품질 기준서(<code>reference-given/quality-bar.md</code>)를 <b>읽고 판정</b>하도록 업그레이드합니다. 번들 자료는 기준표·템플릿·체크리스트 등 무엇이든 될 수 있습니다.",
   steps:`기준서를 <code>.opencode/skills/test-report/references/</code>로 복사하고,<br>
   SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
   stepsWin:`기준서를 <code>.opencode\\skills\\test-report\\references\\</code>로 복사하고,<br>
   SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
-  hints:["에이전트가 기준서를 읽지 않고 판정을 지어낼 수 있습니다. '추정 금지, 반드시 기준서를 읽고 따를 것'을 명시하는 것도 스킬 작성 기술입니다."]},
+  recap:`Lv.4까지 배운 것 — description은 <b>라우팅과 방어선</b>을, 본문은 <b>절차와 출력 형식</b>을 맡습니다. 이번엔 세 번째 재료: 자주 바뀌는 <b>기준</b>은 본문에 박지 말고 <b>레퍼런스 파일</b>로 분리해 스킬 폴더에 동봉합니다.`,
+  hints:["기준서 복사 위치는 스킬 폴더 안입니다: <code>.opencode/skills/test-report/references/quality-bar.md</code> — <code>reference-given/</code>은 팀 공용 서랍일 뿐, 스킬이 읽을 사본을 폴더에 번들하세요.",
+   "에이전트가 기준서를 읽지 않고 판정을 지어낼 수 있습니다. \"추정 금지, 반드시 기준서를 읽고 따를 것\"을 명시하는 것도 스킬 작성 기술입니다.",
+   "GRADE와 REF-VERSION 줄을 리포트에 포함하라는 지시는 본문에 직접 못박으세요 — Lv.3의 출력 형식 못박기와 같은 기술입니다."]},
  {id:"core-silent-skill", lv:6, title:"침묵하는 스킬 — 승급 시험 🥽", skill:"review-summary",
   goal:"전임자가 리뷰 코멘트(<code>data/review-comments.md</code>)를 정리해주던 스킬을 남기고 떠났습니다. 팀 레포의 <code>skills-broken/review-summary</code>에 있다고 합니다. 인수인계 메모는 한 줄뿐 — <i>\"몇 군데 손볼 곳이 있음.\"</i><br>설치하고 <b>\"리뷰 코멘트 분류해서 요약해줘\"</b> 라고 시켜보세요. 지금까지 배운 <b>모든 것이 시험 범위</b>입니다. 수업의 마지막 관문 — 통과하면 수료입니다 🎓",
   steps:`스킬 위치: <code>skills-broken/review-summary</code> — 절차 안내는 없습니다.<br>성공 조건: 리포트 끝에 <code>TYPE_BUG:</code> <code>TYPE_STYLE:</code> <code>TYPE_QUESTION:</code> <code>TYPE_SUGGEST:</code> 4줄(개수 포함) + 본문이 참조하는 <b>분류 기준서</b>가 스킬 폴더에 동봉되고 <code>REF-VERSION</code> 줄이 리포트에 포함될 것.<br>💭 description을 다시 쓰게 된다면 — "요약"이라는 단어, log-digest와 겹치지 않을까요? 방어선을 기억하세요.`,
+  recap:`시험 범위 = 지금까지 전부 — ① 설치 위치·파일명, 수정 후 <b>재시작</b>(Lv.1) ② description은 <b>본문과 같은 이야기</b>를 실제 표현으로(Lv.2) ③ 출력 형식은 <b>본문에 못박기</b>(Lv.3) ④ 겹치는 단어엔 <b>방어선</b>(Lv.4) ⑤ 참조 파일은 스킬 폴더에 <b>번들</b> + REF-VERSION(Lv.5)`,
   hints:["이론의 진단 체크리스트를 순서대로 밟으세요. 첫 항목은 위치와 파일명입니다 — 스킬이 목록에 보이기는 하나요?",
    "목록에는 있는데 침묵한다면 description 차례입니다. 본문과 같은 일을, 사용자가 실제로 칠 표현(한글 포함)으로 말하고 있나요?",
    "발동은 되는데 채점 탈락이라면 — 성공 조건의 TYPE_ 4줄을 본문이 지시하고 있는지 보세요. 출력 형식은 본문에 직접 못박는 것이었죠 (Lv.3).",
@@ -286,7 +312,10 @@ const MISSIONS = [
  {id:"core-my-first-skill", lv:7, title:"졸업 후 추가 도전 — 내 업무를 스킬로 🎒", skill:"(당신의 스킬)",
   goal:"<b>수업은 Lv.6에서 수료했습니다.</b> 이 레벨은 세미나 후 각자의 자리에서 도전하는 자율 퀘스트 — 이제 <b>당신의 반복 업무</b> 차례입니다. 연습: ① 매번 똑같이 설명하던 일을 절차로 옮겨 적기 ② 검증 가능성을 설계해 넣기(산출물과 서명) ③ 팀의 자산으로 남기기.",
   steps:`소재 예시(파일이 남는 일): 회의 메모 → 회의록 파일 · 로그 → 요약 파일 · 주간 보고 초안 파일… "매번 똑같이 설명하는 일"이 최고의 후보.<br>제약(채점기 확인): 결과를 <code>output/</code> 아래 파일로 + 마지막 줄 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명 — 둘 다 SKILL.md 본문에 직접 지시하세요. 발동의 근거를 스스로 남기는 스킬이 좋은 스킬입니다.<br>스스로 점검: 트리거 명확성 · 범위 제한 · 실행 구체성`,
-  hints:[]},
+  recap:`수료까지 배운 좋은 스킬의 3요소 — ① 명확한 <b>트리거</b>(description: 실제 요청 표현 + 방어선) ② 구체적 <b>절차</b>(본문: 읽을 파일·만들 파일·출력 형식) ③ <b>검증 가능성</b>(output/ 산출물 + GENERATED-BY 서명)`,
+  hints:["소재는 \"매번 똑같이 설명하는 일\" 중에서 \"파일이 남는 일\"이 좋습니다. 어제도 누군가에게 절차를 설명했다면, 그게 후보입니다.",
+   "채점기는 output/ 아래에서 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명을 찾습니다. 스킬 폴더 이름과 서명 속 이름이 정확히 일치해야 하고, 산출물 경로와 서명 둘 다 SKILL.md 본문에 직접 지시해야 합니다.",
+   "description은 20자 이상, 실제 트리거 표현을 담아서. 이름은 기존 스킬(daily-report / log-digest / test-report / review-summary)과 다르게 지으세요."]},
 ];
 const RANKS=["신입","견습","수습","정식","숙련","베테랑","전문가","마스터"];
 const RANKDESC=["아직 아무 스킬도 모릅니다","첫 스킬 장착 완료! 가슴 램프 점등","고장 수리 성공! 드라이버 획득",
@@ -408,8 +437,40 @@ function render(){
        <p class="goal">${m.goal}</p>
        <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
-       ${m.hints.map((h,i)=>`<details><summary>힌트 ${"①②③④"[i]}</summary><p>${fmt(h)}</p></details>`).join("")}
+       ${m.hints.length?`<button class="ghost" id="hintBtn"></button>`:""}
        <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
+  const hb=document.getElementById("hintBtn");
+  if(hb){
+    const n=HINTS_OPENED[m.id]||0;
+    hb.textContent = n>0 ? `💡 힌트 보기 (${n}/${m.hints.length} 열림)` : `💡 힌트 보기 — 복습 + 힌트 ${m.hints.length}개`;
+    hb.onclick=openHints;
+  }
+}
+
+/* ===== 힌트 팝업 (복습 + 하나씩 열리는 힌트) ===== */
+const HINTS_OPENED={}; // missionId → 공개된 힌트 수 (새로고침 시 초기화)
+function openHints(){
+  const m=MISSIONS[ST.level]; if(!m) return;
+  const d=document.createElement("div"); d.className="burst";
+  const close=()=>{ d.remove(); render(); };
+  const paint=()=>{
+    const n=HINTS_OPENED[m.id]||0;
+    let items=m.hints.slice(0,n).map((h,i)=>
+      `<div class="hint-item"><div class="htitle">힌트 ${"①②③④"[i]}</div>${h}</div>`).join("");
+    if(n<m.hints.length)
+      items+=`<button class="hint-lock" id="hintMore">🔒 힌트 ${"①②③④"[n]} 열기 (${m.hints.length-n}개 남음)</button>`;
+    d.innerHTML=`<div class="box hint-box">
+      <div class="htop">💡 Lv.${m.lv} 힌트</div>
+      <div class="recap"><div class="rtitle">📚 지금까지 배운 것</div>${m.recap||""}</div>
+      ${items}
+      <div class="hint-foot"><button class="ghost" id="hintClose">닫기</button></div></div>`;
+    const more=d.querySelector("#hintMore");
+    if(more) more.onclick=()=>{ HINTS_OPENED[m.id]=(HINTS_OPENED[m.id]||0)+1; paint(); };
+    d.querySelector("#hintClose").onclick=close;
+  };
+  d.addEventListener("click",e=>{ if(e.target===d) close(); });
+  paint();
+  document.body.appendChild(d);
 }
 
 /* ===== 성장 코드 검증 (check.sh 와 동일 해시) ===== */
