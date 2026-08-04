@@ -77,6 +77,13 @@ code,.cmd{font-family:var(--mono);font-size:13px;background:#33302A;color:#F5E9C
 .cmd{display:inline-block;margin-top:4px;padding:7px 12px}
 .freehint{font-size:12.5px;color:var(--muted);margin-top:12px}
 
+/* 말풍선 (미션 카드 인용 대사) */
+.bubble{position:relative;display:block;width:fit-content;max-width:100%;background:#FFF;
+  border:2px solid var(--line);border-radius:12px;padding:9px 15px;margin:2px 0 16px;font-size:14.5px}
+.bubble::after{content:"";position:absolute;left:20px;bottom:-7px;width:10px;height:10px;background:#FFF;
+  border-right:2px solid var(--line);border-bottom:2px solid var(--line);transform:rotate(45deg)}
+.bubble-who{margin-left:9px;color:var(--muted);font-size:12.5px}
+
 /* 지나온 미션 열람 (뒤로가기) */
 .mnav{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
 .mnav button{padding:7px 14px;font-size:13px}
@@ -306,7 +313,7 @@ const MISSIONS = [
    "방어선은 \"무엇에는 쓰지 않는지\"를 description에 덧붙이는 것입니다. 예: \"테스트 결과 CSV 집계 전용. 일정 브리핑 등 다른 리포트 작성에는 사용하지 않음.\"",
    "방어선을 친 뒤 재시작하고, A 요청이 여전히 잘 발동하는지 꼭 재확인하세요 — 방어선이 과하면 정상 발동까지 막습니다."]},
  {id:"core-power-up", lv:5, title:"장인의 한 수 — 레퍼런스 번들링 ⭐", skill:"test-report v2",
-  goal:`팀장의 요청 — "리포트에 <b>품질 판정</b>도 넣어줘."<br>
+  goal:`<span class="bubble">💬 "리포트에 <b>품질 판정</b>도 넣어줘."<span class="bubble-who">— 팀장</span></span>
   판정 규칙(FAIL 개수 → <code>CLEAN/WATCH/RISK/BLOCK</code>)은 팀 기준서(<code>reference-given/quality-bar.md</code>)에 이미 있습니다.<br>
   기준은 자주 바뀌니 SKILL.md에 베껴 적지 말 것 — <b>기준서 파일을 스킬 폴더에 동봉해, 에이전트가 직접 읽고 판정</b>하게 만드세요. 이것이 <b>레퍼런스 번들링</b>입니다.<br>
   🎯 목표물: 판정이 담긴 <code>output/test-report-v2.md</code>`,
