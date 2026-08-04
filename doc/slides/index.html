@@ -1612,14 +1612,14 @@ footer, header, hgroup, main, menu, nav, section {
         <div class="flow-step neutral" style="flex:1"><span style="font-size:1.08rem">description — 검색 인덱스</span><small>평소에 늘 보이는 한 줄 · <b>발동 여부</b>를 결정</small></div>
         <div class="flow-step neutral" style="flex:1"><span style="font-size:1.08rem">본문 — 실행 매뉴얼</span><small>발동된 뒤에야 읽힘 · <b>결과 품질</b>을 결정</small></div>
       </div>
-      <div class="quote autoshow fade-up" style="margin-top:1.1rem; font-size:1.2rem">description과 본문이 서로 다른 스킬을 설명하면, 에이전트는 <b class="accent3">description을 믿습니다</b> — 침묵의 제1원인.</div>
+      <div class="quote autoshow fade-up" style="margin-top:1.1rem; font-size:1.2rem">description과 본문이 서로 다른 스킬을 설명하면, 에이전트는 <b class="accent3">description을 믿습니다</b> — 미발동의 제1원인.</div>
       <div class="term autoshow fade-up" style="margin-top:1.0rem">
         <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">같은 요청, 다른 운명 — 갈린 것은 description뿐</span></div>
         <div class="term-body" style="padding:0.5rem 0.9rem">
           <table class="wr-table">
             <tr><th>description</th><th>요청</th><th>결과</th></tr>
             <tr class="hl"><td class="mono">오늘 일정 요약·일일 브리핑 요청 시 사용…</td><td>"오늘 일정 브리핑해줘"</td><td>발동 ✓</td></tr>
-            <tr><td class="mono">문서를 PDF로 변환한다… <span class="faint">(본문은 로그 요약)</span></td><td>"리그레션 로그 요약해줘"</td><td>침묵 ✕</td></tr>
+            <tr><td class="mono">문서를 PDF로 변환한다… <span class="faint">(본문은 로그 요약)</span></td><td>"리그레션 로그 요약해줘"</td><td>미발동 ✕</td></tr>
           </table>
         </div>
       </div>
@@ -1627,8 +1627,8 @@ footer, header, hgroup, main, menu, nav, section {
 
     <!-- 7 · 이론② 진단 -->
     <section data-sec="이론 ② · 트리거링">
-      <div><span class="chip">이론 ② · 침묵 진단</span> <span class="pill">→ 실습 Lv.2 · Lv.6</span></div>
-      <h2>침묵하는 스킬은 네 가지를 순서대로 확인합니다</h2>
+      <div><span class="chip">이론 ② · 미발동 진단</span> <span class="pill">→ 실습 Lv.2 · Lv.6</span></div>
+      <h2>스킬이 발동하지 않을 때는, 네 가지를 순서대로 확인합니다</h2>
       <ul class="ol" style="margin-top:1.0rem">
         <li class="show"><span class="ix">① 위치</span><span class="lb"><span class="mono">.opencode/skills/&lt;이름&gt;/SKILL.md</span> — 경로와 파일명이 정확한가</span></li>
         <li class="show"><span class="ix">② 재시작</span><span class="lb">넣거나 고친 뒤 opencode를 재시작했는가 — 스킬은 시작 시점에 로드</span></li>
