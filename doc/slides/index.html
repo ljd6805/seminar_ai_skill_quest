@@ -1687,8 +1687,26 @@ footer, header, hgroup, main, menu, nav, section {
         <span class="flow-arrow">→</span>
         <div class="flow-step"><span style="font-size:1.05rem">가장 잘 맞는 쪽 선택</span><small>daily-report가 맡는 게 정상</small></div>
       </div>
-      <p class="dim autoshow fade-up" style="font-size:1.1rem; margin-top:1.2rem">지금은 스킬 다섯 개라 잘 갈립니다. 하지만 <b style="color:#fff">팀 스킬이 30개가 되면</b> 경쟁은 훨씬 복잡해집니다.</p>
-      <div class="quote autoshow fade-up" style="margin-top:0.8rem; font-size:1.2rem">방어선 — description에 <b class="grad">무엇에는 쓰지 않는지</b>까지 적는 것. 미래의 오발동에 미리 거는 보험입니다.<br><span class="mono tiny faint">예: "테스트 결과 CSV 집계 전용. 일정 브리핑 등 다른 리포트 작성에는 사용하지 않음."</span></div>
+      <div class="autoshow fade-up" style="margin-top:1.2rem">
+        <div class="phead">같은 요청 앞의 세 SKILL.md — "오늘 일정을 <b style="color:#FFE08A">리포트</b>로 정리해줘"</div>
+        <div class="grid-3" style="gap:0.8rem">
+          <div class="panel">
+            <div class="phead good">① daily-report</div>
+            <p class="mono" style="font-size:0.8rem; line-height:1.6"><span class="t-key">description:</span> 오늘 일정 요약·일일 브리핑 요청 시 사용한다.</p>
+            <div style="margin-top:auto; padding-top:0.7rem"><span class="pill green">발동 ✓</span> <span class="tiny dim">요청과 가장 잘 맞음</span></div>
+          </div>
+          <div class="panel">
+            <div class="phead bad">② test-report — 방어선 없음</div>
+            <p class="mono" style="font-size:0.8rem; line-height:1.6"><span class="t-key">description:</span> 테스트 결과 CSV를 집계해 <span class="accent3">리포트</span>를 만들 때 사용한다.</p>
+            <div style="margin-top:auto; padding-top:0.7rem"><span class="pill amber">"리포트" 겹침 ⚠</span> <span class="tiny dim">스킬이 30개로 늘면 오발동 위험</span></div>
+          </div>
+          <div class="panel">
+            <div class="phead good">③ test-report — 방어선 추가</div>
+            <p class="mono" style="font-size:0.8rem; line-height:1.6"><span class="t-key">description:</span> 테스트 결과 CSV 집계 전용. <span class="accent2">일정 브리핑 등 다른 리포트 작성에는 사용하지 않음.</span></p>
+            <div style="margin-top:auto; padding-top:0.7rem"><span class="pill green">오발동 차단 ✓</span> <span class="tiny dim">안 쓰는 경우까지 적음</span></div>
+          </div>
+        </div>
+      </div>
       <p class="note autoshow fade-up" style="margin-top:0.9rem">실습 Lv.4 — 라우팅을 관찰하고, test-report에 방어선을 칩니다. <span class="mono tiny faint">수정 여부는 채점기가 파일로 검증합니다.</span></p>
     </section>
 
