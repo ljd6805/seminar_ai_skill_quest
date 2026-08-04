@@ -77,6 +77,14 @@ code,.cmd{font-family:var(--mono);font-size:13px;background:#F6EEDC;color:#8A523
 .cmd{display:inline-block;margin-top:4px;padding:6px 11px}
 .freehint{font-size:12.5px;color:var(--muted);margin-top:12px}
 
+/* 템플릿 팝업 (Lv.3) */
+.burst .box.tpl-box{max-width:620px;width:calc(100% - 36px);text-align:left;max-height:86vh;overflow:auto}
+.tpl-title{font-weight:800;font-size:16px;margin-bottom:10px;text-align:center}
+.tpl-pre{background:#FBF7EE;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin:0;
+  font-family:var(--mono);font-size:12.5px;line-height:1.7;white-space:pre-wrap;color:#5A5347}
+.tpl-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+#tplBtn{margin-top:12px;padding:8px 16px;font-size:13.5px;color:var(--sky);border-color:#CFE0EE}
+
 /* 말풍선 (미션 카드 인용 대사) */
 .bubble{position:relative;display:block;width:fit-content;max-width:100%;background:#FFF;
   border:2px solid var(--line);border-radius:12px;padding:9px 15px;margin:2px 0 16px;font-size:14.5px}
@@ -300,12 +308,26 @@ const MISSIONS = [
   goal:`이제 직접 만들 차례입니다. 겁먹지 마세요 — 빈칸 채우기에 가깝습니다.<br>
   <code>data/test_results.csv</code>를 집계해 PASS/FAIL 리포트를 만드는 스킬 <b>test-report</b>를 제작하세요. (이름 고정 — 이후 레벨에서 업그레이드합니다)<br>
   🎯 목표물: <code>output/test-report.md</code>`,
-  steps:`1. 스킬 폴더 생성: <code>mkdir -p .opencode/skills/test-report</code> → <code>missions/lv3/core-build-report.md</code> 파일을 참고하여 그 폴더 안에 <code>SKILL.md</code>를 작성합니다<br>
-  2. <code>core-build-report.md</code>의 템플릿을 참고하여 ❓ 표시된 <b>빈칸 두 개</b>(description · 집계 절차)만 채우면 됩니다. 템플릿 4번(<b>결과 스스로 검토</b>)까지 그대로 옮겨 적으세요.<br>
+  steps:`1. 스킬 폴더 생성: <code>mkdir -p .opencode/skills/test-report</code><br>
+  2. 아래 <b>📋 템플릿 보기</b> 버튼을 눌러 템플릿을 열고, 그 폴더 안에 <code>SKILL.md</code>를 작성하세요 — ❓ 표시된 <b>빈칸 두 개</b>(description · 집계 절차)만 채우면 됩니다. 4번(<b>결과 스스로 검토</b>)까지 그대로 옮겨 적으세요. (같은 템플릿이 <code>missions/lv3/core-build-report.md</code>에도 있습니다)<br>
   3. 재시작 → <b>"테스트 결과 리포트 만들어줘"</b>로 발동 → 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 확인`,
-  stepsWin:`1. 스킬 폴더 생성(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report</code> → <code>missions\\lv3\\core-build-report.md</code> 파일을 참고하여 그 폴더 안에 <code>SKILL.md</code>를 작성합니다<br>
-  2. <code>core-build-report.md</code>의 템플릿을 참고하여 ❓ 표시된 <b>빈칸 두 개</b>(description · 집계 절차)만 채우면 됩니다. 템플릿 4번(<b>결과 스스로 검토</b>)까지 그대로 옮겨 적으세요.<br>
+  stepsWin:`1. 스킬 폴더 생성(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report</code><br>
+  2. 아래 <b>📋 템플릿 보기</b> 버튼을 눌러 템플릿을 열고, 그 폴더 안에 <code>SKILL.md</code>를 작성하세요 — ❓ 표시된 <b>빈칸 두 개</b>(description · 집계 절차)만 채우면 됩니다. 4번(<b>결과 스스로 검토</b>)까지 그대로 옮겨 적으세요. (같은 템플릿이 <code>missions\\lv3\\core-build-report.md</code>에도 있습니다)<br>
   3. 재시작 → <b>"테스트 결과 리포트 만들어줘"</b>로 발동 → 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 확인`,
+  tpl:{title:"test-report SKILL.md 템플릿", text:`---
+name: test-report
+description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제로 할 말을 담으세요)
+---
+
+# Test Report Skill
+
+사용자가 테스트 결과 리포트를 요청하면:
+1. data/test_results.csv 를 읽는다.
+2. (❓ 무엇을 집계할지 적으세요)
+3. 결과를 output/test-report.md 로 작성한다. 파일 끝에 반드시
+   TOTAL_PASS: <숫자> 와 TOTAL_FAIL: <숫자> 줄을 포함한다.
+4. 작성한 파일을 다시 읽어 TOTAL_PASS / TOTAL_FAIL 값이 CSV의 실제 개수와
+   일치하는지 반드시 검토한다. 다르면 고친 뒤 사용자에게 완료를 보고한다.`},
   recap:`Lv.2에서 배운 것 — description은 <b>본문과 같은 이야기</b>를, 사용자가 <b>실제로 칠 표현</b>으로 해야 발동합니다. 스킬은 <code>.opencode/skills/&lt;이름&gt;/SKILL.md</code> 위치에 있어야 로드되고(Lv.1), 만들거나 고치면 재시작. 이번엔 그 원리로 백지에서 직접 만듭니다.`,
   hints:["빈칸은 두 개입니다. description에는 \"테스트 결과 리포트 만들어줘\" 같은 실제 요청 표현을, 본문에는 CSV를 읽고 집계하는 절차를 적으세요.",
    "출력 형식은 본문에 직접 못박아야 합니다 — \"리포트 끝에 TOTAL_PASS: / TOTAL_FAIL: 줄을 포함하라\"고 명시하지 않으면 에이전트는 자유 형식으로 써버립니다.",
@@ -563,6 +585,7 @@ function render(){
        <p class="goal">${m.goal}</p>
        <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
+       ${m.tpl?`<button class="ghost" id="tplBtn">📋 템플릿 보기</button>`:""}
        ${m.recap?`<details class="recap"><summary>📖 미션 배경</summary><div class="dbody">${m.recap}</div></details>`:""}
        ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${h}</div></details>`).join("")}
        <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
@@ -580,6 +603,24 @@ function render(){
   const $p=document.getElementById("mnavPrev"); if($p)$p.onclick=()=>{ VIEW = onDoneScreen ? 6 : vi-1; render(); };
   const $n=document.getElementById("mnavNext"); if($n)$n.onclick=()=>{ const nx=vi+1; VIEW = ((!doneAll&&nx>=ST.level)||nx>6) ? null : nx; render(); };
   const $c=document.getElementById("mnavCur"); if($c)$c.onclick=()=>{ VIEW=null; render(); };
+  const $t=document.getElementById("tplBtn"); if($t)$t.onclick=()=>openTpl(MISSIONS[vi]);
+}
+
+/* ===== 템플릿 팝업 (미션 카드의 SKILL.md 템플릿을 바로 열람·복사) ===== */
+function openTpl(m){
+  if(!m||!m.tpl) return;
+  const d=document.createElement("div"); d.className="burst";
+  d.innerHTML=`<div class="box tpl-box">
+    <div class="tpl-title">📋 ${fmt(m.tpl.title)}</div>
+    <pre class="tpl-pre">${fmt(m.tpl.text)}</pre>
+    <div class="tpl-foot"><button id="tplCopy">복사</button><button class="ghost" id="tplClose">닫기</button></div></div>`;
+  d.addEventListener("click",e=>{ if(e.target===d) d.remove(); });
+  d.querySelector("#tplClose").onclick=()=>d.remove();
+  d.querySelector("#tplCopy").onclick=async(e)=>{
+    try{ await navigator.clipboard.writeText(m.tpl.text); e.target.textContent="복사됨 ✓"; }
+    catch(err){ e.target.textContent="복사 실패 — 드래그로 복사해주세요"; }
+  };
+  document.body.appendChild(d);
 }
 
 /* ===== 성장 코드 검증 (check.sh 와 동일 해시) ===== */
