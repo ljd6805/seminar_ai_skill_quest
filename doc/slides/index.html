@@ -525,6 +525,23 @@ footer, header, hgroup, main, menu, nav, section {
     .sk-leg b { font-family: var(--mono); font-weight: 600; color: #C4D2FF !important; font-size: 0.76rem; }
     .sk-leg span { color: var(--fg-soft) !important; }
 
+    /* 6장 스코프 다이어그램 — 표 대신 포함 관계(스킬 하나 → 어느 프로젝트에 보이나)로 표현 */
+    .scp-wrap { display: flex; gap: 1.0rem; margin-top: 0.55rem; align-items: stretch; }
+    .scp-env { flex: 1; position: relative; border: 0.0938rem dashed rgba(155,130,255,0.55); border-radius: 0.9rem; background: rgba(155,130,255,0.05); padding: 0.8rem 0.85rem 0.6rem; }
+    .scp-env.repo { border-color: rgba(43,234,208,0.5); background: rgba(43,234,208,0.04); }
+    .scp-tag { position: absolute; top: -0.66rem; left: 0.85rem; padding: 0 0.5rem; background: var(--bg-0); font-weight: 800; font-size: 0.8rem; color: #B7A5FF !important; }
+    .scp-env.repo .scp-tag { color: #5BFFE0 !important; }
+    .scp-skill { display: inline-block; font-family: var(--mono); font-size: 0.74rem; font-weight: 600; border: 0.0625rem solid rgba(255,212,107,0.6); background: rgba(255,212,107,0.09); color: #FFE9AE !important; border-radius: 0.5rem; padding: 0.2rem 0.6rem; margin-bottom: 0.55rem; }
+    .scp-skill .faint { font-family: var(--sans); }
+    .scp-row { display: flex; gap: 0.5rem; }
+    .scp-proj { flex: 1; text-align: center; border: 0.0625rem solid rgba(255,255,255,0.18); border-radius: 0.6rem; background: #0E1122; padding: 0.36rem 0.3rem; font-size: 0.82rem; font-weight: 700; }
+    .scp-proj small { display: block; font-weight: 700; font-size: 0.72rem; margin-top: 0.1rem; color: #5BFFE0 !important; }
+    .scp-proj.on { border-color: rgba(43,234,208,0.55); }
+    .scp-proj.no { border-style: dashed; opacity: 0.6; font-weight: 600; }
+    .scp-proj.no small { color: #FF94AC !important; }
+    .scp-foot { margin: 0.55rem 0 0; font-size: 0.82rem; color: #C9D0E4 !important; word-break: keep-all; }
+    .scp-foot b { color: #FFFFFF; }
+
     /* 48장 부록 OpenCode 설치 터미널 (진입 시 1회, PC 셸 룩) */
     .ty { display: inline-block; overflow: hidden; white-space: nowrap; vertical-align: bottom; width: 0; }
     .oc-line { opacity: 0; }
@@ -1548,15 +1565,29 @@ footer, header, hgroup, main, menu, nav, section {
         </div>
       </div>
       <p class="dim autoshow fade-up" style="font-size:0.95rem; margin-top:0.7rem">호환 경로 <span class="mono">~/.agents/skills/</span> · <span class="mono">~/.claude/skills/</span> 도 인식됩니다 — 단 Windows는 <span class="mono">.agents</span> 경로 미인식 버그가 있어 <span class="mono">.config</span> 경로를 권장합니다 <span class="mono tiny faint">(공식 문서·이슈 확인 2026-07)</span>.</p>
-      <div class="term autoshow fade-up" style="margin-top:1.0rem">
-        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">무엇이 달라지나</span></div>
-        <div class="term-body" style="padding:0.5rem 0.9rem">
-          <table class="wr-table">
-            <tr><th></th><th>전역 (홈 폴더)</th><th>프로젝트 (레포 안)</th></tr>
-            <tr class="hl"><td><b>적용 범위</b></td><td>내 컴퓨터의 모든 프로젝트</td><td>그 레포에서 opencode를 실행할 때만</td></tr>
-            <tr class="hl"><td><b>공유</b></td><td>나만 사용 — 개인 세팅</td><td>레포에 커밋 → clone한 팀 전체가 획득</td></tr>
-            <tr class="hl"><td><b>어울리는 스킬</b></td><td>개인 습관 · 범용 도구</td><td>팀 규칙 · 프로젝트 전용 절차</td></tr>
-          </table>
+      <div class="autoshow fade-up" style="margin-top:1.2rem">
+        <div class="phead">무엇이 달라지나 — 같은 스킬 하나가, 어느 프로젝트에 보이는가</div>
+        <div class="scp-wrap">
+          <div class="scp-env">
+            <span class="scp-tag">전역 — 홈 폴더에 설치</span>
+            <div class="scp-skill">📦 daily-report <span class="faint">— 홈 폴더에 하나</span></div>
+            <div class="scp-row">
+              <div class="scp-proj on">프로젝트 A<small>적용 ✓</small></div>
+              <div class="scp-proj on">프로젝트 B<small>적용 ✓</small></div>
+              <div class="scp-proj on">프로젝트 C<small>적용 ✓</small></div>
+            </div>
+            <p class="scp-foot"><b>나만 사용</b> — 개인 습관 · 범용 도구에 어울림</p>
+          </div>
+          <div class="scp-env repo">
+            <span class="scp-tag">프로젝트 — 레포 A 안에 설치</span>
+            <div class="scp-skill">📦 test-report <span class="faint">— 레포 A에 커밋</span></div>
+            <div class="scp-row">
+              <div class="scp-proj on">레포 A<small>적용 ✓</small></div>
+              <div class="scp-proj no">프로젝트 B<small>안 보임 ✕</small></div>
+              <div class="scp-proj no">프로젝트 C<small>안 보임 ✕</small></div>
+            </div>
+            <p class="scp-foot"><b>커밋하면 팀 자산</b> — clone한 팀 전체가 획득 · 팀 규칙에 어울림</p>
+          </div>
         </div>
       </div>
       <p class="note autoshow fade-up" style="margin-top:1.0rem">오늘 실습은 전부 <b class="accent">프로젝트 스코프</b>(<span class="mono">.opencode/skills/</span>)에 설치합니다 — 여러분의 전역 설정은 건드리지 않고, 만든 스킬은 레포와 함께 팀 자산이 됩니다.</p>
