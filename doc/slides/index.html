@@ -531,6 +531,7 @@ footer, header, hgroup, main, menu, nav, section {
     .scp-env.repo { border-color: rgba(43,234,208,0.5); background: rgba(43,234,208,0.04); }
     .scp-tag { position: absolute; top: -0.66rem; left: 0.85rem; padding: 0 0.5rem; background: var(--bg-0); font-weight: 800; font-size: 0.8rem; color: #B7A5FF !important; }
     .scp-env.repo .scp-tag { color: #5BFFE0 !important; }
+    .scp-path { font-family: var(--mono); font-size: 0.74rem; line-height: 1.75; color: #C9D0E4 !important; background: #0B0E1A; border: 0.0625rem solid rgba(255,255,255,0.12); border-radius: 0.55rem; padding: 0.42rem 0.65rem; margin-bottom: 0.6rem; }
     .scp-skill { display: inline-block; font-family: var(--mono); font-size: 0.74rem; font-weight: 600; border: 0.0625rem solid rgba(255,212,107,0.6); background: rgba(255,212,107,0.09); color: #FFE9AE !important; border-radius: 0.5rem; padding: 0.2rem 0.6rem; margin-bottom: 0.55rem; }
     .scp-skill .faint { font-family: var(--sans); }
     .scp-row { display: flex; gap: 0.5rem; }
@@ -1554,42 +1555,33 @@ footer, header, hgroup, main, menu, nav, section {
     <section data-sec="이론 ① · Skill의 최소 구성">
       <div><span class="chip">이론 ① · 스킬 스코프</span> <span class="pill">→ 실습 Lv.1</span></div>
       <h2>같은 스킬도, 놓인 경로에 따라 적용 범위가 다릅니다</h2>
-      <div class="autoshow fade-up" style="display:flex; gap:1.0rem; margin-top:0.9rem; align-items:stretch">
-        <div class="term" style="flex:1.25">
-          <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">전역 스코프 — 홈 폴더</span></div>
-          <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.84rem; line-height:1.75">Linux&nbsp;&nbsp;: ~/.config/opencode/skills/&lt;이름&gt;/SKILL.md<br>Windows: C:\Users\&lt;사용자&gt;\.config\opencode\skills\&lt;이름&gt;\SKILL.md<br><span class="faint">← 어느 프로젝트에서든 로드</span></div>
-        </div>
-        <div class="term" style="flex:1">
-          <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">프로젝트 스코프 — 레포 안</span></div>
-          <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.84rem; line-height:1.75">&lt;레포&gt;/.opencode/skills/&lt;이름&gt;/SKILL.md<br><span class="faint">← OS 무관 · 이 레포에서 실행할 때만</span></div>
-        </div>
-      </div>
-      <p class="dim autoshow fade-up" style="font-size:0.95rem; margin-top:0.7rem">호환 경로 <span class="mono">~/.agents/skills/</span> · <span class="mono">~/.claude/skills/</span> 도 인식됩니다 — 단 Windows는 <span class="mono">.agents</span> 경로 미인식 버그가 있어 <span class="mono">.config</span> 경로를 권장합니다 <span class="mono tiny faint">(공식 문서·이슈 확인 2026-07)</span>.</p>
       <div class="autoshow fade-up" style="margin-top:1.2rem">
-        <div class="phead">무엇이 달라지나 — 같은 스킬 하나가, 어느 프로젝트에 보이는가</div>
         <div class="scp-wrap">
-          <div class="scp-env">
-            <span class="scp-tag">전역 — 홈 폴더에 설치</span>
-            <div class="scp-skill">📦 daily-report <span class="faint">— 홈 폴더에 하나</span></div>
+          <div class="scp-env" style="flex:1.15">
+            <span class="scp-tag">전역 스코프 — 홈 폴더에 설치</span>
+            <div class="scp-path">Linux&nbsp;&nbsp;: ~/.config/opencode/skills/&lt;이름&gt;/SKILL.md<br>Windows: C:\Users\&lt;사용자&gt;\.config\opencode\skills\&lt;이름&gt;\SKILL.md</div>
+            <div class="scp-skill">📦 daily-report <span class="faint">— 위 경로에 설치하면</span></div>
             <div class="scp-row">
               <div class="scp-proj on">프로젝트 A<small>적용 ✓</small></div>
               <div class="scp-proj on">프로젝트 B<small>적용 ✓</small></div>
               <div class="scp-proj on">프로젝트 C<small>적용 ✓</small></div>
             </div>
-            <p class="scp-foot"><b>나만 사용</b> — 개인 습관 · 범용 도구에 어울림</p>
+            <p class="scp-foot">어느 프로젝트에서든 로드 — <b>나만 사용</b> · 개인 습관·범용 도구에 어울림</p>
           </div>
           <div class="scp-env repo">
-            <span class="scp-tag">프로젝트 — 레포 A 안에 설치</span>
-            <div class="scp-skill">📦 test-report <span class="faint">— 레포 A에 커밋</span></div>
+            <span class="scp-tag">프로젝트 스코프 — 레포 안에 설치</span>
+            <div class="scp-path">&lt;레포&gt;/.opencode/skills/&lt;이름&gt;/SKILL.md<br><span class="faint">OS 무관 — 레포 기준 같은 경로</span></div>
+            <div class="scp-skill">📦 test-report <span class="faint">— 레포 A에 커밋하면</span></div>
             <div class="scp-row">
               <div class="scp-proj on">레포 A<small>적용 ✓</small></div>
               <div class="scp-proj no">프로젝트 B<small>안 보임 ✕</small></div>
               <div class="scp-proj no">프로젝트 C<small>안 보임 ✕</small></div>
             </div>
-            <p class="scp-foot"><b>커밋하면 팀 자산</b> — clone한 팀 전체가 획득 · 팀 규칙에 어울림</p>
+            <p class="scp-foot">이 레포에서 실행할 때만 — <b>커밋하면 팀 자산</b> · clone한 팀 전체가 획득</p>
           </div>
         </div>
       </div>
+      <p class="dim autoshow fade-up" style="font-size:0.95rem; margin-top:0.8rem">호환 경로 <span class="mono">~/.agents/skills/</span> · <span class="mono">~/.claude/skills/</span> 도 인식됩니다 — 단 Windows는 <span class="mono">.agents</span> 경로 미인식 버그가 있어 <span class="mono">.config</span> 경로를 권장합니다 <span class="mono tiny faint">(공식 문서·이슈 확인 2026-07)</span>.</p>
       <p class="note autoshow fade-up" style="margin-top:1.0rem">오늘 실습은 전부 <b class="accent">프로젝트 스코프</b>(<span class="mono">.opencode/skills/</span>)에 설치합니다 — 여러분의 전역 설정은 건드리지 않고, 만든 스킬은 레포와 함께 팀 자산이 됩니다.</p>
     </section>
 
