@@ -262,18 +262,27 @@ const MISSIONS = [
    "<code>output/daily-report.md</code>가 있는데도 채점 탈락이라면, 파일 안에 서명(<code>GENERATED-BY: daily-report-skill</code>) 줄이 있는지 보세요. 서명이 없다면 스킬이 아니라 에이전트의 즉흥 답변입니다."]},
  {id:"core-fix-log-digest", lv:2, title:"첫 수리 — 고장난 스킬", skill:"log-digest",
   goal:"전임자가 남긴 <code>skills-broken/log-digest</code>가 발동하지 않습니다. 고쳐서 regression 로그를 요약시키세요.",
-  steps:`1. 스킬 설치 후 재시작 → <b>"리그레션 로그 요약해줘"</b> → 발동 안 됨을 확인<br>
-  2. SKILL.md의 <b>description을 읽어보세요.</b> 스킬이 알맞게 작성되어 있나요? 본문과 같은 얘기를 하고 있나요?<br>
-  3. description 수정 → 재시작 → 다시 요청`,
-  recap:`Lv.1에서 배운 것 — ① 스킬은 <b>재시작</b> 시점에 로드됩니다 ② 에이전트는 <b>description</b>을 보고 발동을 결정합니다 ③ 산출물의 <b>서명</b>(GENERATED-BY)으로 스킬이 정말 발동했는지 확인할 수 있습니다.`,
+  steps:`1. 스킬 설치: <code>cp -r skills-broken/log-digest .opencode/skills/</code> → opencode <b>재시작</b><br>
+  2. 에이전트에게: <b>"리그레션 로그 요약해줘"</b> → 발동 안 됨을 확인<br>
+  3. <code>.opencode/skills/log-digest/SKILL.md</code>의 <b>description을 읽어보세요.</b> 스킬이 알맞게 작성되어 있나요? 본문과 같은 얘기를 하고 있나요?<br>
+  4. description 수정 → 재시작 → 다시 요청`,
+  stepsWin:`1. 스킬 설치(PowerShell): <code>Copy-Item -Recurse skills-broken\\log-digest .opencode\\skills\\</code> → opencode <b>재시작</b><br>
+  2. 에이전트에게: <b>"리그레션 로그 요약해줘"</b> → 발동 안 됨을 확인<br>
+  3. <code>.opencode\\skills\\log-digest\\SKILL.md</code>의 <b>description을 읽어보세요.</b> 스킬이 알맞게 작성되어 있나요? 본문과 같은 얘기를 하고 있나요?<br>
+  4. description 수정 → 재시작 → 다시 요청`,
+  recap:`Lv.1에서 배운 것 — ① 스킬 설치 = 스킬 폴더를 <code>.opencode/skills/</code>에 복사 ② 스킬은 <b>재시작</b> 시점에 로드됩니다 ③ 에이전트는 <b>description</b>을 보고 발동을 결정합니다 ④ 산출물의 <b>서명</b>(GENERATED-BY)으로 스킬이 정말 발동했는지 확인할 수 있습니다.`,
   hints:["스킬이 침묵하면 의심 1순위는 description입니다. 에이전트는 본문을 읽기 전, description만 보고 \"이 일을 맡을지\"를 정합니다.",
    "log-digest의 description을 소리 내어 읽어보세요. 본문은 regression 로그 요약인데, description은 전혀 다른 이야기를 하고 있지 않나요?",
    "description에는 사용자가 실제로 할 말(\"리그레션 로그 요약해줘\" 같은 표현)을 담으세요. 고친 뒤에는? — 재시작입니다 (Lv.1)."]},
  {id:"core-build-report", lv:3, title:"첫 제작 — 템플릿 채우기", skill:"test-report",
   goal:"<code>data/test_results.csv</code>를 집계하는 스킬 <b>test-report</b>를 직접 만드세요. (이름 고정 — 나중에 업그레이드합니다)",
-  steps:`미션 카드(<code>missions/lv3/</code>)의 템플릿에서 빈칸 두 개만 채우면 됩니다.<br>
-  리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄을 포함시키는 걸 잊지 마세요.`,
-  recap:`Lv.2에서 배운 것 — description은 <b>본문과 같은 이야기</b>를, 사용자가 <b>실제로 칠 표현</b>으로 해야 발동합니다. 수정하면 재시작(Lv.1). 이번엔 그 원리로 백지에서 직접 만듭니다.`,
+  steps:`1. 스킬 폴더 생성: <code>mkdir -p .opencode/skills/test-report</code> → 그 안에 <code>SKILL.md</code> 작성<br>
+  2. 미션 카드(<code>missions/lv3/</code>)의 템플릿에서 빈칸 두 개만 채우면 됩니다.<br>
+  3. 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 포함 — 작성 후 재시작하고 발동시키세요.`,
+  stepsWin:`1. 스킬 폴더 생성(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report</code> → 그 안에 <code>SKILL.md</code> 작성<br>
+  2. 미션 카드(<code>missions\\lv3\\</code>)의 템플릿에서 빈칸 두 개만 채우면 됩니다.<br>
+  3. 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 포함 — 작성 후 재시작하고 발동시키세요.`,
+  recap:`Lv.2에서 배운 것 — description은 <b>본문과 같은 이야기</b>를, 사용자가 <b>실제로 칠 표현</b>으로 해야 발동합니다. 스킬은 <code>.opencode/skills/&lt;이름&gt;/SKILL.md</code> 위치에 있어야 로드되고(Lv.1), 만들거나 고치면 재시작. 이번엔 그 원리로 백지에서 직접 만듭니다.`,
   hints:["빈칸은 두 개입니다. description에는 \"테스트 결과 리포트 만들어줘\" 같은 실제 요청 표현을, 본문에는 CSV를 읽고 집계하는 절차를 적으세요.",
    "출력 형식은 본문에 직접 못박아야 합니다 — \"리포트 끝에 TOTAL_PASS: / TOTAL_FAIL: 줄을 포함하라\"고 명시하지 않으면 에이전트는 자유 형식으로 써버립니다.",
    "집계값이 틀리면 지시가 모호한 것입니다. \"<code>data/test_results.csv</code>에서 PASS인 행 수를 세라\"처럼 파일 경로와 세는 방법을 구체적으로 적어보세요."]},
@@ -288,10 +297,10 @@ const MISSIONS = [
    "방어선을 친 뒤 재시작하고, A 요청이 여전히 잘 발동하는지 꼭 재확인하세요 — 방어선이 과하면 정상 발동까지 막습니다."]},
  {id:"core-power-up", lv:5, title:"장인의 한 수 — 레퍼런스 번들링 ⭐", skill:"test-report v2",
   goal:"판정 기준은 자주 바뀝니다 — 기준을 본문에 박지 말고 <b>레퍼런스로 분리</b>하세요. test-report가 팀 품질 기준서(<code>reference-given/quality-bar.md</code>)를 <b>읽고 판정</b>하도록 업그레이드합니다. 번들 자료는 기준표·템플릿·체크리스트 등 무엇이든 될 수 있습니다.",
-  steps:`기준서를 <code>.opencode/skills/test-report/references/</code>로 복사하고,<br>
-  SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
-  stepsWin:`기준서를 <code>.opencode\\skills\\test-report\\references\\</code>로 복사하고,<br>
-  SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
+  steps:`1. 기준서 번들: <code>mkdir -p .opencode/skills/test-report/references && cp reference-given/quality-bar.md .opencode/skills/test-report/references/</code><br>
+  2. SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
+  stepsWin:`1. 기준서 번들(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report\\references | Out-Null; Copy-Item reference-given\\quality-bar.md .opencode\\skills\\test-report\\references\\</code><br>
+  2. SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
   recap:`Lv.4까지 배운 것 — description은 <b>라우팅과 방어선</b>을, 본문은 <b>절차와 출력 형식</b>을 맡습니다. 이번엔 세 번째 재료: 자주 바뀌는 <b>기준</b>은 본문에 박지 말고 <b>레퍼런스 파일</b>로 분리해 스킬 폴더에 동봉합니다.`,
   hints:["기준서 복사 위치는 스킬 폴더 안입니다: <code>.opencode/skills/test-report/references/quality-bar.md</code> — <code>reference-given/</code>은 팀 공용 서랍일 뿐, 스킬이 읽을 사본을 폴더에 번들하세요.",
    "에이전트가 기준서를 읽지 않고 판정을 지어낼 수 있습니다. \"추정 금지, 반드시 기준서를 읽고 따를 것\"을 명시하는 것도 스킬 작성 기술입니다.",
@@ -306,7 +315,7 @@ const MISSIONS = [
    "본문이 참조하는 파일이 정말 그 자리에 있나요? 전임자는 분류 기준서를 팀 공용 서랍(reference-given/)에 두고 갔습니다 — 번들을 기억하세요 (Lv.5)."]},
  {id:"core-my-first-skill", lv:7, title:"졸업 후 추가 도전 — 내 업무를 스킬로 🎒", skill:"(당신의 스킬)",
   goal:"<b>수업은 Lv.6에서 수료했습니다.</b> 이 레벨은 세미나 후 각자의 자리에서 도전하는 자율 퀘스트 — 이제 <b>당신의 반복 업무</b> 차례입니다. 연습: ① 매번 똑같이 설명하던 일을 절차로 옮겨 적기 ② 검증 가능성을 설계해 넣기(산출물과 서명) ③ 팀의 자산으로 남기기.",
-  steps:`소재 예시(파일이 남는 일): 회의 메모 → 회의록 파일 · 로그 → 요약 파일 · 주간 보고 초안 파일… "매번 똑같이 설명하는 일"이 최고의 후보.<br>제약(채점기 확인): 결과를 <code>output/</code> 아래 파일로 + 마지막 줄 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명 — 둘 다 SKILL.md 본문에 직접 지시하세요. 발동의 근거를 스스로 남기는 스킬이 좋은 스킬입니다.<br>스스로 점검: 트리거 명확성 · 범위 제한 · 실행 구체성`,
+  steps:`소재 예시(파일이 남는 일): 회의 메모 → 회의록 파일 · 로그 → 요약 파일 · 주간 보고 초안 파일… "매번 똑같이 설명하는 일"이 최고의 후보.<br>제약(채점기 확인): 스킬은 <code>.opencode/skills/&lt;이름&gt;/SKILL.md</code>로 만들고, 결과를 <code>output/</code> 아래 파일로 + 마지막 줄 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명 — 둘 다 SKILL.md 본문에 직접 지시하세요. 발동의 근거를 스스로 남기는 스킬이 좋은 스킬입니다.<br>스스로 점검: 트리거 명확성 · 범위 제한 · 실행 구체성`,
   recap:`수료까지 배운 좋은 스킬의 3요소 — ① 명확한 <b>트리거</b>(description: 실제 요청 표현 + 방어선) ② 구체적 <b>절차</b>(본문: 읽을 파일·만들 파일·출력 형식) ③ <b>검증 가능성</b>(output/ 산출물 + GENERATED-BY 서명)`,
   hints:["소재는 \"매번 똑같이 설명하는 일\" 중에서 \"파일이 남는 일\"이 좋습니다. 어제도 누군가에게 절차를 설명했다면, 그게 후보입니다.",
    "채점기는 output/ 아래에서 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명을 찾습니다. 스킬 폴더 이름과 서명 속 이름이 정확히 일치해야 하고, 산출물 경로와 서명 둘 다 SKILL.md 본문에 직접 지시해야 합니다.",
