@@ -521,6 +521,8 @@ footer, header, hgroup, main, menu, nav, section {
     .skmd-zone.nm .skmd-tag { color: #B7A5FF; }
     .skmd-zone.ref { border-color: rgba(143,168,255,0.6); }
     .skmd-zone.ref .skmd-tag { color: #8FA8FF; }
+    .skmd-zone.pk { border-color: rgba(255,122,149,0.55); }
+    .skmd-zone.pk .skmd-tag { color: #FF94AC; }
     .sk-leg { display: grid; grid-template-columns: 8.6rem 1fr; gap: 0.22rem 0.6rem; margin-top: 0.5rem; font-size: 0.8rem; }
     .sk-leg b { font-family: var(--mono); font-weight: 600; color: #C4D2FF !important; font-size: 0.76rem; }
     .sk-leg span { color: var(--fg-soft) !important; }
@@ -1642,19 +1644,36 @@ footer, header, hgroup, main, menu, nav, section {
     <section data-sec="이론 ③ · 좋은 SKILL.md">
       <div><span class="chip">이론 ③ · 작성법</span> <span class="pill">→ 실습 Lv.3</span></div>
       <h2>좋은 SKILL.md는 다섯 가지가 선명합니다</h2>
-      <p class="dim autoshow fade-up" style="font-size:1.1rem">지난 세미나의 기준 그대로입니다 — <b style="color:#fff">입력 · 출력 · 절차 · 금지 · 검증</b>.</p>
-      <div class="flow-lane autoshow fade-up" style="margin-top:0.9rem; gap:0.6rem; flex-wrap:wrap">
-        <div class="flow-step neutral"><span>입력</span><small>무엇을 받는가</small></div>
-        <div class="flow-step neutral"><span>출력</span><small>어떤 구조로 돌려주는가</small></div>
-        <div class="flow-step neutral"><span>절차</span><small>어떤 순서로 실행하는가</small></div>
-        <div class="flow-step neutral"><span>금지</span><small>추정·변경하면 안 되는 것</small></div>
-        <div class="flow-step"><span>검증</span><small>무엇과 대조해야 하는가</small></div>
+      <p class="dim autoshow fade-up" style="font-size:1.1rem">지난 세미나의 기준 그대로 — <b style="color:#fff">입력 · 출력 · 절차 · 금지 · 검증</b>. 실습 Lv.3에서 만들 <span class="mono">test-report</span> 스킬을 예로 하나씩 봅니다.</p>
+      <div class="term sk25 autoshow fade-up" style="margin-top:0.7rem">
+        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">.opencode/skills/test-report/SKILL.md — 다섯 요소를 표시한 예시</span></div>
+        <div class="term-body" style="padding:0.45rem 0.8rem 0.65rem">
+          <div style="white-space:pre-wrap"><span class="faint">--- &nbsp;name: test-report · description: 테스트 결과 리포트 요청 시 사용… &nbsp;--- &nbsp;← 4페이지에서 다룬 두 줄</span></div>
+          <div class="skmd-zone nm" style="margin-top:0.55rem">
+            <span class="skmd-tag">① 입력 — 무엇을 받는가</span>
+            <div style="white-space:pre-wrap"><span class="t-key">data/test_results.csv</span> 를 읽는다.</div>
+          </div>
+          <div class="skmd-zone md">
+            <span class="skmd-tag">② 절차 — 어떤 순서로 실행하는가</span>
+            <div style="white-space:pre-wrap">1. PASS / FAIL 건수를 집계한다.
+2. 실패 항목을 표로 정리한다.</div>
+          </div>
+          <div class="skmd-zone">
+            <span class="skmd-tag">③ 출력 — 어떤 구조로 돌려주는가 · 기계가 읽을 형식은 못박는다</span>
+            <div style="white-space:pre-wrap">결과를 <span class="t-key">output/test-report.md</span> 로 작성한다. 파일 끝에 반드시
+<span class="t-str">TOTAL_PASS: &lt;숫자&gt;</span> 와 <span class="t-str">TOTAL_FAIL: &lt;숫자&gt;</span> 줄을 포함한다.</div>
+          </div>
+          <div class="skmd-zone pk">
+            <span class="skmd-tag">④ 금지 — 추정·변경하면 안 되는 것</span>
+            <div style="white-space:pre-wrap">CSV에 없는 수치를 추정해 쓰지 않는다.</div>
+          </div>
+          <div class="skmd-zone ref">
+            <span class="skmd-tag">⑤ 검증 — 무엇과 대조해야 하는가</span>
+            <div style="white-space:pre-wrap"><span class="t-str">TOTAL_PASS + TOTAL_FAIL</span> 이 CSV 전체 행 수와 일치하는지 대조한다.</div>
+          </div>
+        </div>
       </div>
-      <div class="term autoshow fade-up" style="margin-top:1.1rem">
-        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">출력 못박기 — 기계가 읽을 형식은 확률에 맡기지 않습니다</span></div>
-        <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.95rem; line-height:1.7">3. 결과를 output/test-report.md 로 작성한다. 파일 끝에 반드시<br>&nbsp;&nbsp; <span class="accent2">TOTAL_PASS: &lt;숫자&gt;</span> 와 <span class="accent2">TOTAL_FAIL: &lt;숫자&gt;</span> 줄을 포함한다.</div>
-      </div>
-      <p class="note autoshow fade-up" style="margin-top:1.0rem">지난 세미나 원칙 ② <b>출력을 구조화한다</b> — 채점기와 후속 스크립트가 이 줄을 읽습니다. 실습 Lv.3에서 템플릿 빈칸을 채워 첫 스킬을 만듭니다.</p>
+      <p class="note autoshow fade-up" style="margin-top:0.9rem">③이 특히 중요합니다 — 지난 세미나 원칙 ② <b>출력을 구조화한다</b>. 채점기와 후속 스크립트가 저 <span class="mono">TOTAL_PASS</span> 줄을 읽습니다. 실습 Lv.3에서 이 템플릿의 빈칸을 채워 첫 스킬을 만듭니다.</p>
     </section>
 
     <!-- 9 · 이론④ 라우팅 -->
