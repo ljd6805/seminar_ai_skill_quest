@@ -77,6 +77,13 @@ code,.cmd{font-family:var(--mono);font-size:13px;background:#33302A;color:#F5E9C
 .cmd{display:inline-block;margin-top:4px;padding:7px 12px}
 .freehint{font-size:12.5px;color:var(--muted);margin-top:12px}
 
+/* 지나온 미션 열람 (뒤로가기) */
+.mnav{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
+.mnav button{padding:7px 14px;font-size:13px}
+.pastbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#F4EFE3;border:1.5px solid var(--line);
+  border-radius:10px;padding:8px 12px;font-size:13px;color:#5A5347;margin-bottom:12px}
+.pastbar button{margin-left:auto;padding:5px 11px;font-size:12.5px}
+
 /* 접이식 미션 배경·힌트 (미션 카드 하단) */
 details{margin-top:8px;border:1.5px dashed var(--line);border-radius:10px;padding:9px 13px;font-size:13.5px}
 details summary{cursor:pointer;font-weight:700;color:var(--sky)}
@@ -336,6 +343,7 @@ const PARTNAMES=["","🌱 새싹 안테나가 반짝!","💡 가슴 램프 점�
 /* ===== 상태 ===== */
 let ST = { name:"", level:0, skills:[], os:"linux" };
 let JUSTLEVELED=false;
+let VIEW=null; // null=현재 도전 미션, 숫자=열람 중인 완료 미션 인덱스(0-base)
 
 /* ===== 픽셀 로봇 (도트 애니메이션) ===== */
 function px(x,y,w,h,c){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;}
@@ -486,18 +494,41 @@ function render(){
   document.getElementById("checkHint").innerHTML = ST.os==="windows"
     ? `Windows: <span class="cmd">check.bat</span> 더블클릭 → id 입력 → 결과 확인 후 창 닫기`
     : `Linux: <span class="cmd">./check.sh &lt;mission-id&gt;</span>`;
-  const m=MISSIONS[ST.level];
-  document.getElementById("missionBody").innerHTML = ST.level>=7
-    ? `<h3><span class="lvbadge" style="background:${ACC[7]}">LV 7</span>🎓 온보딩 완료!</h3><p class="goal">당신의 에이전트는 이제 <b>마스터</b>입니다.
+  /* 미션 카드 — VIEW!=null 이면 지나온 미션 열람 모드 */
+  const doneAll = ST.level>=7;
+  if(VIEW!=null && (VIEW<0 || VIEW>=(doneAll?7:ST.level))) VIEW=null; // 열람 범위: 완료한 미션만
+  const onDoneScreen = doneAll && VIEW==null;
+  const vi = VIEW!=null ? VIEW : Math.min(ST.level,6);
+  let body;
+  if(onDoneScreen){
+    body = `<h3><span class="lvbadge" style="background:${ACC[7]}">LV 7</span>🎓 온보딩 완료!</h3><p class="goal">당신의 에이전트는 이제 <b>마스터</b>입니다.
        다음 단계: Lv.7에서 만든 스킬을 팀 스킬 레포에 공유하고, 자기학습 트랙(self)의 미션을 만들어보세요 —
-       미션 제작은 마스터의 특권입니다.</p>`
-    : `<h3><span class="lvbadge" style="background:${ACC[Math.min(ST.level+1,7)]}">LV ${m.lv}</span>${fmt(m.title)}</h3>
+       미션 제작은 마스터의 특권입니다.</p>`;
+  } else {
+    const m=MISSIONS[vi];
+    body = (VIEW!=null?`<div class="pastbar">📖 완료한 미션 다시 보기 — 열람 전용입니다
+        <button class="ghost" id="mnavCur">${doneAll?"완료 화면으로":`현재 미션(Lv.${ST.level+1})으로`}</button></div>`:"")
+      +`<h3><span class="lvbadge" style="background:${ACC[vi+1]}">LV ${m.lv}</span>${fmt(m.title)}</h3>
        <p class="goal">${m.goal}</p>
        <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
        ${m.recap?`<details class="recap"><summary>📖 미션 배경</summary><div class="dbody">${m.recap}</div></details>`:""}
        ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${h}</div></details>`).join("")}
        <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
+  }
+  /* 열람 내비게이션: ◀ 지난 미션 / 다음 ▶ */
+  const canPrev = onDoneScreen || vi>0;
+  let nav="";
+  if(canPrev || VIEW!=null){
+    const nx=vi+1;
+    const nextLabel = (!doneAll&&nx>=ST.level) ? "현재 미션 ▶" : (nx>6 ? "완료 화면 ▶" : `Lv.${nx+1} ▶`);
+    nav=`<div class="mnav">${canPrev?`<button class="ghost" id="mnavPrev">◀ Lv.${onDoneScreen?7:vi} 다시 보기</button>`:"<span></span>"}
+      ${VIEW!=null?`<button class="ghost" id="mnavNext">${nextLabel}</button>`:""}</div>`;
+  }
+  document.getElementById("missionBody").innerHTML = body+nav;
+  const $p=document.getElementById("mnavPrev"); if($p)$p.onclick=()=>{ VIEW = onDoneScreen ? 6 : vi-1; render(); };
+  const $n=document.getElementById("mnavNext"); if($n)$n.onclick=()=>{ const nx=vi+1; VIEW = ((!doneAll&&nx>=ST.level)||nx>6) ? null : nx; render(); };
+  const $c=document.getElementById("mnavCur"); if($c)$c.onclick=()=>{ VIEW=null; render(); };
 }
 
 /* ===== 성장 코드 검증 (check.sh 와 동일 해시) ===== */
@@ -520,6 +551,7 @@ async function submitCode(){
     return;
   }
   ST.level++;
+  VIEW=null;
   if(m.skill) ST.skills.push(m.skill);
   document.getElementById("codeInput").value=""; $m.textContent="";
   if(m.id==="core-my-first-skill") promptDogam();
@@ -613,7 +645,7 @@ document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="
 document.getElementById("resetBtn").onclick=async()=>{
   if(!confirm("정말 처음부터 다시 시작할까요? 레벨이 0으로 돌아갑니다.")) return;
   ST={name:"",level:0,skills:[],os:"linux"}; try{ await store.del("trainer-v1"); }catch(e){}
-  CUT=0; render();
+  CUT=0; VIEW=null; render();
 };
 
 /* ===== 시작 ===== */
