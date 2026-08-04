@@ -76,18 +76,13 @@ code,.cmd{font-family:var(--mono);font-size:13px;background:#33302A;color:#F5E9C
 .cmd{display:inline-block;margin-top:4px;padding:7px 12px}
 .freehint{font-size:12.5px;color:var(--muted);margin-top:12px}
 
-/* 힌트 팝업 */
-#hintBtn{margin-top:12px;padding:8px 16px;font-size:13.5px;color:var(--sky);border-color:#CFE0EE}
-.burst .box.hint-box{max-width:560px;width:calc(100% - 36px);text-align:left;max-height:84vh;overflow-y:auto}
-.hint-box .htop{font-weight:800;font-size:17px;margin-bottom:10px;text-align:center}
-.recap{background:#FBF7EE;border-radius:10px;padding:12px 16px;font-size:13.5px;line-height:1.8;color:#5A5347;margin-bottom:14px}
-.recap b{color:var(--ink)}
-.recap .rtitle{font-weight:800;color:var(--ink);font-size:13px;margin-bottom:5px}
-.hint-item{border:1.5px dashed var(--line);border-radius:10px;padding:10px 14px;font-size:13.5px;line-height:1.75;color:#5A5347;margin-bottom:8px}
-.hint-item .htitle{font-weight:700;color:var(--sky);font-size:13px;margin-bottom:3px}
-.hint-lock{display:block;width:100%;background:var(--panel);border:1.5px dashed #CFE0EE;color:var(--sky);
-  box-shadow:none;font-size:13.5px;padding:10px 14px;margin-bottom:8px}
-.hint-foot{display:flex;justify-content:flex-end;margin-top:8px}
+/* 접이식 복습·힌트 (미션 카드 하단) */
+details{margin-top:8px;border:1.5px dashed var(--line);border-radius:10px;padding:9px 13px;font-size:13.5px}
+details summary{cursor:pointer;font-weight:700;color:var(--sky)}
+details .dbody{margin-top:7px;line-height:1.75;color:#5A5347}
+details.recap{border-style:solid;background:#FBF7EE}
+details.recap summary{color:var(--ink)}
+details.recap .dbody b{color:var(--ink)}
 
 /* 도감 */
 .dogam-list{display:flex;flex-direction:column;gap:7px}
@@ -437,40 +432,9 @@ function render(){
        <p class="goal">${m.goal}</p>
        <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
-       ${m.hints.length?`<button class="ghost" id="hintBtn"></button>`:""}
+       ${m.recap?`<details class="recap"><summary>📚 지금까지 배운 것 (복습)</summary><div class="dbody">${m.recap}</div></details>`:""}
+       ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${h}</div></details>`).join("")}
        <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
-  const hb=document.getElementById("hintBtn");
-  if(hb){
-    const n=HINTS_OPENED[m.id]||0;
-    hb.textContent = n>0 ? `💡 힌트 보기 (${n}/${m.hints.length} 열림)` : `💡 힌트 보기 — 복습 + 힌트 ${m.hints.length}개`;
-    hb.onclick=openHints;
-  }
-}
-
-/* ===== 힌트 팝업 (복습 + 하나씩 열리는 힌트) ===== */
-const HINTS_OPENED={}; // missionId → 공개된 힌트 수 (새로고침 시 초기화)
-function openHints(){
-  const m=MISSIONS[ST.level]; if(!m) return;
-  const d=document.createElement("div"); d.className="burst";
-  const close=()=>{ d.remove(); render(); };
-  const paint=()=>{
-    const n=HINTS_OPENED[m.id]||0;
-    let items=m.hints.slice(0,n).map((h,i)=>
-      `<div class="hint-item"><div class="htitle">힌트 ${"①②③④"[i]}</div>${h}</div>`).join("");
-    if(n<m.hints.length)
-      items+=`<button class="hint-lock" id="hintMore">🔒 힌트 ${"①②③④"[n]} 열기 (${m.hints.length-n}개 남음)</button>`;
-    d.innerHTML=`<div class="box hint-box">
-      <div class="htop">💡 Lv.${m.lv} 힌트</div>
-      <div class="recap"><div class="rtitle">📚 지금까지 배운 것</div>${m.recap||""}</div>
-      ${items}
-      <div class="hint-foot"><button class="ghost" id="hintClose">닫기</button></div></div>`;
-    const more=d.querySelector("#hintMore");
-    if(more) more.onclick=()=>{ HINTS_OPENED[m.id]=(HINTS_OPENED[m.id]||0)+1; paint(); };
-    d.querySelector("#hintClose").onclick=close;
-  };
-  d.addEventListener("click",e=>{ if(e.target===d) close(); });
-  paint();
-  document.body.appendChild(d);
 }
 
 /* ===== 성장 코드 검증 (check.sh 와 동일 해시) ===== */
