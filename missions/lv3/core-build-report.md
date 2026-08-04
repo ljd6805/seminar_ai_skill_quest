@@ -18,7 +18,7 @@ check: script
 1. 스킬 폴더 생성 후 그 안에 `SKILL.md` 생성:
    - Linux: `mkdir -p .opencode/skills/test-report`
    - Windows(PowerShell): `New-Item -Type Directory -Force .opencode\skills\test-report`
-2. 아래 템플릿의 빈칸을 채우세요:
+2. 아래 템플릿을 참고해 그 폴더 안에 `SKILL.md`를 작성하세요 (❓ 표시된 빈칸 두 개만 채우면 됩니다):
 
 ```markdown
 ---
@@ -33,6 +33,8 @@ description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제�
 2. (❓ 무엇을 집계할지 적으세요)
 3. 결과를 output/test-report.md 로 작성한다. 파일 끝에 반드시
    TOTAL_PASS: <숫자> 와 TOTAL_FAIL: <숫자> 줄을 포함한다.
+4. 작성한 파일을 다시 읽어 TOTAL_PASS / TOTAL_FAIL 값이 CSV의 실제 개수와
+   일치하는지 반드시 검토한다. 다르면 고친 뒤 사용자에게 완료를 보고한다.
 ```
 
 3. opencode 재시작 → **"테스트 결과 리포트 만들어줘"**
@@ -44,4 +46,4 @@ description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제�
 - Linux&nbsp;&nbsp;&nbsp;: `./check.sh core-build-report`
 - Windows: `check.bat core-build-report`  (또는 `check.bat` 더블클릭 후 id 입력 — 창은 결과 확인 후 닫으면 됩니다)
 
-> 💡 성공 조건에 "기계가 읽을 수 있는 형식"을 못박는 것 — 이것도 스킬 설계의 중요한 기술입니다.
+> 💡 성공 조건에 "기계가 읽을 수 있는 형식"을 못박고(3번), 스킬이 결과를 스스로 검토하게 하는 것(4번) — 이것도 스킬 설계의 중요한 기술입니다.

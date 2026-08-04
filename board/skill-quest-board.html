@@ -300,12 +300,12 @@ const MISSIONS = [
   goal:`이제 직접 만들 차례입니다. 겁먹지 마세요 — 빈칸 채우기에 가깝습니다.<br>
   <code>data/test_results.csv</code>를 집계해 PASS/FAIL 리포트를 만드는 스킬 <b>test-report</b>를 제작하세요. (이름 고정 — 이후 레벨에서 업그레이드합니다)<br>
   🎯 목표물: <code>output/test-report.md</code>`,
-  steps:`1. 스킬 폴더 생성: <code>mkdir -p .opencode/skills/test-report</code> → 그 안에 <code>SKILL.md</code> 작성<br>
-  2. 미션 카드(<code>missions/lv3/</code>)의 템플릿에서 빈칸 두 개만 채우면 됩니다.<br>
-  3. 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 포함 — 작성 후 재시작하고 발동시키세요.`,
-  stepsWin:`1. 스킬 폴더 생성(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report</code> → 그 안에 <code>SKILL.md</code> 작성<br>
-  2. 미션 카드(<code>missions\\lv3\\</code>)의 템플릿에서 빈칸 두 개만 채우면 됩니다.<br>
-  3. 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 포함 — 작성 후 재시작하고 발동시키세요.`,
+  steps:`1. 스킬 폴더 생성: <code>mkdir -p .opencode/skills/test-report</code> → <code>missions/lv3/core-build-report.md</code> 파일을 참고하여 그 폴더 안에 <code>SKILL.md</code>를 작성합니다<br>
+  2. <code>core-build-report.md</code>의 템플릿을 참고하여 ❓ 표시된 <b>빈칸 두 개</b>(description · 집계 절차)만 채우면 됩니다. 템플릿 4번(<b>결과 스스로 검토</b>)까지 그대로 옮겨 적으세요.<br>
+  3. 재시작 → <b>"테스트 결과 리포트 만들어줘"</b>로 발동 → 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 확인`,
+  stepsWin:`1. 스킬 폴더 생성(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report</code> → <code>missions\\lv3\\core-build-report.md</code> 파일을 참고하여 그 폴더 안에 <code>SKILL.md</code>를 작성합니다<br>
+  2. <code>core-build-report.md</code>의 템플릿을 참고하여 ❓ 표시된 <b>빈칸 두 개</b>(description · 집계 절차)만 채우면 됩니다. 템플릿 4번(<b>결과 스스로 검토</b>)까지 그대로 옮겨 적으세요.<br>
+  3. 재시작 → <b>"테스트 결과 리포트 만들어줘"</b>로 발동 → 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 확인`,
   recap:`Lv.2에서 배운 것 — description은 <b>본문과 같은 이야기</b>를, 사용자가 <b>실제로 칠 표현</b>으로 해야 발동합니다. 스킬은 <code>.opencode/skills/&lt;이름&gt;/SKILL.md</code> 위치에 있어야 로드되고(Lv.1), 만들거나 고치면 재시작. 이번엔 그 원리로 백지에서 직접 만듭니다.`,
   hints:["빈칸은 두 개입니다. description에는 \"테스트 결과 리포트 만들어줘\" 같은 실제 요청 표현을, 본문에는 CSV를 읽고 집계하는 절차를 적으세요.",
    "출력 형식은 본문에 직접 못박아야 합니다 — \"리포트 끝에 TOTAL_PASS: / TOTAL_FAIL: 줄을 포함하라\"고 명시하지 않으면 에이전트는 자유 형식으로 써버립니다.",
