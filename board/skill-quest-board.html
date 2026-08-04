@@ -106,6 +106,8 @@ details.recap .dbody b{color:var(--ink)}
 @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 .burst .big{font-size:26px;font-weight:800;color:var(--coral);margin:8px 0 4px}
 .burst .part{font-size:14.5px;color:#5A5347;margin-bottom:16px}
+.burst .part-art{margin:8px 0 6px}
+.burst .part-art:empty{display:none}
 .spark{font-size:30px}
 @media (prefers-reduced-motion:reduce){.dot.now{animation:none}.burst .box{animation:none}}
 /* --- 도트 애니메이션 (steps로 프레임 단위 움직임) --- */
@@ -326,7 +328,7 @@ const RANKS=["신입","견습","수습","정식","숙련","베테랑","전문가
 const RANKDESC=["아직 아무 스킬도 모릅니다","첫 스킬 장착 완료! 가슴 램프 점등","고장 수리 성공! 드라이버 획득",
  "첫 제작 완료! 공구벨트 장착","오발동을 막는 법을 압니다","절차와 기준을 분리합니다 — 기준서 번들",
  "스스로 진단합니다 — 수료! 🎓 고글 장착","자기 업무를 스킬로 — 이제 남을 가르칠 수 있습니다 ⭐"];
-const PARTNAMES=["","🌱 새싹 안테나가 반짝!","💡 가슴 램프 점등 + 🪛 드라이버","🧰 공구벨트 + 첫 카트리지",
+const PARTNAMES=["","🌱 새싹 안테나가 반짝!","💡 가슴 램프 점등 + 드라이버","🧰 공구벨트 + 첫 카트리지",
  "🛡️ 오발동 방지 배지","📘 기준서 카트리지","🥽 진단 고글 + 🎓 수료","🎒 자작 스킬 배낭 + ⭐ 별 안테나 + 🏅 훈장 + 미니 제자"];
 
 /* ===== 상태 ===== */
@@ -335,6 +337,31 @@ let JUSTLEVELED=false;
 
 /* ===== 픽셀 로봇 (도트 애니메이션) ===== */
 function px(x,y,w,h,c){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;}
+
+/* ===== 픽셀 아이템 아이콘 (레벨업 팝업 — 새로 얻은 장비를 픽셀 아트로 표시) ===== */
+function partIcon(lv){
+  const G="#6FBFA0",Y="#F2B84B",YL="#FBE3A8",R="#F27D5C",RD="#C75548",S="#7FAED8",
+        W="#FFFDF8",GD="#E0A030",GRY="#9AA9B5",BR="#8A6B4C",EYE="#33404C",INK="#33302A",ST_="#8C8578";
+  const ITEMS={
+    sprout:o=>px(o+4,5,2,4,ST_)+px(o+2,3,2,2,G)+px(o+6,3,2,2,G)+px(o+4,1,2,2,G)+px(o+8,1,1,1,YL),
+    lamp:o=>px(o+3,3,4,4,Y)+px(o+4,4,2,2,YL)+px(o+1,4,1,1,YL)+px(o+8,5,1,1,YL)+px(o+4,1,1,1,YL)+px(o+5,8,1,1,YL),
+    driver:o=>px(o+3,0,3,4,RD)+px(o+3,0,1,4,R)+px(o+4,4,1,1,GRY)+px(o+4,5,1,4,GRY),
+    belt:o=>px(o,4,10,3,BR)+px(o+4,4,2,3,GD)+px(o+1,1,3,3,G)+px(o+1,1,1,1,W),
+    badge:o=>px(o+2,1,6,5,S)+px(o+3,6,4,1,S)+px(o+4,7,2,2,S)+px(o+4,3,2,2,W),
+    book:o=>px(o+2,1,6,8,W)+px(o+2,1,2,8,S)+px(o+5,3,2,1,GRY)+px(o+5,5,2,1,GRY),
+    goggles:o=>px(o,4,10,2,EYE)+px(o+1,3,3,3,S)+px(o+6,3,3,3,S)+px(o+1,3,1,1,W)+px(o+6,3,1,1,W),
+    gradcap:o=>px(o+3,1,4,2,INK)+px(o+1,3,8,2,INK)+px(o+2,5,6,2,"#5A6B7C")+px(o+8,5,1,3,GD),
+    backpack:o=>px(o+2,2,6,7,R)+px(o+2,2,6,2,RD)+px(o+4,6,2,2,Y),
+    star:o=>px(o+3,3,4,4,GD)+px(o+4,1,2,2,GD)+px(o+4,7,2,2,GD)+px(o+1,4,2,2,GD)+px(o+7,4,2,2,GD)+px(o+4,4,2,2,YL),
+    medal:o=>px(o+3,0,2,3,R)+px(o+5,0,2,3,S)+px(o+3,4,4,4,GD)+px(o+4,5,2,2,YL)
+  };
+  const BYLV=[[],["sprout"],["lamp","driver"],["belt"],["badge"],["book"],["goggles","gradcap"],["backpack","star","medal"]];
+  const parts=BYLV[lv]||[];
+  if(!parts.length) return "";
+  const w=parts.length*12-2;
+  return `<svg class="part-icon" width="${w*4.5}" height="45" viewBox="0 0 ${w} 10" shape-rendering="crispEdges" aria-hidden="true">`
+    +parts.map((p,i)=>ITEMS[p](i*12)).join("")+`</svg>`;
+}
 
 /* ===== 픽셀 OS 로고 (🪟 이모지는 Windows 10 등에서 미지원 → SVG 직접 렌더) ===== */
 const OSICON={
@@ -498,11 +525,13 @@ function levelBurst(){
   d.innerHTML = ST.level>=7
     ? `<div class="box"><div class="spark">🎉 ✦ 🎓 ✦ 🎉</div>
       <div class="big">QUEST COMPLETE!</div>
+      <div class="part-art">${partIcon(7)}</div>
       <div class="part">Lv.7 ${RANKS[7]} 달성 — ${PARTNAMES[7]}</div>
       <div class="part">모든 퀘스트를 완료했습니다. 축하합니다! 만든 스킬을 팀과 공유해주세요.</div>
       <button id="burstOk">완료 🎉</button></div>`
     : `<div class="box"><div class="spark">✦ ✦ ✦</div>
       <div class="big">LEVEL UP! Lv.${ST.level} ${RANKS[ST.level]}</div>
+      <div class="part-art">${partIcon(ST.level)}</div>
       <div class="part">${PARTNAMES[ST.level]}</div>
       <button id="burstOk">다음 미션으로</button></div>`;
   document.body.appendChild(d);
