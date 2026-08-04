@@ -398,8 +398,13 @@ function drawRobot(lv, leveled, target="robot"){
   c+= lv>=1 ? px(14,13,3,1,EYE) : px(14,13,2,1,GRY);          /* 입 */
   /* 안테나 (sway: 몸과 반대 위상) */
   if(lv<7){
-    c+=`<g class="sway">`+px(14,4,1,3,ST_)+px(13,3,1,1,G)+px(15,3,1,1,G)+px(14,2,1,1,G)
-      +(lv>=5?`<g class="lamp">`+px(14,1,1,1,YL)+`</g>`:"")+`</g>`;
+    c+=`<g class="sway">`+px(14,4,1,3,ST_)+px(13,3,1,1,G)+px(15,3,1,1,G)+px(14,2,1,1,G);
+    if(lv>=1){ /* Lv.1 보상: 새싹 안테나 반짝임 — 금색 스파클 2위상 교차 (연노랑은 배경과 대비가 약해 금색 사용) */
+      const NP1=(leveled&&lv===1)?" newpart":"";
+      c+=`<g class="tw1${NP1}">`+px(14,1,1,1,GD)+px(12,2,1,1,Y)+`</g>`
+        +`<g class="tw2${NP1}">`+px(16,2,1,1,GD)+px(13,0,1,1,Y)+`</g>`;
+    }
+    c+=`</g>`;
   } else {
     c+=`<g class="sway${leveled&&lv===7?" newpart":""}">`+px(14,4,1,2,ST_)+px(13,2,3,1,GD)+px(14,1,1,3,GD)
       +`<g class="tw1">`+px(12,3,1,1,YL)+`</g><g class="tw2">`+px(16,3,1,1,YL)+`</g></g>`;
