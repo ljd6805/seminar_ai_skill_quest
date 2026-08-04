@@ -1471,7 +1471,66 @@ footer, header, hgroup, main, menu, nav, section {
           <div class="term-body mono" style="padding:0.7rem 0.9rem; font-size:0.92rem; line-height:1.65">---<br>name: daily-report <span class="faint">← 폴더명과 일치</span><br>description: 오늘 일정 요약·일일 브리핑 요청 시 사용… <span class="faint">← 발동 결정</span><br>---<br><span class="faint">## 절차 — 자유 형식 Markdown 절차서 (실행 품질 결정)</span></div>
         </div>
       </div>
-      <p class="note autoshow fade-up" style="margin-top:1.1rem">폴더 이름 = 스킬 이름, 파일 이름은 반드시 <span class="mono">SKILL.md</span> — 그리고 이 폴더를 <b class="accent">어디에 두느냐</b>가 다음 장 이야기입니다.</p>
+      <p class="note autoshow fade-up" style="margin-top:1.1rem">폴더 이름 = 스킬 이름, 파일 이름은 반드시 <span class="mono">SKILL.md</span> — 그리고 이 폴더에 <b class="accent">무엇을 더 담을 수 있는지</b>가 다음 장 이야기입니다.</p>
+    </section>
+
+    <!-- 4a · 이론① 전체 구조 -->
+    <section data-sec="이론 ① · Skill의 최소 구성">
+      <div><span class="chip">이론 ① · Skill의 전체 구조</span> <span class="pill">→ 실습 Lv.1 · Lv.5</span></div>
+      <h2>Skill은 SKILL.md와 필요한 자료로 구성됩니다</h2>
+      <p class="dim autoshow fade-up" style="font-size:1.1rem">최소 구성은 <b style="color:#fff">SKILL.md</b> 하나 — 상세 자료와 도구는 <b style="color:#fff">필요에 따라 옆에 동봉</b>해 확장합니다.</p>
+      <div class="grid-2 sk25" style="margin-top:0.6rem; align-items:start; grid-template-columns:0.95fr 1.05fr">
+        <div class="autoshow fade-left">
+          <div class="phead">폴더 구조 — SKILL.md 하나로 시작</div>
+          <div class="term">
+            <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">.opencode/skills/test-report/ — 확장된 모습 예시</span></div>
+            <div class="term-body" style="white-space:pre"><span class="t-hl">.opencode/skills/test-report/</span>   <span class="t-out">← 폴더명 = 스킬 이름</span>
+├─ <span class="t-key">SKILL.md</span>              <span class="t-out">← 필수 — 오른쪽 해부</span>
+├─ <span class="t-key">references/</span>           <span class="t-out">← 선택</span>
+│  └─ quality-bar.md
+├─ <span class="t-key">scripts/</span>              <span class="t-out">← 선택</span>
+│  └─ validate-report.py
+└─ <span class="t-key">assets/</span>               <span class="t-out">← 선택</span>
+   └─ report-template.md</div>
+          </div>
+          <div class="sk-leg">
+            <b>SKILL.md</b><span>이름·설명·절차·출력·검증 기준 — 필수</span>
+            <b>references/</b><span>판정 기준·예시 등 상세 자료</span>
+            <b>scripts/</b><span>반복 실행하거나 검증할 코드</span>
+            <b>assets/</b><span>템플릿·스키마 등 출력에 쓸 파일</span>
+          </div>
+          <p class="mono tiny faint" style="margin-top:0.45rem">선택 폴더는 없어도 됩니다 — 모든 스킬이 네 폴더를 갖는 것은 아닙니다</p>
+        </div>
+        <div class="autoshow fade-right">
+          <div class="phead">SKILL.md 해부 — 필수 파일 하나의 네 영역</div>
+          <div class="term">
+            <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">…/test-report/SKILL.md — 축약 예시</span></div>
+            <div class="term-body" style="padding:0.5rem 0.8rem 0.65rem">
+              <div class="skmd-zone nm" style="margin-top:0.45rem">
+                <span class="skmd-tag">① name — 스킬 식별 (필수)</span>
+                <div style="white-space:pre-wrap"><span class="t-key">name:</span> <span class="t-str">test-report</span>   <span class="t-out">← 폴더명과 일치</span></div>
+              </div>
+              <div class="skmd-zone">
+                <span class="skmd-tag">② description — 언제 쓰는 스킬인지 (필수)</span>
+                <div style="white-space:pre-wrap"><span class="t-key">description:</span> <span class="t-str">테스트 결과 CSV를 집계해 리포트를 만들 때 사용한다.</span></div>
+              </div>
+              <div class="skmd-zone md">
+                <span class="skmd-tag">③ 본문 — 실행 절차 (자유 형식 Markdown)</span>
+                <div style="white-space:pre-wrap"><span class="t-hl">## 절차</span>
+1. CSV에서 PASS / FAIL 을 집계한다.
+2. 결과를 <span class="t-key">output/test-report.md</span> 로 작성한다.
+3. 파일 끝에 <span class="t-key">TOTAL_PASS</span> · <span class="t-key">TOTAL_FAIL</span> 줄을 남긴다.</div>
+              </div>
+              <div class="skmd-zone ref">
+                <span class="skmd-tag">④ 참조 조건과 경로 — 언제 무엇을 더 읽는지</span>
+                <div style="white-space:pre-wrap"><span class="t-hl">## 참조 자료</span>
+판정이 필요하면 <span class="t-key">references/quality-bar.md</span> 의 기준표를 따른다.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="note autoshow fade-up" style="margin-top:0.8rem">오늘 실습은 <b class="accent">SKILL.md 하나로 시작</b>합니다(Lv.1~4) — 그리고 Lv.5에서 <span class="mono">references/</span>를 동봉하는 확장을 직접 해봅니다.</p>
     </section>
 
     <!-- 4b · 이론① 스킬 스코프 -->
