@@ -299,11 +299,13 @@ const MISSIONS = [
    "방어선은 \"무엇에는 쓰지 않는지\"를 description에 덧붙이는 것입니다. 예: \"테스트 결과 CSV 집계 전용. 일정 브리핑 등 다른 리포트 작성에는 사용하지 않음.\"",
    "방어선을 친 뒤 재시작하고, A 요청이 여전히 잘 발동하는지 꼭 재확인하세요 — 방어선이 과하면 정상 발동까지 막습니다."]},
  {id:"core-power-up", lv:5, title:"장인의 한 수 — 레퍼런스 번들링 ⭐", skill:"test-report v2",
-  goal:"판정 기준은 자주 바뀝니다 — 기준을 본문에 박지 말고 <b>레퍼런스로 분리</b>하세요. test-report가 팀 품질 기준서(<code>reference-given/quality-bar.md</code>)를 <b>읽고 판정</b>하도록 업그레이드합니다. 번들 자료는 기준표·템플릿·체크리스트 등 무엇이든 될 수 있습니다.",
-  steps:`1. 기준서 번들: <code>mkdir -p .opencode/skills/test-report/references && cp reference-given/quality-bar.md .opencode/skills/test-report/references/</code><br>
-  2. SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
-  stepsWin:`1. 기준서 번들(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report\\references | Out-Null; Copy-Item reference-given\\quality-bar.md .opencode\\skills\\test-report\\references\\</code><br>
-  2. SKILL.md에 "판정은 반드시 기준서를 따르라"고 지시. 기준서에 따른 <code>GRADE</code> 판정과 <code>REF-VERSION</code> 줄까지 리포트에 포함시키세요. 마지막 단서 미션입니다 — 다음은 승급 시험.`,
+  goal:`팀장의 요청 — "리포트에 <b>품질 판정</b>도 넣어줘." 판정 규칙(FAIL 개수 → <code>CLEAN/WATCH/RISK/BLOCK</code>)은 팀 기준서(<code>reference-given/quality-bar.md</code>)에 이미 있습니다. 기준은 자주 바뀌니 SKILL.md에 베껴 적지 말고 — <b>기준서 파일을 스킬 폴더에 동봉해, 에이전트가 직접 읽고 판정</b>하게 만드세요. 이것이 <b>레퍼런스 번들링</b>입니다. 목표물: 판정이 담긴 <code>output/test-report-v2.md</code>`,
+  steps:`1. 기준서를 스킬 폴더로 복사(=번들): <code>mkdir -p .opencode/skills/test-report/references && cp reference-given/quality-bar.md .opencode/skills/test-report/references/</code><br>
+  2. SKILL.md 본문에 <b>3가지 지시</b>: ① 판정 전에 반드시 <code>references/quality-bar.md</code>를 읽을 것(추측 금지) ② 리포트에 <code>GRADE:</code> 줄 포함 ③ 기준서의 <code>REF-VERSION:</code> 줄을 그대로 복사<br>
+  3. 재시작 → 발동 → <code>output/test-report-v2.md</code> 확인. REF-VERSION은 기준서 안에만 있는 값 — <b>진짜 읽었다는 증거</b>입니다. 마지막 단서 미션, 다음은 승급 시험.`,
+  stepsWin:`1. 기준서를 스킬 폴더로 복사(=번들, PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report\\references | Out-Null; Copy-Item reference-given\\quality-bar.md .opencode\\skills\\test-report\\references\\</code><br>
+  2. SKILL.md 본문에 <b>3가지 지시</b>: ① 판정 전에 반드시 <code>references/quality-bar.md</code>를 읽을 것(추측 금지) ② 리포트에 <code>GRADE:</code> 줄 포함 ③ 기준서의 <code>REF-VERSION:</code> 줄을 그대로 복사<br>
+  3. 재시작 → 발동 → <code>output\\test-report-v2.md</code> 확인. REF-VERSION은 기준서 안에만 있는 값 — <b>진짜 읽었다는 증거</b>입니다. 마지막 단서 미션, 다음은 승급 시험.`,
   recap:`Lv.4까지 배운 것 — description은 <b>라우팅과 방어선</b>을, 본문은 <b>절차와 출력 형식</b>을 맡습니다. 이번엔 세 번째 재료: 자주 바뀌는 <b>기준</b>은 본문에 박지 말고 <b>레퍼런스 파일</b>로 분리해 스킬 폴더에 동봉합니다.`,
   hints:["기준서 복사 위치는 스킬 폴더 안입니다: <code>.opencode/skills/test-report/references/quality-bar.md</code> — <code>reference-given/</code>은 팀 공용 서랍일 뿐, 스킬이 읽을 사본을 폴더에 번들하세요.",
    "에이전트가 기준서를 읽지 않고 판정을 지어낼 수 있습니다. \"추정 금지, 반드시 기준서를 읽고 따를 것\"을 명시하는 것도 스킬 작성 기술입니다.",

@@ -8,19 +8,33 @@ check: script
 
 # Lv.5 장인의 한 수 — 레퍼런스 번들링 ⭐
 
-판정 기준은 자주 바뀝니다. 기준을 SKILL.md 본문에 박아두면, 바뀔 때마다 스킬을 뜯어고쳐야 하죠.
-장인은 **절차(본문)와 기준(레퍼런스)을 분리**합니다.
-스킬 폴더에는 SKILL.md 외에 기준표·템플릿·체크리스트 같은 참고 자료도 함께 담을 수 있습니다.
+## 상황
+팀장이 요청합니다 — "리포트에 **품질 판정**도 넣어줘."
+다행히 판정 규칙은 팀 기준서(`reference-given/quality-bar.md`)에 이미 있습니다.
+FAIL 개수에 따라 `CLEAN / WATCH / RISK / BLOCK` 등급을 매기는 표죠.
+
+그런데 이 기준은 분기마다 바뀝니다. 표를 SKILL.md 본문에 베껴 적으면,
+기준이 바뀔 때마다 스킬도 뜯어고쳐야 하죠. 그래서 이번엔 다르게 갑니다 —
+**기준서 파일을 스킬 폴더에 동봉하고, 에이전트가 그 파일을 직접 읽고 판정하게** 만듭니다.
+이것이 **레퍼런스 번들링**입니다. (기준표뿐 아니라 템플릿·체크리스트도 이렇게 담을 수 있습니다)
 
 ## 목표
-`test-report` 스킬이 팀 품질 기준서(`reference-given/quality-bar.md`)를 **읽고 판정**하도록 업그레이드해서,
-판정이 포함된 `output/test-report-v2.md`를 만들게 하세요.
+`test-report` 스킬을 업그레이드해서, 기준서에 따른 판정(`GRADE:`)이 포함된
+`output/test-report-v2.md`를 만들게 하세요.
 
-## 단서 (마지막 단서입니다)
-- 기준서를 스킬 폴더 안으로: `.opencode/skills/test-report/references/quality-bar.md`
-- SKILL.md 본문에 "판정은 반드시 `references/quality-bar.md` 기준서를 따르고, 리포트에 `GRADE:` 줄과
-  기준서의 `REF-VERSION:` 줄을 그대로 포함하라"고 지시하세요
-- `REF-VERSION:`은 기준서를 진짜 읽어야만 알 수 있는 값이라, 에이전트가 기준을 "아는 척"하면 검증에서 걸립니다
+## 절차 (레시피)
+1. 기준서를 스킬 폴더 안으로 복사합니다 (= 번들):
+   - Linux: `mkdir -p .opencode/skills/test-report/references && cp reference-given/quality-bar.md .opencode/skills/test-report/references/`
+   - Windows(PowerShell): `New-Item -Type Directory -Force .opencode\skills\test-report\references | Out-Null; Copy-Item reference-given\quality-bar.md .opencode\skills\test-report\references\`
+2. SKILL.md 본문에 세 가지를 지시합니다:
+   - ① 판정하기 전에 반드시 `references/quality-bar.md`를 **읽을 것** (추측 금지)
+   - ② 리포트에 `GRADE: <판정>` 줄을 포함할 것
+   - ③ 기준서에 있는 `REF-VERSION:` 줄을 리포트에 **그대로 복사**할 것
+3. opencode 재시작 → 스킬 발동 → `output/test-report-v2.md` 확인
+
+## 왜 REF-VERSION까지 넣게 하나요?
+그 값은 기준서 파일 안에만 적혀 있습니다. 리포트에 정확히 들어 있다면
+에이전트가 기준서를 **진짜로 읽었다는 증거**가 되죠. 안 읽고 "아는 척" 판정하면 여기서 걸립니다.
 
 ## 성공 조건
 - `output/test-report-v2.md`에 기준서에 따른 올바른 `GRADE:` 값이 포함될 것
