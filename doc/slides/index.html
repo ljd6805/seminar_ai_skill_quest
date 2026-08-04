@@ -1680,20 +1680,15 @@ footer, header, hgroup, main, menu, nav, section {
     <section data-sec="이론 ④ · 교통정리">
       <div><span class="chip">이론 ④ · 라우팅과 방어선</span> <span class="pill">→ 실습 Lv.4</span></div>
       <h2>스킬이 여럿이면, description이 교통정리를 합니다</h2>
-      <div class="flow-lane autoshow fade-up" style="margin-top:1.1rem; gap:0.8rem">
-        <div class="flow-step neutral"><span style="font-size:1.05rem">요청 하나</span><small>"오늘 일정을 <b>리포트</b>로 정리해줘"</small></div>
-        <span class="flow-arrow">→</span>
-        <div class="flow-step neutral"><span style="font-size:1.05rem">description 비교</span><small>daily-report(일정 조회·브리핑) vs test-report(테스트 CSV 집계)</small></div>
-        <span class="flow-arrow">→</span>
-        <div class="flow-step"><span style="font-size:1.05rem">가장 잘 맞는 쪽 선택</span><small>daily-report가 맡는 게 정상</small></div>
-      </div>
-      <div class="autoshow fade-up" style="margin-top:1.2rem">
-        <div style="display:flex; justify-content:center; margin-bottom:0.8rem">
-          <div class="bubble user" style="max-width:none; font-size:1.08rem; padding:0.6rem 1.2rem">
-            <span class="who">사용자 요청</span>
-            "오늘 일정을 <b style="color:#FFE08A">리포트</b>로 정리해줘"
+      <div class="autoshow fade-up" style="margin-top:1.3rem">
+        <div style="display:flex; justify-content:center">
+          <div style="background:rgba(255,255,255,0.04); border:0.0625rem solid rgba(190,200,224,0.4); border-radius:0.8rem; padding:0.55rem 1.5rem; text-align:center">
+            <span class="mono tiny faint" style="display:block; letter-spacing:0.08em; margin-bottom:0.12rem">사용자 요청</span>
+            <span style="font-size:1.15rem; font-weight:700">"오늘 일정을 <b style="color:#FFE08A">리포트</b>로 정리해줘"</span>
           </div>
         </div>
+        <div style="text-align:center; color:#8A93B2; font-size:1.15rem; line-height:1.1; margin:0.35rem 0 0.15rem">↓</div>
+        <p style="text-align:center; font-size:0.9rem; color:#B8BFD0 !important; margin:0 0 0.6rem">세 스킬의 description과 비교 — 가장 잘 맞는 쪽이 발동합니다</p>
         <div class="grid-3" style="gap:0.8rem">
           <div class="panel">
             <div class="phead good">① daily-report</div>
