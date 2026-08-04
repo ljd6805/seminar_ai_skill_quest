@@ -55,6 +55,7 @@ button:active{transform:translateY(3px);box-shadow:none}
 button.ghost{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none}
 .osbtn{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none;padding:9px 16px;font-size:13.5px}
 .osbtn.sel{background:#EAF3FB;border-color:var(--sky);color:#33607F}
+.osicon{display:inline-block;vertical-align:-3px;margin-right:5px}
 .lvbadge{display:inline-flex;align-items:center;justify-content:center;min-width:66px;height:36px;
   border-radius:10px;color:#FFF;font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:1px;
   padding:0 13px;margin-right:11px;vertical-align:middle;box-shadow:0 3px 0 rgba(62,58,51,.2)}
@@ -179,8 +180,8 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
       <p class="cut-text" style="margin-bottom:12px">준비되셨나요? 멘토 닉네임을 등록하고 온보딩을 시작하세요.</p>
       <div style="margin-bottom:12px">
         <span style="font-size:13px;color:var(--muted);margin-right:6px">작업 환경:</span>
-        <button class="osbtn sel" data-os="linux">🐧 Linux / SSH</button>
-        <button class="osbtn" data-os="windows">🪟 Windows</button>
+        <button class="osbtn sel" data-os="linux">Linux / SSH</button>
+        <button class="osbtn" data-os="windows">Windows</button>
       </div>
       <div class="coderow">
         <input type="text" id="nick" maxlength="12" placeholder="멘토 닉네임 (예: verif_kim)">
@@ -334,6 +335,24 @@ let JUSTLEVELED=false;
 
 /* ===== 픽셀 로봇 (도트 애니메이션) ===== */
 function px(x,y,w,h,c){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;}
+
+/* ===== 픽셀 OS 로고 (🪟 이모지는 Windows 10 등에서 미지원 → SVG 직접 렌더) ===== */
+const OSICON={
+  linux:`<svg class="osicon" width="15" height="17" viewBox="0 0 10 11" shape-rendering="crispEdges" aria-hidden="true">`
+    +px(3,0,4,1,"#33302A")+px(2,1,6,1,"#33302A")
+    +px(2,2,1,1,"#33302A")+px(3,2,1,1,"#FFFDF8")+px(4,2,2,1,"#33302A")+px(6,2,1,1,"#FFFDF8")+px(7,2,1,1,"#33302A")
+    +px(2,3,2,1,"#33302A")+px(4,3,2,1,"#E0A030")+px(6,3,2,1,"#33302A")
+    +px(1,4,2,1,"#33302A")+px(3,4,4,1,"#FFFDF8")+px(7,4,2,1,"#33302A")
+    +px(1,5,2,1,"#33302A")+px(3,5,4,1,"#FFFDF8")+px(7,5,2,1,"#33302A")
+    +px(0,6,3,1,"#33302A")+px(3,6,4,1,"#FFFDF8")+px(7,6,3,1,"#33302A")
+    +px(0,7,3,1,"#33302A")+px(3,7,4,1,"#FFFDF8")+px(7,7,3,1,"#33302A")
+    +px(1,8,2,1,"#33302A")+px(3,8,4,1,"#FFFDF8")+px(7,8,2,1,"#33302A")
+    +px(2,9,6,1,"#33302A")
+    +px(2,10,2,1,"#E0A030")+px(6,10,2,1,"#E0A030")+`</svg>`,
+  windows:`<svg class="osicon" width="14" height="14" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true">`
+    +px(0,0,4,4,"#F27D5C")+px(5,0,4,4,"#6FBFA0")
+    +px(0,5,4,4,"#7FAED8")+px(5,5,4,4,"#F2B84B")+`</svg>`
+};
 function drawRobot(lv, leveled, target="robot"){
   const B="#5A6B7C", BL="#43525F", FACE="#DCE8F0", EYE="#33404C",
         G="#6FBFA0", Y="#F2B84B", YL="#FBE3A8", R="#F27D5C", RD="#C75548",
@@ -427,7 +446,8 @@ function render(){
   document.getElementById("equip").innerHTML = ST.skills.length
     ? ST.skills.map(x=>`<span class="chip">${fmt(x)}</span>`).join("")
     : `<span class="dogam-empty">없음 (텅 빈 공구벨트)</span>`;
-  document.getElementById("osToggle").textContent = ST.os==="windows" ? "🪟 Windows (클릭해서 변경)" : "🐧 Linux / SSH (클릭해서 변경)";
+  document.getElementById("osToggle").innerHTML = ST.os==="windows"
+    ? OSICON.windows+" Windows (클릭해서 변경)" : OSICON.linux+" Linux / SSH (클릭해서 변경)";
   document.getElementById("dogamAdd").classList.toggle("hidden", ST.level<7);
   document.getElementById("checkHint").innerHTML = ST.os==="windows"
     ? `Windows: <span class="cmd">check.bat</span> 더블클릭 → id 입력 → 결과 확인 후 창 닫기`
@@ -532,6 +552,7 @@ async function removeDogam(i){
 }
 
 /* ===== 이벤트 ===== */
+document.querySelectorAll(".osbtn").forEach(b=>b.insertAdjacentHTML("afterbegin",OSICON[b.dataset.os]));
 document.getElementById("cutNext").onclick=()=>showCut(CUT+1);
 document.getElementById("cutSkip").onclick=()=>showCut(document.querySelectorAll("#regCard .cut").length-1);
 let selOS="linux";
