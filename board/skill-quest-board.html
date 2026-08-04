@@ -76,7 +76,7 @@ code,.cmd{font-family:var(--mono);font-size:13px;background:#33302A;color:#F5E9C
 .cmd{display:inline-block;margin-top:4px;padding:7px 12px}
 .freehint{font-size:12.5px;color:var(--muted);margin-top:12px}
 
-/* 접이식 복습·힌트 (미션 카드 하단) */
+/* 접이식 미션 배경·힌트 (미션 카드 하단) */
 details{margin-top:8px;border:1.5px dashed var(--line);border-radius:10px;padding:9px 13px;font-size:13.5px}
 details summary{cursor:pointer;font-weight:700;color:var(--sky)}
 details .dbody{margin-top:7px;line-height:1.75;color:#5A5347}
@@ -432,7 +432,7 @@ function render(){
        <p class="goal">${m.goal}</p>
        <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
-       ${m.recap?`<details class="recap"><summary>📚 지금까지 배운 것 (복습)</summary><div class="dbody">${m.recap}</div></details>`:""}
+       ${m.recap?`<details class="recap"><summary>📖 미션 배경</summary><div class="dbody">${m.recap}</div></details>`:""}
        ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${h}</div></details>`).join("")}
        <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
 }
