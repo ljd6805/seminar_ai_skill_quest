@@ -32,7 +32,7 @@ TYPE_QUESTION: <개수>
 TYPE_SUGGEST: <개수>
 ```
 
-- 본문이 참조하는 **분류 기준서**가 스킬 폴더에 동봉되고, 기준서의 `REF-VERSION:` 줄이 리포트에 포함될 것
+- 본문이 참조하는 **분류 기준서**가 스킬 폴더에 동봉되고 (원본: `reference-given/comment-types.md`), 기준서의 `REF-VERSION:` 줄이 리포트에 포함될 것
 
 ## 검증
 - Linux&nbsp;&nbsp;&nbsp;: `./check.sh core-silent-skill`
