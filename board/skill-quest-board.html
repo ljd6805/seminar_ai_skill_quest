@@ -354,7 +354,7 @@ description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제�
   &nbsp;&nbsp;<code>mkdir -p .opencode/skills/test-report/references && cp reference-given/quality-bar.md .opencode/skills/test-report/references/</code><br>
   2. SKILL.md 본문의 작업절차를 아래 <b>4가지 지시</b>로 수정합니다:<br>
   &nbsp;&nbsp;① <b>데이터</b> — 집계 원본은 <code>data/test_results.csv</code>를 사용할 것<br>
-  &nbsp;&nbsp;② <b>판정</b> — 판정 전에 반드시 <code>references/quality-bar.md</code>를 읽고 따를 것 (추측 금지)<br>
+  &nbsp;&nbsp;② <b>판정</b> — 판정 전에 반드시 스킬 내부의 <code>references/quality-bar.md</code>를 읽고 따를 것 (추측 금지)<br>
   &nbsp;&nbsp;③ <b>출력</b> — 결과물은 <code>output/test-report-v2.md</code>로 저장하고, <code>GRADE:</code> 줄과 기준서의 <code>REF-VERSION:</code> 줄을 그대로 포함할 것<br>
   &nbsp;&nbsp;④ <b>검토</b> — 작성한 파일을 다시 읽어 GRADE가 기준표와 맞는지, REF-VERSION이 정확한지 검토하고 틀리면 고칠 것<br>
   3. 재시작 → 발동 → <code>output/test-report-v2.md</code> 확인<br>
@@ -363,7 +363,7 @@ description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제�
   &nbsp;&nbsp;<code>New-Item -Type Directory -Force .opencode\\skills\\test-report\\references | Out-Null; Copy-Item reference-given\\quality-bar.md .opencode\\skills\\test-report\\references\\</code><br>
   2. SKILL.md 본문의 작업절차를 아래 <b>4가지 지시</b>로 수정합니다:<br>
   &nbsp;&nbsp;① <b>데이터</b> — 집계 원본은 <code>data/test_results.csv</code>를 사용할 것<br>
-  &nbsp;&nbsp;② <b>판정</b> — 판정 전에 반드시 <code>references/quality-bar.md</code>를 읽고 따를 것 (추측 금지)<br>
+  &nbsp;&nbsp;② <b>판정</b> — 판정 전에 반드시 스킬 내부의 <code>references/quality-bar.md</code>를 읽고 따를 것 (추측 금지)<br>
   &nbsp;&nbsp;③ <b>출력</b> — 결과물은 <code>output/test-report-v2.md</code>로 저장하고, <code>GRADE:</code> 줄과 기준서의 <code>REF-VERSION:</code> 줄을 그대로 포함할 것<br>
   &nbsp;&nbsp;④ <b>검토</b> — 작성한 파일을 다시 읽어 GRADE가 기준표와 맞는지, REF-VERSION이 정확한지 검토하고 틀리면 고칠 것<br>
   3. 재시작 → 발동 → <code>output\\test-report-v2.md</code> 확인<br>
