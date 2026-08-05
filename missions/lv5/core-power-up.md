@@ -26,7 +26,7 @@ FAIL 개수에 따라 `CLEAN / WATCH / RISK / BLOCK` 등급을 매기는 표죠.
 1. 기준서를 스킬 폴더 안으로 복사합니다 (= 번들):
    - Linux: `mkdir -p .opencode/skills/test-report/references && cp reference-given/quality-bar.md .opencode/skills/test-report/references/`
    - Windows(PowerShell): `New-Item -Type Directory -Force .opencode\skills\test-report\references | Out-Null; Copy-Item reference-given\quality-bar.md .opencode\skills\test-report\references\`
-2. SKILL.md 본문에 네 가지를 지시합니다:
+2. SKILL.md 본문의 작업절차를 아래 네 가지 지시로 수정합니다:
    - ① **데이터** — 집계 원본은 `data/test_results.csv`를 사용할 것
    - ② **판정** — 판정하기 전에 반드시 `references/quality-bar.md`를 **읽고 따를 것** (추측 금지)
    - ③ **출력** — 결과물은 `output/test-report-v2.md`로 저장하고, `GRADE: <판정>` 줄과 기준서의 `REF-VERSION:` 줄을 **그대로 포함**할 것
