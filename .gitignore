@@ -2,3 +2,4 @@
 output/
 .opencode/
 .quest-state
+data/regression-big.log

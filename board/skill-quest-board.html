@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SKILL QUEST — 에이전트 온보딩 보드</title>
+<title>SKILL QUEST — 에이전트 온보딩·심화 보드</title>
 <style>
 :root{
   --bg:#FAF3E7; --panel:#FFFDF8; --ink:#3E3A33; --muted:#8C8578;
@@ -34,7 +34,8 @@ h1 .q{color:var(--sun)}
 .sheet .info{flex:1;min-width:220px}
 .lvname{font-size:22px;font-weight:800}
 .lvtitle{color:var(--coral);font-weight:700;font-size:15px;margin:2px 0 10px}
-.dots{display:flex;gap:7px;margin:10px 0 14px}
+.dots{display:flex;gap:7px;margin:10px 0 14px;flex-wrap:wrap;max-width:300px}
+.dots .sgap{width:2px;height:10px;border-radius:2px;background:#D8CDB6}
 .dot{width:22px;height:10px;border-radius:6px;background:var(--line);position:relative}
 .dot.on{background:var(--mint)}
 .dot.now{background:var(--sun);animation:pulse 1.4s ease-in-out infinite}
@@ -175,7 +176,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
 <div class="wrap">
   <header>
     <h1>SKILL <span class="q">QUEST</span></h1>
-    <div class="tag">opencode 에이전트를 신입에서 고참 동료로 성장시키는 7단계 온보딩 게임</div>
+    <div class="tag">opencode 에이전트를 키우는 실습 게임 — 시즌 1 온보딩(Lv.1~7) + 시즌 2 심화 · 라인 조립(Lv.8~13)</div>
   </header>
 
   <!-- 등록 (프롤로그 컷신 → 신입 에이전트 이름 짓기) -->
@@ -260,16 +261,18 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
 
   <footer>
     <button class="ghost" id="resetBtn">처음부터 다시 시작</button>
-    <div style="margin-top:10px">SKILL QUEST v1.0 · 작성자 jdeok.lee</div>
+    <div style="margin-top:10px">SKILL QUEST v2.0 (시즌 1+2) · 작성자 jdeok.lee</div>
   </footer>
 </div>
 
 <script>
 /* ===== 설정: check.sh 와 동일한 솔트 ===== */
 const SALT = "skill-quest-2026-hbd";
-const FALLBACK = { // crypto.subtle 미지원 환경용 (check.sh 산출값과 동일)
+const FALLBACK = { // crypto.subtle 미지원 환경용 (check.sh / check-adv.sh 산출값과 동일)
   "core-daily-report":"CBFC","core-fix-log-digest":"6BFC","core-build-report":"EFDF",
-  "core-scope-guard":"B168","core-silent-skill":"204E","core-my-first-skill":"91BF","core-power-up":"9223"
+  "core-scope-guard":"B168","core-silent-skill":"204E","core-my-first-skill":"91BF","core-power-up":"9223",
+  "adv-script-offload":"AA9A","adv-artifact-contract":"DE5A","adv-pipeline":"9962",
+  "adv-validate-loop":"C6A8","adv-refute":"BB0E","adv-final-weekly":"2E5B"
 };
 
 /* ===== 미션 데이터 (core 트랙) — md 카드와 동일 내용 요약 ===== */
@@ -403,13 +406,120 @@ description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제�
   hints:["소재는 \"매번 똑같이 설명하는 일\" 중에서 \"파일이 남는 일\"이 좋습니다. 어제도 누군가에게 절차를 설명했다면, 그게 후보입니다.",
    "채점기는 output/ 아래에서 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명을 찾습니다. 스킬 폴더 이름과 서명 속 이름이 정확히 일치해야 하고, 산출물 경로와 서명 둘 다 SKILL.md 본문에 직접 지시해야 합니다.",
    "description은 20자 이상, 실제 트리거 표현을 담아서. 이름은 기존 스킬(daily-report / log-digest / test-report / review-summary)과 다르게 지으세요."]},
+ /* ===== 시즌 2 · SKILL 심화 — 부품(8) → 라인(9~10) → 검사(11~12) → 보스전(13) ===== */
+ {id:"adv-script-offload", lv:8, title:"다시 고장난 log-digest — 50만 줄의 벽 🔩", skill:"digest.py 번들", adv:true,
+  goal:`<b>시즌 2 개막 — STAGE 1 · 부품.</b> 시즌 1에서 여러분이 고친 그 <code>log-digest</code>가, 로그가 <b>50만 줄</b>이 되자 다시 막혔습니다. 읽다 끊기고, 세다 틀립니다.<br>
+  집계는 동봉 스크립트(<code>digest.py</code>)에 맡기고, 에이전트는 <b>결과 몇 줄만</b> 받도록 개조하세요.<br>
+  🎯 목표물: <code>output/digest.md</code> (수치가 스크립트 출력과 정확히 일치)`,
+  steps:`1. 대형 로그 생성: <code>python tools/gen-big-log.py</code> <span style="font-size:12px;color:var(--muted)">(느리면 --lines 50000 — 오류 수는 동일)</span><br>
+  2. (선택) 개조 전에 <b>"data/regression-big.log 요약해줘"</b> — 막히는 걸 목격<br>
+  3. 스크립트 번들: <code>mkdir -p .opencode/skills/log-digest/scripts && cp scripts-given/digest.py .opencode/skills/log-digest/scripts/</code><br>
+  4. SKILL.md 절차를 <b>"직접 읽지 않는다 → 스크립트 실행 → 그대로 옮겨 적기"</b>로 교체 + <code>## 금지</code>/<code>## 검증</code> 절 — <b>교체 전문은 미션 카드</b>(<code>missions/lv8/adv-script-offload.md</code>)에 복붙용으로 있습니다<br>
+  5. 재시작 → <b>"대형 리그레션 로그(data/regression-big.log) 원인 분석해줘"</b>`,
+  stepsWin:`1. 대형 로그 생성: <code>python tools\\gen-big-log.py</code> <span style="font-size:12px;color:var(--muted)">(느리면 --lines 50000 — 오류 수는 동일)</span><br>
+  2. (선택) 개조 전에 <b>"data/regression-big.log 요약해줘"</b> — 막히는 걸 목격<br>
+  3. 스크립트 번들(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\log-digest\\scripts | Out-Null; Copy-Item scripts-given\\digest.py .opencode\\skills\\log-digest\\scripts\\</code><br>
+  4. SKILL.md 절차를 <b>"직접 읽지 않는다 → 스크립트 실행 → 그대로 옮겨 적기"</b>로 교체 + <code>## 금지</code>/<code>## 검증</code> 절 — <b>교체 전문은 미션 카드</b>(<code>missions\\lv8\\adv-script-offload.md</code>)에 복붙용으로 있습니다<br>
+  5. 재시작 → <b>"대형 리그레션 로그(data/regression-big.log) 원인 분석해줘"</b>`,
+  recap:`시즌 1에서 배운 다섯 재료 — 설치·재시작(Lv.1) · description은 본문과 같은 이야기(Lv.2) · 출력은 본문에 못박기(Lv.3) · 방어선(Lv.4) · 레퍼런스 번들(Lv.5). <b>시즌 2는 그 스킬들을 부품 삼아 시스템(라인)을 조립합니다</b> — 부품(Lv.8) → 라인(Lv.9~10) → 검사(Lv.11~12) → 보스전(Lv.13).`,
+  hints:["수치가 어긋나면 — 에이전트가 숫자를 \"요약\"하려 든 겁니다. 절차의 \"그대로 옮겨 적는다\"와 ## 금지(직접 세지 않는다)가 본문에 있는지, 재시작했는지 확인하세요.",
+   "채점 기대값은 고정입니다: assertion 1842 · timeout 317 · build 96 · env 41 · 스파이크 02:14. 스크립트를 실제로 실행했다면 절대 틀릴 수 없는 값들입니다 — 그게 이 기법의 요점입니다."]},
+ {id:"adv-artifact-contract", lv:9, title:"전달 사고 — 두 스킬에 약속을 한 절씩 🤝", skill:"산출물 약속", adv:true,
+  goal:`<b>STAGE 2 · 라인.</b> 새 스킬 <code>incident-report</code>를 설치하면 이상합니다 — digest 결과가 있는데 <b>그게 어디 있는지 모릅니다</b>. 사람이 복붙해 줘야 하고, 옛 파일을 집는 사고도 납니다.<br>
+  새 스킬을 만들지 않습니다 — <b>두 스킬에 약속을 한 절씩</b>: log-digest에 쓰는 쪽(경로·형식·버전), incident-report에 읽는 쪽(그것만 근거로·버전 확인·없으면 정지).<br>
+  🎯 목표물: <code>output/report.md</code> + 파일이 없을 때 <b>멈추는 장면</b>`,
+  steps:`1. 설치: <code>cp -r skills-broken/incident-report .opencode/skills/</code><br>
+  2. 두 SKILL.md에 약속을 한 절씩 추가 — <b>추가 전문은 미션 카드</b>(<code>missions/lv9/adv-artifact-contract.md</code>) 레시피 2~3번<br>
+  3. 재시작 → 먼저 <b>정지 조항 시험</b>: <code>rm -f output/digest.md</code> 후 <b>"장애 리포트 만들어줘"</b> → 쓰지 않고 멈추며 log-digest를 안내해야 정상 (채점기가 물어봅니다)<br>
+  4. 정상 경로: <b>"대형 리그레션 로그 원인 분석해줘"</b> → 3섹션 digest 확인 → <b>"장애 리포트 만들어줘"</b>`,
+  stepsWin:`1. 설치(PowerShell): <code>Copy-Item -Recurse skills-broken\\incident-report .opencode\\skills\\</code><br>
+  2. 두 SKILL.md에 약속을 한 절씩 추가 — <b>추가 전문은 미션 카드</b>(<code>missions\\lv9\\adv-artifact-contract.md</code>) 레시피 2~3번<br>
+  3. 재시작 → 먼저 <b>정지 조항 시험</b>: <code>Remove-Item output\\digest.md</code> 후 <b>"장애 리포트 만들어줘"</b> → 쓰지 않고 멈추며 log-digest를 안내해야 정상 (채점기가 물어봅니다)<br>
+  4. 정상 경로: <b>"대형 리그레션 로그 원인 분석해줘"</b> → 3섹션 digest 확인 → <b>"장애 리포트 만들어줘"</b>`,
+  recap:`Lv.8에서 배운 것 — <b>기법 ② 스크립트 위임</b>: 세는 일(집계·산술)은 컨텍스트 밖의 코드가, 뜻 읽기(해석·판단)만 모델이. 원본이 500만 줄이 되어도 컨텍스트 비용은 결과 몇 줄 — <b>크기와 비용의 분리</b>입니다.`,
+  hints:["에이전트가 멈추지 않고 로그를 직접 읽으러 가면 — 읽는 쪽 약속 3번(\"없으면 안내하고 멈춘다\")과 1번(\"직접 읽지 않는다\")이 본문에 정말 있는지 확인하세요. 스킬은 적힌 만큼만 약속을 지킵니다.",
+   "report.md 채점은 SOURCE 줄을 봅니다 — <code>SOURCE: output/digest.md (DIGEST-VERSION: 1)</code>. 읽는 쪽 약속 4번이 이 줄을 지시합니다."]},
+ {id:"adv-pipeline", lv:10, title:"새벽 2시 훈련 — 지휘 스킬과 게이트 한 곳 🚨", skill:"incident-flow", adv:true,
+  goal:`부품 4개(log-digest·root-cause·incident-report·report-check)는 다 있는데 <b>순서를 아는 스킬이 없습니다</b>. "장애 대응 시작해줘" <b>한 마디</b>로 4단계가 자동 진행되는 지휘 스킬을 완성하고, 부실이 비싸지는 길목 <b>딱 한 곳</b>(분석→초안)에 게이트를 세우세요.<br>
+  ⚠️ 1차 실행은 <b>반드시 게이트에서 반려됩니다</b> — 설계된 이벤트입니다. 반려를 겪는 것까지가 미션.<br>
+  🎯 목표물: 산출물 4종 + <code>output/flow-log.md</code> (FAIL→SKIP→PASS의 흔적)`,
+  steps:`1. 부품·게이트 설치: <code>cp -r skills-given/root-cause skills-given/report-check .opencode/skills/ && mkdir -p .opencode/skills/incident-report/scripts && cp scripts-given/gate.py .opencode/skills/incident-report/scripts/</code><br>
+  2. 템플릿 설치: <code>cp -r skills-templates/incident-flow .opencode/skills/</code> → 단계표 빈칸 8곳 채우기 (표는 미션 카드 <code>missions/lv10/adv-pipeline.md</code>)<br>
+  3. 출발선 초기화: <code>rm -f output/*.md</code> → 재시작 → <b>"장애 대응 시작해줘"</b> → <b>GATE FAIL·반려 목격</b> (root-cause의 TBD 버릇 때문)<br>
+  4. root-cause 절차 4번을 카드의 교체문으로 수정 → 재시작 → 다시 <b>"장애 대응 시작해줘"</b><br>
+  5. 이번엔 <code>SKIP 1/4</code>(중간 재개!) → <code>GATE: PASS</code> → 4단계 완주 — <b>output/ 을 지우지 말고</b> 재요청해야 SKIP이 보입니다`,
+  stepsWin:`1. 부품·게이트 설치(PowerShell): <code>Copy-Item -Recurse skills-given\\root-cause,skills-given\\report-check .opencode\\skills\\; New-Item -Type Directory -Force .opencode\\skills\\incident-report\\scripts | Out-Null; Copy-Item scripts-given\\gate.py .opencode\\skills\\incident-report\\scripts\\</code><br>
+  2. 템플릿 설치: <code>Copy-Item -Recurse skills-templates\\incident-flow .opencode\\skills\\</code> → 단계표 빈칸 8곳 채우기 (표는 미션 카드 <code>missions\\lv10\\adv-pipeline.md</code>)<br>
+  3. 출발선 초기화: <code>Remove-Item output\\*.md</code> → 재시작 → <b>"장애 대응 시작해줘"</b> → <b>GATE FAIL·반려 목격</b> (root-cause의 TBD 버릇 때문)<br>
+  4. root-cause 절차 4번을 카드의 교체문으로 수정 → 재시작 → 다시 <b>"장애 대응 시작해줘"</b><br>
+  5. 이번엔 <code>SKIP 1/4</code>(중간 재개!) → <code>GATE: PASS</code> → 4단계 완주 — <b>output 을 지우지 말고</b> 재요청해야 SKIP이 보입니다`,
+  recap:`Lv.9에서 배운 것 — <b>기법 ⑥ 산출물 약속</b>: 전달은 대화가 아니라 약속된 파일로. 경로·형식·버전을 고정하면 스킬은 부품이 됩니다. 단, 약속의 책임은 <b>전달까지</b> — 내용이 부실한 경우는 이번 미션의 <b>게이트</b>가 맡습니다.`,
+  hints:["한 마디에 안 굴러가면 — incident-flow description의 \"장애 대응 시작\" 트리거와 단계표 빈칸(스킬 이름·경로)이 표와 정확히 같은지 보세요. 지휘 스킬은 단계표에 적힌 만큼만 지휘합니다.",
+   "게이트 FAIL 후 재실행해도 계속 FAIL이면 — 반려(analysis.md → analysis.rejected.md 이동)가 됐는지 확인하세요. 부실 파일이 자리에 남으면 \"있으면 건너뜀\" 규칙에 걸려 분석이 다시 실행되지 않습니다.",
+   "게이트는 모든 연결마다가 아니라 <b>부실이 비싸지는 길목에 한 곳</b> — 여기서 잡으면 1×, 리포트까지 가면 3×, 배포 뒤엔 9×."]},
+ {id:"adv-validate-loop", lv:11, title:"검산기 은퇴식 — 채점기를 동봉하라 🧮", skill:"validate.py", adv:true,
+  goal:`<b>STAGE 3 · 검사.</b> 34주차 CSV(<code>data/test_results_week34.csv</code>)로 리포트를 만들면 <b>합계가 틀립니다</b> — 이번 데이터엔 함정이 숨어 있거든요. 여러분이 찾을 필요는 없습니다. <b>여러분이 만들 채점기가 잡아 줍니다.</b><br>
+  <code>validate.py</code>를 동봉하고, <b>PASS까지 스스로 고치는 루프</b>를 절차에 넣으세요. 참고 — 매 미션 돌리는 check-adv가 바로 이 구조입니다.<br>
+  🎯 목표물: <code>output/test-report-v3.md</code> (VALIDATE: PASS 원문 첨부)`,
+  steps:`1. 뼈대 복사: <code>mkdir -p .opencode/skills/test-report/scripts && cp scripts-given/validate-skeleton.py .opencode/skills/test-report/scripts/validate.py</code><br>
+  2. 빈칸 3곳 채우기 (주석이 안내 · 정답은 미션 카드 <code>missions/lv11/adv-validate-loop.md</code>)<br>
+  3. 채점기 자가 시험: <code>python .opencode/skills/test-report/scripts/validate.py scripts-given/fixtures/bad-report.md</code> → 불량 견본이니 <b>FAIL이 나와야 정상</b><br>
+  4. SKILL.md에 루프 절차 추가(카드 레시피 3번) → 재시작 → <b>"34주차 테스트 결과 리포트 만들어줘"</b><br>
+  5. 관전 포인트: 1차 리포트가 지적받고 → 에이전트가 <b>스스로 고쳐</b> PASS 도달. 여러분은 손대지 않습니다`,
+  stepsWin:`1. 뼈대 복사(PowerShell): <code>New-Item -Type Directory -Force .opencode\\skills\\test-report\\scripts | Out-Null; Copy-Item scripts-given\\validate-skeleton.py .opencode\\skills\\test-report\\scripts\\validate.py</code><br>
+  2. 빈칸 3곳 채우기 (주석이 안내 · 정답은 미션 카드 <code>missions\\lv11\\adv-validate-loop.md</code>)<br>
+  3. 채점기 자가 시험: <code>python .opencode\\skills\\test-report\\scripts\\validate.py scripts-given\\fixtures\\bad-report.md</code> → 불량 견본이니 <b>FAIL이 나와야 정상</b><br>
+  4. SKILL.md에 루프 절차 추가(카드 레시피 3번) → 재시작 → <b>"34주차 테스트 결과 리포트 만들어줘"</b><br>
+  5. 관전 포인트: 1차 리포트가 지적받고 → 에이전트가 <b>스스로 고쳐</b> PASS 도달. 여러분은 손대지 않습니다`,
+  recap:`Lv.10에서 배운 것 — <b>기법 ⑦ 파이프라인 스킬</b>(순서를 아는 스킬은 하나면 된다) + <b>기법 ⑧ 게이트 체크</b>(결함은 태어난 자리에서 멈춘다 — 길목에 한두 곳만). 그리고 SKIP 1/4의 중간 재개는 <b>기법 ③ 외부 기억</b>의 원리였습니다 — 파일은 남으니까요.`,
+  hints:["루프가 5회를 넘기면 validate의 지적문을 읽어 보세요 — \"마지막 결과만 셉니다\", \"SKIP도 있습니다\" 같은 답이 그대로 적혀 있습니다. 에이전트가 지적문을 안 보면 절차 4(\"지적 항목을 고치고\")가 본문에 있는지 확인.",
+   "check-adv는 여러분의 validate.py를 불량 견본으로 <b>역채점</b>합니다 — 다 통과시키는 가짜 채점기는 여기서 걸립니다. 채점기부터 채점에 합격해야죠."]},
+ {id:"adv-refute", lv:12, title:"그럴듯한 오답 — 무너뜨려 보라 🔨", skill:"refute-check", adv:true,
+  goal:`<b>수료 미션.</b> <code>data/analysis-draft.md</code>를 열어 보세요 — "원인은 8/12 v2.3.1 배포, 롤백 권고." 근거 3개에 "검증 통과"까지. <b>여러분 눈에도 맞아 보일 겁니다.</b> 문제는 그 검증이 지지 증거만 모은 검증이라는 것.<br>
+  검증의 방향을 뒤집는 스킬 <code>refute-check</code>를 완성하세요 — <b>"이 결론은 틀렸다"를 전제</b>로 3경로(시간·사례·대안)에서 반례를 찾습니다. 진실은 <code>data/incident/</code> 5일치 로그에 있습니다.<br>
+  🎯 목표물: <code>output/refute-log.md</code> (VERDICT: REJECTED + 진짜 원인)`,
+  steps:`1. 소재 읽기: <code>data/analysis-draft.md</code> — 왜 그럴듯한지 직접 느껴 보세요<br>
+  2. 템플릿 설치: <code>cp -r skills-templates/refute-check .opencode/skills/</code> → 3경로 빈칸 채우기 (각 줄의 "예)"가 큰 힌트)<br>
+  3. 재시작 → <b>"data/analysis-draft.md 결론을 반박 검증해줘"</b><br>
+  4. 관전 포인트: 에이전트가 로그를 뒤져 반례를 찾고 결론을 <b>기각</b> — 진짜 원인의 반전까지<br>
+  결말 미리 보기(선택): <code>grep -r "certificate" data/incident/</code>`,
+  stepsWin:`1. 소재 읽기: <code>data\\analysis-draft.md</code> — 왜 그럴듯한지 직접 느껴 보세요<br>
+  2. 템플릿 설치(PowerShell): <code>Copy-Item -Recurse skills-templates\\refute-check .opencode\\skills\\</code> → 3경로 빈칸 채우기 (각 줄의 "예)"가 큰 힌트)<br>
+  3. 재시작 → <b>"data/analysis-draft.md 결론을 반박 검증해줘"</b><br>
+  4. 관전 포인트: 에이전트가 로그를 뒤져 반례를 찾고 결론을 <b>기각</b> — 진짜 원인의 반전까지<br>
+  결말 미리 보기(선택): <code>Select-String -Path data\\incident\\*.log -Pattern certificate</code>`,
+  recap:`Lv.11에서 배운 것 — <b>기법 ⑫ 기계 채점 하네스</b>: 결정적 기준(형식·산술)은 확률 도구가 아니라 코드가 판정. 판정은 코드가, 수정은 모델이, 사람은 PASS 로그만. 그리고 지금까지 돌린 <b>check.sh / check-adv.sh가 바로 이 구조</b>였습니다.`,
+  hints:["에이전트가 결론을 \"확인\"만 하고 통과시키면 — 절차의 <b>입장 전환</b>(\"틀렸다를 전제로\")이 본문에 있는지 보세요. 그 문구가 없으면 모델은 자연스럽게 지지 증거를 모읍니다. 그게 analysis-draft가 저지른 실수입니다.",
+   "시간 반박이 핵심입니다 — 지목된 원인(8/12) <b>이전</b> 날짜의 로그부터 grep. 반례 하나면 충분합니다."]},
+ {id:"adv-final-weekly", lv:13, title:"보스전 — 주간 리그레션 리포트, 한 마디로 🏭", skill:"regression-weekly", adv:true,
+  goal:`<b>수업은 Lv.12에서 수료했습니다.</b> 보스전은 세미나 후 각자 도전하는 무대 — 이론편 마지막의 그 장면입니다.<br>
+  사람의 입력은 <b>"주간 리그레션 리포트 만들어줘" 한 마디.</b> 그 뒤로 집계(②)→판정(①)→게이트(⑧)→작성→<b>증거표(⑬)</b>까지, 다섯 미션에서 만든 부품·라인·검사가 한 줄로 꿰어져 돌아가야 합니다.<br>
+  🎯 목표물: <code>output/weekly-report.md</code> (증거표 포함 — 미실행은 정직 표기)`,
+  steps:`전제: Lv.8~12 클리어 상태의 스킬들.<br>
+  1. 템플릿 설치 + 기준서 번들: <code>cp -r skills-templates/regression-weekly .opencode/skills/ && mkdir -p .opencode/skills/regression-weekly/references && cp .opencode/skills/test-report/references/quality-bar.md .opencode/skills/regression-weekly/references/</code><br>
+  2. 빈칸 1곳(판정 기준 파일 경로) 채우기<br>
+  3. 출발선 초기화: <code>rm -f output/*.md</code> → 재시작 → <b>"주간 리그레션 리포트 만들어줘"</b> — 그리고 이번엔 정말 지켜만 보세요<br>
+  💭 이번 주 FAIL_TOTAL은 기준표의 어느 줄에 떨어질까요?`,
+  stepsWin:`전제: Lv.8~12 클리어 상태의 스킬들.<br>
+  1. 템플릿 설치 + 기준서 번들(PowerShell): <code>Copy-Item -Recurse skills-templates\\regression-weekly .opencode\\skills\\; New-Item -Type Directory -Force .opencode\\skills\\regression-weekly\\references | Out-Null; Copy-Item .opencode\\skills\\test-report\\references\\quality-bar.md .opencode\\skills\\regression-weekly\\references\\</code><br>
+  2. 빈칸 1곳(판정 기준 파일 경로) 채우기<br>
+  3. 출발선 초기화: <code>Remove-Item output\\*.md</code> → 재시작 → <b>"주간 리그레션 리포트 만들어줘"</b> — 그리고 이번엔 정말 지켜만 보세요<br>
+  💭 이번 주 FAIL_TOTAL은 기준표의 어느 줄에 떨어질까요?`,
+  recap:`Lv.12에서 배운 것 — <b>기법 ⑪ 반박 검증</b>: 검증의 방향을 "통과 찾기"에서 "반례 찾기"로. 반례 하나가 확신을 이기고, 기각의 기록이 남습니다. <b>시즌 2 수료 🎓</b> — 이제 부품·라인·검사를 전부 가졌습니다. 보스전에서 하나로 꿰세요.`,
+  hints:["흐름이 끊기면 끊긴 단계의 스킬을 <b>단독으로</b> 시켜 보세요 — 부품 단위 디버깅이 라인의 장점입니다. 게이트에서 멈췄다면 Lv.10과 같은 반려 처리인지 확인.",
+   "증거표는 최소 4행 — 각 행에 점검 항목·실행한 명령·출력 요지·판정. 실행 못 한 항목은 비우거나 추정하지 말고 <b>\"미실행\"</b>이라고 적는 것, 그게 기법 ⑬입니다."]},
 ];
-const RANKS=["신입","견습","수습","정식","숙련","베테랑","전문가","마스터"];
+const RANKS=["신입","견습","수습","정식","숙련","베테랑","전문가","마스터",
+ "부품공","연결공","라인 지휘자","채점관","반증관","라인 마스터"];
 const RANKDESC=["아직 아무 스킬도 모릅니다","첫 스킬 장착 완료! 가슴 램프 점등","고장 수리 성공! 드라이버 획득",
  "첫 제작 완료! 공구벨트 장착","오발동을 막는 법을 압니다","절차와 기준을 분리합니다 — 기준서 번들",
- "스스로 진단합니다 — 수료! 🎓 고글 장착","자기 업무를 스킬로 — 이제 남을 가르칠 수 있습니다 ⭐"];
+ "스스로 진단합니다 — 수료! 🎓 고글 장착","자기 업무를 스킬로 — 이제 남을 가르칠 수 있습니다 ⭐",
+ "부품을 다듬습니다 — 세는 일은 코드에게","스킬 사이에 약속을 세웁니다 — 전달은 파일로",
+ "라인을 지휘합니다 — 게이트는 길목에 한 곳","판정은 코드가, 수정은 스스로 — 검산기 은퇴",
+ "무너뜨려 살아남은 결론만 믿습니다 — 시즌 2 수료! 🎓","한 마디로 라인 전체를 돌립니다 🏭"];
 const PARTNAMES=["","🌱 새싹 안테나가 반짝!","💡 가슴 램프 점등 + 드라이버","🧰 공구벨트 + 첫 카트리지",
- "🛡️ 오발동 방지 배지","📘 기준서 카트리지","🥽 진단 고글 + 🎓 수료","🎒 자작 스킬 배낭 + ⭐ 별 안테나 + 🏅 훈장 + 미니 제자"];
+ "🛡️ 오발동 방지 배지","📘 기준서 카트리지","🥽 진단 고글 + 🎓 수료","🎒 자작 스킬 배낭 + ⭐ 별 안테나 + 🏅 훈장 + 미니 제자",
+ "🔧 부품공의 스패너","🔗 연결 코일","🚩 지휘 깃발","📋 채점판","⚖️ 반증 망치","👑 황금 안전모 + 라인 동료 합류"];
 
 /* ===== 상태 ===== */
 let ST = { name:"", level:0, skills:[], os:"linux" };
@@ -434,9 +544,16 @@ function partIcon(lv){
     gradcap:o=>px(o+3,1,4,2,INK)+px(o+1,3,8,2,INK)+px(o+2,5,6,2,"#5A6B7C")+px(o+8,5,1,3,GD),
     backpack:o=>px(o+2,2,6,7,R)+px(o+2,2,6,2,RD)+px(o+4,6,2,2,Y),
     star:o=>px(o+3,3,4,4,GD)+px(o+4,1,2,2,GD)+px(o+4,7,2,2,GD)+px(o+1,4,2,2,GD)+px(o+7,4,2,2,GD)+px(o+4,4,2,2,YL),
-    medal:o=>px(o+3,0,2,3,R)+px(o+5,0,2,3,S)+px(o+3,4,4,4,GD)+px(o+4,5,2,2,YL)
+    medal:o=>px(o+3,0,2,3,R)+px(o+5,0,2,3,S)+px(o+3,4,4,4,GD)+px(o+4,5,2,2,YL),
+    wrench:o=>px(o+3,0,4,1,GRY)+px(o+3,1,1,1,GRY)+px(o+6,1,1,1,GRY)+px(o+4,2,2,6,GRY)+px(o+4,8,2,1,ST_),
+    coil:o=>px(o+2,2,6,1,S)+px(o+2,3,1,4,S)+px(o+7,3,1,4,S)+px(o+2,7,6,1,S)+px(o+4,4,2,2,W),
+    flag:o=>px(o+2,0,1,9,ST_)+px(o+3,0,5,3,R)+px(o+3,3,3,1,R),
+    clip:o=>px(o+2,0,6,9,W)+px(o+2,0,6,1,GRY)+px(o+3,3,1,1,G)+px(o+5,3,2,1,GRY)+px(o+3,5,1,1,G)+px(o+5,5,2,1,GRY),
+    gavel:o=>px(o+1,1,5,3,GD)+px(o+3,4,1,5,BR)+px(o+6,7,3,1,GRY),
+    goldhat:o=>px(o+1,4,8,2,GD)+px(o+3,2,4,2,GD)+px(o+4,1,2,1,YL)+px(o+4,6,2,2,R)
   };
-  const BYLV=[[],["sprout"],["lamp","driver"],["belt"],["badge"],["book"],["goggles","gradcap"],["backpack","star","medal"]];
+  const BYLV=[[],["sprout"],["lamp","driver"],["belt"],["badge"],["book"],["goggles","gradcap"],["backpack","star","medal"],
+    ["wrench"],["coil"],["flag"],["clip"],["gavel"],["goldhat","star","medal"]];
   const parts=BYLV[lv]||[];
   if(!parts.length) return "";
   const w=parts.length*12-2;
@@ -498,9 +615,18 @@ function drawRobot(lv, leveled, target="robot"){
   if(lv>=6) c+=`<g${NP(6)}>`+px(9,9,12,1,EYE)+px(11,8,3,2,S)+px(16,8,3,2,S)+px(11,8,1,1,W)+px(16,8,1,1,W)+`</g>`; /* 고글 */
   if(lv===6) c+=`<g${NP(6)}>`+px(7,4,16,3,"#33302A")+px(9,7,12,1,GD)+px(14,4,1,1,GD)
       +px(22,7,1,2,GD)+px(22,9,1,1,Y)+`</g>`; /* 학사모(수료): 블랙&골드 두꺼운 판 — Lv.7에선 작업모로 교체 */
-  if(lv>=7) c+=`<g${NP(7)}>`+px(5,16,3,6,R)+px(5,16,3,1,RD)+px(5,17,1,2,Y)+px(6,19,1,2,G)
-      +px(8,5,14,2,Y)+px(12,4,6,1,Y)+`</g>`;                               /* 배낭+작업모 */
+  if(lv>=7){ const HAT = lv>=13 ? GD : Y;                                  /* Lv.13: 작업모가 황금 안전모로 */
+    c+=`<g${NP(7)}>`+px(5,16,3,6,R)+px(5,16,3,1,RD)+px(5,17,1,2,Y)+px(6,19,1,2,G)
+      +px(8,5,14,2,HAT)+px(12,4,6,1,HAT)+`</g>`;                           /* 배낭+작업모 */
+  }
   if(lv>=7) c+=`<g${NP(7)}>`+px(17,18,2,2,GD)+px(17,18,1,1,W)+`</g>`;      /* 훈장 */
+  /* --- 시즌 2 파츠 (Lv.8~13) --- */
+  if(lv>=8)  c+=`<g${NP(8)}>`+px(4,9,3,1,GRY)+px(4,10,1,1,GRY)+px(6,10,1,1,GRY)+px(5,11,1,3,GRY)+`</g>`;      /* 부품공의 스패너 */
+  if(lv>=9)  c+=`<g${NP(9)}>`+px(24,10,4,1,S)+px(24,11,1,2,S)+px(27,11,1,2,S)+px(24,13,4,1,S)+`</g>`;          /* 연결 코일 */
+  if(lv>=10) c+=`<g${NP(10)}>`+px(23,5,1,7,ST_)+px(24,5,3,2,R)+px(24,7,2,1,R)+`</g>`;                          /* 지휘 깃발 */
+  if(lv>=11) c+=`<g${NP(11)}>`+px(2,16,3,3,W)+px(2,16,3,1,GRY)+px(3,17,1,1,G)+`</g>`;                          /* 채점판 */
+  if(lv>=12) c+=`<g${NP(12)}>`+px(24,14,3,2,GD)+px(25,16,1,3,BR)+`</g>`;                                       /* 반증 망치 */
+  if(lv>=13) c+=`<g${NP(13)}>`+px(14,3,2,1,R)+`</g>`;                                                          /* 안전모 보석 */
 
   /* --- 조립: 그림자(고정) + 본체(bob) + 스파클/제자(별도 위상) --- */
   let s = px(8,27,14,1,"#E8DFCE");
@@ -515,12 +641,19 @@ function drawRobot(lv, leveled, target="robot"){
     s+=`<g class="minibot">`+px(24,22,4,3,B)+px(25,20,2,2,B)+px(25,21,2,1,FACE)+px(26,19,1,1,G)
       +px(24,25,1,2,BL)+px(27,25,1,2,BL)+`</g>`;
   }
+  if(lv>=13){ /* 라인 동료 합류 — 왼쪽에 두 번째 미니봇 + 황금 스파클 */
+    s+=`<g class="minibot">`+px(2,22,4,3,B)+px(3,20,2,2,B)+px(3,21,2,1,FACE)+px(4,19,1,1,Y)
+      +px(2,25,1,2,BL)+px(5,25,1,2,BL)+`</g>`
+      +`<g class="tw1">`+px(1,10,1,1,GD)+px(28,18,1,1,GD)+`</g>`;
+  }
   document.getElementById(target).innerHTML=s;
 }
 
-/* ===== 레벨별 테마 (0=시작, 1~7=도전 중인 레벨) ===== */
-const ACC=["#8C8578","#6FBFA0","#7FAED8","#F2B84B","#F27D5C","#9B7FD8","#4FB3A5","#E0A030"];
-const BGT=["#FAF3E7","#EDF6F1","#ECF3FA","#FBF4E2","#FBEEE9","#F2EDFA","#E9F5F3","#FAF0D8"];
+/* ===== 레벨별 테마 (0=시작, 1~13=도전 중인 레벨) ===== */
+const ACC=["#8C8578","#6FBFA0","#7FAED8","#F2B84B","#F27D5C","#9B7FD8","#4FB3A5","#E0A030",
+           "#6FBFA0","#7FAED8","#9B7FD8","#F2B84B","#F27D5C","#E0A030"];
+const BGT=["#FAF3E7","#EDF6F1","#ECF3FA","#FBF4E2","#FBEEE9","#F2EDFA","#E9F5F3","#FAF0D8",
+           "#EDF6F1","#ECF3FA","#F2EDFA","#FBF4E2","#FBEEE9","#FAF0D8"];
 
 /* ===== 프롤로그 컷신 ===== */
 let CUT=0;
@@ -547,7 +680,7 @@ function render(){
   for(const id of["sheetCard","codeCard","missionCard","dogamCard"])
     document.getElementById(id).classList.toggle("hidden",!reg);
   if(!reg){ document.body.style.background="var(--bg)"; showCut(CUT); return; }
-  const cur=Math.min(ST.level+1,7), acc=ACC[cur];
+  const cur=Math.min(ST.level+1,13), acc=ACC[cur];
   document.body.style.background=BGT[cur];
   document.getElementById("missionCard").style.borderColor=acc;
   document.querySelector(".stage").style.borderColor=acc;
@@ -556,35 +689,39 @@ function render(){
   document.getElementById("lvNum").textContent=ST.level;
   document.getElementById("lvRank").textContent=RANKS[ST.level]+" "+fmt(ST.name);
   document.getElementById("lvDesc").textContent=RANKDESC[ST.level];
-  document.getElementById("dots").innerHTML=[1,2,3,4,5,6,7].map(i=>
-    `<div class="dot ${i<=ST.level?"on":(i===ST.level+1?"now":"")}"></div>`).join("");
+  document.getElementById("dots").innerHTML=Array.from({length:13},(_,k)=>k+1).map(i=>
+    `${i===8?'<div class="sgap" title="시즌 2"></div>':""}<div class="dot ${i<=ST.level?"on":(i===ST.level+1?"now":"")}"></div>`).join("");
   document.getElementById("equip").innerHTML = ST.skills.length
     ? ST.skills.map(x=>`<span class="chip">${fmt(x)}</span>`).join("")
     : `<span class="dogam-empty">없음 (텅 빈 공구벨트)</span>`;
   document.getElementById("osToggle").innerHTML = ST.os==="windows"
     ? OSICON.windows+" Windows (클릭해서 변경)" : OSICON.linux+" Linux / SSH (클릭해서 변경)";
   document.getElementById("dogamAdd").classList.toggle("hidden", ST.level<7);
+  const advNow = ST.level>=7;
   document.getElementById("checkHint").innerHTML = ST.os==="windows"
-    ? `Windows: <span class="cmd">check.bat</span> 더블클릭 → id 입력 → 결과 확인 후 창 닫기`
-    : `Linux: <span class="cmd">./check.sh &lt;mission-id&gt;</span>`;
+    ? `Windows: <span class="cmd">${advNow?"check-adv.bat":"check.bat"}</span> 더블클릭 → id 입력 → 결과 확인 후 창 닫기`
+    : `Linux: <span class="cmd">${advNow?"./check-adv.sh":"./check.sh"} &lt;mission-id&gt;</span>`;
   /* 미션 카드 — VIEW!=null 이면 지나온 미션 열람 모드 */
-  const doneAll = ST.level>=7;
-  if(VIEW!=null && (VIEW<0 || VIEW>=(doneAll?7:ST.level))) VIEW=null; // 열람 범위: 완료한 미션만
+  const doneAll = ST.level>=13;
+  if(VIEW!=null && (VIEW<0 || VIEW>=(doneAll?13:ST.level))) VIEW=null; // 열람 범위: 완료한 미션만
   const onDoneScreen = doneAll && VIEW==null;
-  const vi = VIEW!=null ? VIEW : Math.min(ST.level,6);
+  const vi = VIEW!=null ? VIEW : Math.min(ST.level,12);
   let body;
   if(onDoneScreen){
-    body = `<h3><span class="lvbadge" style="background:${ACC[7]}">LV 7</span>🎓 온보딩 완료!</h3><p class="goal">당신의 에이전트는 이제 <b>마스터</b>입니다.
-       다음 단계: Lv.7에서 만든 스킬을 팀 스킬 레포에 공유하고, 자기학습 트랙(self)의 미션을 만들어보세요 —
-       미션 제작은 마스터의 특권입니다.</p>`;
+    body = `<h3><span class="lvbadge" style="background:${ACC[13]}">LV 13</span>🏭 라인 마스터!</h3><p class="goal">두 시즌을 모두 완주했습니다 — 당신의 에이전트는 이제 <b>부품·라인·검사를 전부 갖춘 라인 마스터</b>입니다.
+       다음 단계: <b>EX 자율 퀘스트</b>(<code>missions/ex/adv-my-pipeline.md</code>) — 당신의 진짜 반복 업무를 2~3단계 파이프라인으로 옮기고,
+       완성작을 아래 도감에 등록해 팀과 공유하세요. 라인 설계는 라인 마스터의 특권입니다.</p>`;
   } else {
     const m=MISSIONS[vi];
+    const advCmd = m.lv>=8;
     body = (VIEW!=null?`<div class="pastbar">📖 완료한 미션 다시 보기 — 열람 전용입니다
         <button class="ghost" id="mnavCur">${doneAll?"완료 화면으로":`현재 미션(Lv.${ST.level+1})으로`}</button></div>`:"")
+      +(VIEW==null&&ST.level===6?`<div class="pastbar">🏭 <b>시즌 2 개장!</b> 심화 세미나 참가자는 Lv.7(자율 퀘스트)을 건너뛰고, 시즌 2 첫 미션
+        <code>adv-script-offload</code>(카드: <code>missions/lv8/</code>)의 성장 코드로 <b>바로 Lv.8에 입장</b>할 수 있습니다. 아래 Lv.7 카드는 언제든 자율 도전.</div>`:"")
       +`<h3><span class="lvbadge" style="background:${ACC[vi+1]}">LV ${m.lv}</span>${fmt(m.title)}</h3>
        <p class="goal">${m.goal}</p>
        <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
-       <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
+       <div>검증: <span class="cmd">${ST.os==="windows"?`${advCmd?"check-adv.bat":"check.bat"} ${m.id}`:`${advCmd?"./check-adv.sh":"./check.sh"} ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(${advCmd?"check-adv.bat":"check.bat"} 더블클릭 후 id 입력도 가능)</span>`:""}</div>
        ${m.tpl?`<button class="ghost" id="tplBtn">📋 템플릿 보기</button>`:""}
        ${m.recap?`<details class="recap"><summary>📖 미션 배경</summary><div class="dbody">${m.recap}</div></details>`:""}
        ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${h}</div></details>`).join("")}
@@ -595,13 +732,13 @@ function render(){
   let nav="";
   if(canPrev || VIEW!=null){
     const nx=vi+1;
-    const nextLabel = (!doneAll&&nx>=ST.level) ? "현재 미션 ▶" : (nx>6 ? "완료 화면 ▶" : `Lv.${nx+1} ▶`);
-    nav=`<div class="mnav">${canPrev?`<button class="ghost" id="mnavPrev">◀ Lv.${onDoneScreen?7:vi} 다시 보기</button>`:"<span></span>"}
+    const nextLabel = (!doneAll&&nx>=ST.level) ? "현재 미션 ▶" : (nx>12 ? "완료 화면 ▶" : `Lv.${nx+1} ▶`);
+    nav=`<div class="mnav">${canPrev?`<button class="ghost" id="mnavPrev">◀ Lv.${onDoneScreen?13:vi} 다시 보기</button>`:"<span></span>"}
       ${VIEW!=null?`<button class="ghost" id="mnavNext">${nextLabel}</button>`:""}</div>`;
   }
   document.getElementById("missionBody").innerHTML = body+nav;
-  const $p=document.getElementById("mnavPrev"); if($p)$p.onclick=()=>{ VIEW = onDoneScreen ? 6 : vi-1; render(); };
-  const $n=document.getElementById("mnavNext"); if($n)$n.onclick=()=>{ const nx=vi+1; VIEW = ((!doneAll&&nx>=ST.level)||nx>6) ? null : nx; render(); };
+  const $p=document.getElementById("mnavPrev"); if($p)$p.onclick=()=>{ VIEW = onDoneScreen ? 12 : vi-1; render(); };
+  const $n=document.getElementById("mnavNext"); if($n)$n.onclick=()=>{ const nx=vi+1; VIEW = ((!doneAll&&nx>=ST.level)||nx>12) ? null : nx; render(); };
   const $c=document.getElementById("mnavCur"); if($c)$c.onclick=()=>{ VIEW=null; render(); };
   const $t=document.getElementById("tplBtn"); if($t)$t.onclick=()=>openTpl(MISSIONS[vi]);
 }
@@ -632,14 +769,21 @@ async function expectedCode(id){
 }
 async function submitCode(){
   const $m=document.getElementById("codeMsg");
-  if(ST.level>=7){$m.className="msg ok";$m.textContent="이미 최고 단계입니다 🎓";return;}
-  const m=MISSIONS[ST.level];
+  if(ST.level>=13){$m.className="msg ok";$m.textContent="이미 최고 단계입니다 🏭";return;}
+  let m=MISSIONS[ST.level];
   const raw=document.getElementById("codeInput").value.trim().toUpperCase();
   const tail=(raw.match(/([0-9A-F]{4})$/)||[])[1];
-  const exp=await expectedCode(m.id);
+  let exp=await expectedCode(m.id);
+  if(ST.level===6 && tail && tail!==exp){
+    /* 시즌 2 입장: Lv.6 수료자는 Lv.7(자율)을 건너뛰고 Lv.8 미션 코드로 바로 진급할 수 있다 */
+    const exp8=await expectedCode(MISSIONS[7].id);
+    if(tail===exp8){ ST.level=7; m=MISSIONS[7]; exp=exp8; }
+  }
   if(!tail || tail!==exp){
     $m.className="msg no";
-    $m.textContent="코드가 맞지 않습니다. 지금 미션("+m.id+")의 채점을 통과했는지 확인해주세요.";
+    $m.textContent = ST.level===6
+      ? "코드가 맞지 않습니다. 지금 미션("+m.id+") 또는 시즌 2 첫 미션(adv-script-offload)의 채점을 통과했는지 확인해주세요."
+      : "코드가 맞지 않습니다. 지금 미션("+m.id+")의 채점을 통과했는지 확인해주세요.";
     return;
   }
   ST.level++;
@@ -653,18 +797,29 @@ async function submitCode(){
 }
 function levelBurst(){
   const d=document.createElement("div"); d.className="burst";
-  d.innerHTML = ST.level>=7
-    ? `<div class="box"><div class="spark">🎉 ✦ 🎓 ✦ 🎉</div>
-      <div class="big">QUEST COMPLETE!</div>
+  let inner;
+  if(ST.level>=13){
+    inner = `<div class="box"><div class="spark">🎉 ✦ 🏭 ✦ 🎉</div>
+      <div class="big">LINE COMPLETE!</div>
+      <div class="part-art">${partIcon(13)}</div>
+      <div class="part">Lv.13 ${RANKS[13]} 달성 — ${PARTNAMES[13]}</div>
+      <div class="part">두 시즌을 모두 완주했습니다. 다음은 EX — 당신의 진짜 업무를 라인으로. 완성작을 도감에!</div>
+      <button id="burstOk">완료 🎉</button></div>`;
+  } else if(ST.level===7){
+    inner = `<div class="box"><div class="spark">🎉 ✦ 🎓 ✦ 🎉</div>
+      <div class="big">SEASON 1 COMPLETE!</div>
       <div class="part-art">${partIcon(7)}</div>
       <div class="part">Lv.7 ${RANKS[7]} 달성 — ${PARTNAMES[7]}</div>
-      <div class="part">모든 퀘스트를 완료했습니다. 축하합니다! 만든 스킬을 팀과 공유해주세요.</div>
-      <button id="burstOk">완료 🎉</button></div>`
-    : `<div class="box"><div class="spark">✦ ✦ ✦</div>
+      <div class="part">시즌 1을 완주했습니다. 그리고 이야기는 계속됩니다 — <b>시즌 2 · SKILL 심화</b>가 열렸습니다.</div>
+      <button id="burstOk">시즌 2로 ▸</button></div>`;
+  } else {
+    inner = `<div class="box"><div class="spark">✦ ✦ ✦</div>
       <div class="big">LEVEL UP! Lv.${ST.level} ${RANKS[ST.level]}</div>
       <div class="part-art">${partIcon(ST.level)}</div>
-      <div class="part">${PARTNAMES[ST.level]}</div>
+      <div class="part">${PARTNAMES[ST.level]}${ST.level===8?"<br>🏭 시즌 2 입장 — 부품 → 라인 → 검사":""}${ST.level===12?"<br>🎓 시즌 2 수료! 보스전(Lv.13)이 기다립니다":""}</div>
       <button id="burstOk">다음 미션으로</button></div>`;
+  }
+  d.innerHTML = inner;
   document.body.appendChild(d);
   d.querySelector("#burstOk").onclick=()=>d.remove();
 }
