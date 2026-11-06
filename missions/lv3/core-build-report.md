@@ -16,8 +16,10 @@ check: script
 
 ## 절차 (레시피)
 1. 스킬 폴더 생성 후 그 안에 `SKILL.md` 생성:
-   - Linux: `mkdir -p .opencode/skills/test-report`
-   - Windows(PowerShell): `New-Item -Type Directory -Force .opencode\skills\test-report`
+   - opencode · Linux: `mkdir -p .opencode/skills/test-report`
+   - opencode · Windows(PowerShell): `New-Item -Type Directory -Force .opencode\skills\test-report`
+   - Claude Code · Linux: `mkdir -p .claude/skills/test-report`
+   - Claude Code · Windows(PowerShell): `New-Item -Type Directory -Force .claude\skills\test-report`
 2. 아래 템플릿을 참고해 그 폴더 안에 `SKILL.md`를 작성하세요 (❓ 표시된 빈칸 두 개만 채우면 됩니다):
 
 ```markdown
@@ -37,7 +39,7 @@ description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제�
    일치하는지 반드시 검토한다. 다르면 고친 뒤 사용자에게 완료를 보고한다.
 ```
 
-3. opencode 재시작 → **"테스트 결과 리포트 만들어줘"**
+3. 스킬 다시 불러오기(opencode: 재시작 / Claude Code: `/reload-skills`) → **"테스트 결과 리포트 만들어줘"**
 
 ## 성공 조건
 - `output/test-report.md`에 정확한 `TOTAL_PASS:` / `TOTAL_FAIL:` 값이 포함될 것

@@ -1,9 +1,31 @@
 #!/usr/bin/env bash
 # SKILL QUEST 채점기 — 사용법: ./check.sh <mission-id>
 # 통과 시 성장 코드(GROW-Lx-XXXX)를 출력합니다. 웹 보드에 입력하세요.
+# opencode(.opencode/skills)와 Claude Code(.claude/skills)를 모두 지원합니다.
+# 에이전트는 자동 감지하며, 강제하려면: QUEST_AGENT=claude ./check.sh <id>  (또는 opencode)
 set -u
 SALT="skill-quest-2026-hbd"
 ID="${1:-}"
+
+# ── 에이전트 감지 ─────────────────────────────────────────────
+AGENT="${QUEST_AGENT:-}"
+if [ -z "$AGENT" ]; then
+  if [ -d .claude/skills ] && [ ! -d .opencode/skills ]; then AGENT=claude
+  elif [ -d .opencode/skills ] && [ ! -d .claude/skills ]; then AGENT=opencode
+  else AGENT=any; fi
+fi
+case "$AGENT" in
+  claude)   ROOTS=".claude/skills";                   SK=".claude/skills";   RELOAD="Claude Code에서 /reload-skills 를 실행했나요?" ;;
+  opencode) ROOTS=".opencode/skills";                 SK=".opencode/skills"; RELOAD="opencode를 재시작했나요?" ;;
+  *)        ROOTS=".opencode/skills .claude/skills";  SK=".opencode/skills(또는 .claude/skills)"; RELOAD="스킬을 다시 불러왔나요? (opencode: 재시작 / Claude Code: /reload-skills)" ;;
+esac
+
+# skill_file <스킬이름> [상대경로=SKILL.md] → 존재하는 첫 경로를 출력
+skill_file() {
+  local rel="${2:-SKILL.md}" r
+  for r in $ROOTS; do [ -f "$r/$1/$rel" ] && { echo "$r/$1/$rel"; return 0; }; done
+  return 1
+}
 
 pass() { # $1=level
   local code
@@ -38,7 +60,7 @@ case "$ID" in
   core-fix-log-digest)
     need_file output/log-digest.md
     grep -q "GENERATED-BY: log-digest-skill" output/log-digest.md \
-      || fail "스킬 서명이 없습니다. description을 고친 뒤 opencode를 재시작했나요?"
+      || fail "스킬 서명이 없습니다. description을 고친 뒤 $RELOAD"
     for kw in assertion timeout build; do
       grep -qi "$kw" output/log-digest.md || fail "'$kw' 버킷이 리포트에 보이지 않습니다."
     done
@@ -47,17 +69,17 @@ case "$ID" in
 
   core-build-report)
     need_file output/test-report.md
-    [ -f .opencode/skills/test-report/SKILL.md ] \
-      || fail "스킬이 .opencode/skills/test-report/SKILL.md 위치에 없습니다. (이름은 test-report로 통일해주세요)"
+    TR=$(skill_file test-report) \
+      || fail "스킬이 $SK/test-report/SKILL.md 위치에 없습니다. (이름은 test-report로 통일해주세요)"
     grep -q "TOTAL_PASS: 12" output/test-report.md || fail "TOTAL_PASS 값이 없거나 틀렸습니다. 스킬이 CSV를 제대로 집계했는지 확인하세요."
     grep -q "TOTAL_FAIL: 5"  output/test-report.md || fail "TOTAL_FAIL 값이 없거나 틀렸습니다."
-    sha1sum .opencode/skills/test-report/SKILL.md | cut -d' ' -f1 > .quest-state
+    sha1sum "$TR" | cut -d' ' -f1 > .quest-state
     pass 3 ;;
 
   core-scope-guard)
-    [ -f .opencode/skills/test-report/SKILL.md ] || fail "test-report 스킬이 설치되어 있지 않습니다."
+    TR=$(skill_file test-report) || fail "test-report 스킬이 설치되어 있지 않습니다. ($SK/test-report/SKILL.md)"
     if [ -f .quest-state ]; then
-      cur=$(sha1sum .opencode/skills/test-report/SKILL.md | cut -d' ' -f1)
+      cur=$(sha1sum "$TR" | cut -d' ' -f1)
       [ "$cur" != "$(cat .quest-state)" ] \
         || fail "test-report가 Lv.3 이후 수정되지 않았습니다. description에 '무엇에는 쓰지 않는지'(방어선)를 추가해보세요."
     else
@@ -69,8 +91,8 @@ case "$ID" in
     pass 4 ;;
 
   core-power-up)
-    [ -f .opencode/skills/test-report/references/quality-bar.md ] \
-      || fail "기준서가 .opencode/skills/test-report/references/quality-bar.md 위치에 없습니다. 스킬 폴더에 번들해주세요."
+    skill_file test-report references/quality-bar.md >/dev/null \
+      || fail "기준서가 $SK/test-report/references/quality-bar.md 위치에 없습니다. 스킬 폴더에 번들해주세요."
     need_file output/test-report-v2.md
     grep -q "GRADE: RISK" output/test-report-v2.md \
       || fail "GRADE 판정이 없거나 기준서와 다릅니다. FAIL 개수를 기준표에 직접 대조해보세요."
@@ -80,7 +102,7 @@ case "$ID" in
 
   core-silent-skill)
     [ -f output/review-summary.md ] \
-      || fail "산출물(output/review-summary.md)이 없습니다. 스킬이 로드는 되고 있나요? 스킬 목록부터 확인하세요."
+      || fail "산출물(output/review-summary.md)이 없습니다. 스킬이 로드는 되고 있나요? 스킬 목록부터 확인하세요. (Claude Code: /skills)"
     grep -q "GENERATED-BY: review-summary-skill" output/review-summary.md \
       || fail "스킬 서명이 없습니다 — 스킬이 아닌 에이전트의 즉흥 답변일 수 있습니다. description은 본문과 같은 이야기를 하고 있나요?"
     SUM=0
@@ -92,19 +114,22 @@ case "$ID" in
     [ "$SUM" -eq 10 ] || fail "TYPE_ 4줄의 합계가 10이 아닙니다(현재 $SUM). 코멘트 10개가 모두 분류됐는지 확인하세요."
     grep -q "REF-VERSION: CT-2026-07" output/review-summary.md \
       || fail "기준서 버전(REF-VERSION)이 리포트에 없습니다. 본문이 참조하는 분류 기준서를 스킬이 정말 읽었을까요? (힌트 ④)"
-    [ -f .opencode/skills/review-summary/references/comment-types.md ] \
+    skill_file review-summary references/comment-types.md >/dev/null \
       || fail "분류 기준서가 스킬 폴더에 동봉되어 있지 않습니다 (references/comment-types.md). 번들을 기억하세요 (Lv.5)."
     pass 6 ;;
 
   core-my-first-skill)
-    FOUND=""
-    for d in .opencode/skills/*/; do
-      name=$(basename "$d")
-      case "$name" in daily-report|log-digest|review-summary|test-report) continue ;; esac
-      [ -f "$d/SKILL.md" ] && FOUND="$name"
+    FOUND=""; FOUND_FILE=""
+    for r in $ROOTS; do
+      for d in "$r"/*/; do
+        [ -d "$d" ] || continue
+        name=$(basename "$d")
+        case "$name" in daily-report|log-digest|review-summary|test-report) continue ;; esac
+        [ -f "$d/SKILL.md" ] && { FOUND="$name"; FOUND_FILE="$d/SKILL.md"; }
+      done
     done
-    [ -n "$FOUND" ] || fail "새로 만든 스킬이 보이지 않습니다. .opencode/skills/<이름>/SKILL.md 로 만들어주세요."
-    desc=$(grep -m1 "^description:" ".opencode/skills/$FOUND/SKILL.md" | cut -d: -f2-)
+    [ -n "$FOUND" ] || fail "새로 만든 스킬이 보이지 않습니다. $SK/<이름>/SKILL.md 로 만들어주세요."
+    desc=$(grep -m1 "^description:" "$FOUND_FILE" | cut -d: -f2-)
     [ "${#desc}" -ge 20 ] || fail "'$FOUND'의 description이 너무 짧습니다. 실제로 할 말(트리거 표현)을 담아 조금 더 구체적으로 써보세요."
     echo "  [Lv.7 확인] 발견된 스킬: $FOUND"
     grep -rq "GENERATED-BY: $FOUND" output/ 2>/dev/null \
@@ -112,7 +137,7 @@ case "$ID" in
     pass 7 ;;
 
   "")
-    echo "사용법: ./check.sh <mission-id>"
+    echo "사용법: ./check.sh <mission-id>   (감지된 스킬 폴더: $SK)"
     echo "미션 목록:"; ls missions/*/*.md | sed 's|missions/lv[0-9]*/||; s|\.md||; s|^|  - |' ;;
 
   *)

@@ -39,7 +39,7 @@ TYPE_SUGGEST: <개수>
 - Windows: `check.bat core-silent-skill`  (또는 `check.bat` 더블클릭 후 id 입력 — 창은 결과 확인 후 닫으면 됩니다)
 
 <details><summary>힌트 ① (편하게 여세요)</summary>
-이론의 진단 체크리스트를 순서대로 밟으세요. 첫 항목은 **위치와 파일명**입니다 — 스킬이 목록에 보이기는 하나요?
+이론의 진단 체크리스트를 순서대로 밟으세요. 첫 항목은 **위치와 파일명**입니다 — 스킬이 목록에 보이기는 하나요? (Claude Code: `/skills`)
 </details>
 
 <details><summary>힌트 ② (원리 리마인드)</summary>

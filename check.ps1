@@ -2,6 +2,27 @@
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
 $SALT = "skill-quest-2026-hbd"
 
+# opencode(.opencode/skills)와 Claude Code(.claude/skills)를 모두 지원합니다.
+# 에이전트는 자동 감지하며, 강제하려면 환경변수 QUEST_AGENT=claude (또는 opencode) 를 지정하세요.
+$Agent = "$env:QUEST_AGENT"
+if ($Agent -eq "") {
+  $hasCc = Test-Path ".claude/skills"; $hasOc = Test-Path ".opencode/skills"
+  if ($hasCc -and -not $hasOc) { $Agent = "claude" }
+  elseif ($hasOc -and -not $hasCc) { $Agent = "opencode" }
+  else { $Agent = "any" }
+}
+switch ($Agent) {
+  "claude"   { $Roots = @(".claude/skills");   $SK = ".claude/skills";   $Reload = "Claude Code에서 /reload-skills 를 실행했나요?" }
+  "opencode" { $Roots = @(".opencode/skills"); $SK = ".opencode/skills"; $Reload = "opencode를 재시작했나요?" }
+  default    { $Roots = @(".opencode/skills", ".claude/skills"); $SK = ".opencode/skills(또는 .claude/skills)"; $Reload = "스킬을 다시 불러왔나요? (opencode: 재시작 / Claude Code: /reload-skills)" }
+}
+
+# 스킬 폴더들 중 존재하는 첫 파일 경로를 돌려줍니다. 없으면 $null
+function Skill-File([string]$Name, [string]$Rel = "SKILL.md") {
+  foreach ($r in $Roots) { $p = "$r/$Name/$Rel"; if (Test-Path $p) { return $p } }
+  return $null
+}
+
 function Get-GrowthCode([string]$mid) {
   $sha = [System.Security.Cryptography.SHA256]::Create()
   $hash = $sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($mid + $SALT))
@@ -41,7 +62,8 @@ function Has([string]$File, [string]$Pattern) {
 }
 
 if ($Id -eq "") {
-  Write-Host "SKILL QUEST 채점기 - 미션 목록:"
+  Write-Host "SKILL QUEST 채점기 - 감지된 스킬 폴더: $SK"
+  Write-Host "미션 목록:"
   Get-ChildItem -Path "missions" -Recurse -Filter *.md | ForEach-Object { Write-Host ("  - " + $_.BaseName) }
   $Id = (Read-Host "채점할 미션 id 를 입력하세요").Trim()
   if ($Id -eq "") { Fail "미션 id 가 입력되지 않았습니다." }
@@ -58,7 +80,7 @@ switch ($Id) {
   "core-fix-log-digest" {
     Need-File "output/log-digest.md"
     if (-not (Has "output/log-digest.md" "GENERATED-BY: log-digest-skill")) {
-      Fail "스킬 서명이 없습니다. description을 고친 뒤 opencode를 재시작했나요?" }
+      Fail "스킬 서명이 없습니다. description을 고친 뒤 $Reload" }
     foreach ($kw in @("assertion","timeout","build")) {
       if (-not (Has "output/log-digest.md" $kw)) { Fail "'$kw' 버킷이 리포트에 보이지 않습니다." } }
     if (-not (Has "output/log-digest.md" "환경|env")) { Fail "환경(env) 버킷이 리포트에 보이지 않습니다." }
@@ -66,17 +88,19 @@ switch ($Id) {
 
   "core-build-report" {
     Need-File "output/test-report.md"
-    if (-not (Test-Path ".opencode/skills/test-report/SKILL.md")) {
-      Fail "스킬이 .opencode/skills/test-report/SKILL.md 위치에 없습니다. (이름은 test-report로 통일해주세요)" }
+    $tr = Skill-File "test-report"
+    if (-not $tr) {
+      Fail "스킬이 $SK/test-report/SKILL.md 위치에 없습니다. (이름은 test-report로 통일해주세요)" }
     if (-not (Has "output/test-report.md" "TOTAL_PASS: 12")) { Fail "TOTAL_PASS 값이 없거나 틀렸습니다. 스킬이 CSV를 제대로 집계했는지 확인하세요." }
     if (-not (Has "output/test-report.md" "TOTAL_FAIL: 5"))  { Fail "TOTAL_FAIL 값이 없거나 틀렸습니다." }
-    (Get-FileHash ".opencode/skills/test-report/SKILL.md" -Algorithm SHA1).Hash.ToLower() | Out-File ".quest-state" -Encoding ascii
+    (Get-FileHash $tr -Algorithm SHA1).Hash.ToLower() | Out-File ".quest-state" -Encoding ascii
     Pass 3 }
 
   "core-scope-guard" {
-    if (-not (Test-Path ".opencode/skills/test-report/SKILL.md")) { Fail "test-report 스킬이 설치되어 있지 않습니다." }
+    $tr = Skill-File "test-report"
+    if (-not $tr) { Fail "test-report 스킬이 설치되어 있지 않습니다. ($SK/test-report/SKILL.md)" }
     if (Test-Path ".quest-state") {
-      $cur = (Get-FileHash ".opencode/skills/test-report/SKILL.md" -Algorithm SHA1).Hash.ToLower()
+      $cur = (Get-FileHash $tr -Algorithm SHA1).Hash.ToLower()
       $old = (Get-Content ".quest-state" -Raw).Trim().ToLower()
       if ($cur -eq $old) { Fail "test-report가 Lv.3 이후 수정되지 않았습니다. description에 '무엇에는 쓰지 않는지'(방어선)를 추가해보세요." }
     } else {
@@ -88,8 +112,8 @@ switch ($Id) {
     Pass 4 }
 
   "core-power-up" {
-    if (-not (Test-Path ".opencode/skills/test-report/references/quality-bar.md")) {
-      Fail "기준서가 .opencode/skills/test-report/references/quality-bar.md 위치에 없습니다. 스킬 폴더에 번들해주세요." }
+    if (-not (Skill-File "test-report" "references/quality-bar.md")) {
+      Fail "기준서가 $SK/test-report/references/quality-bar.md 위치에 없습니다. 스킬 폴더에 번들해주세요." }
     Need-File "output/test-report-v2.md"
     if (-not (Has "output/test-report-v2.md" "GRADE: RISK")) {
       Fail "GRADE 판정이 없거나 기준서와 다릅니다. FAIL 개수를 기준표에 직접 대조해보세요." }
@@ -99,7 +123,7 @@ switch ($Id) {
 
   "core-silent-skill" {
     if (-not (Test-Path "output/review-summary.md")) {
-      Fail "산출물(output/review-summary.md)이 없습니다. 스킬이 로드는 되고 있나요? 스킬 목록부터 확인하세요." }
+      Fail "산출물(output/review-summary.md)이 없습니다. 스킬이 로드는 되고 있나요? 스킬 목록부터 확인하세요. (Claude Code: /skills)" }
     if (-not (Has "output/review-summary.md" "GENERATED-BY: review-summary-skill")) {
       Fail "스킬 서명이 없습니다 - 스킬이 아닌 에이전트의 즉흥 답변일 수 있습니다. description은 본문과 같은 이야기를 하고 있나요?" }
     $sum = 0
@@ -111,20 +135,22 @@ switch ($Id) {
     if ($sum -ne 10) { Fail "TYPE_ 4줄의 합계가 10이 아닙니다(현재 $sum). 코멘트 10개가 모두 분류됐는지 확인하세요." }
     if (-not (Has "output/review-summary.md" "REF-VERSION: CT-2026-07")) {
       Fail "기준서 버전(REF-VERSION)이 리포트에 없습니다. 본문이 참조하는 분류 기준서를 스킬이 정말 읽었을까요? (힌트 ④)" }
-    if (-not (Test-Path ".opencode/skills/review-summary/references/comment-types.md")) {
+    if (-not (Skill-File "review-summary" "references/comment-types.md")) {
       Fail "분류 기준서가 스킬 폴더에 동봉되어 있지 않습니다 (references/comment-types.md). 번들을 기억하세요 (Lv.5)." }
     Pass 6 }
 
   "core-my-first-skill" {
-    $found = ""
-    if (Test-Path ".opencode/skills") {
-      foreach ($d in (Get-ChildItem ".opencode/skills" -Directory)) {
+    $found = ""; $foundFile = ""
+    foreach ($r in $Roots) {
+      if (-not (Test-Path $r)) { continue }
+      foreach ($d in (Get-ChildItem $r -Directory)) {
         if (@("daily-report","log-digest","review-summary","test-report") -contains $d.Name) { continue }
-        if (Test-Path (Join-Path $d.FullName "SKILL.md")) { $found = $d.Name }
+        $f = Join-Path $d.FullName "SKILL.md"
+        if (Test-Path $f) { $found = $d.Name; $foundFile = $f }
       }
     }
-    if ($found -eq "") { Fail "새로 만든 스킬이 보이지 않습니다. .opencode/skills/<이름>/SKILL.md 로 만들어주세요." }
-    $descLine = (Select-String -Path ".opencode/skills/$found/SKILL.md" -Pattern "^description:" | Select-Object -First 1)
+    if ($found -eq "") { Fail "새로 만든 스킬이 보이지 않습니다. $SK/<이름>/SKILL.md 로 만들어주세요." }
+    $descLine = (Select-String -Path $foundFile -Pattern "^description:" | Select-Object -First 1)
     $desc = ""
     if ($descLine) { $desc = $descLine.Line.Substring("description:".Length).Trim() }
     if ($desc.Length -lt 20) { Fail "'$found'의 description이 너무 짧습니다. 실제로 할 말(트리거 표현)을 담아 조금 더 구체적으로 써보세요." }

@@ -16,9 +16,15 @@ check: script
 
 ## 절차 (레시피)
 1. 이 레포 최상위에서 스킬을 설치합니다:
-   - Linux: `mkdir -p .opencode/skills && cp -r skills-given/daily-report .opencode/skills/`
-   - Windows(PowerShell): `New-Item -Type Directory -Force .opencode\skills | Out-Null; Copy-Item -Recurse skills-given\daily-report .opencode\skills\`
-2. opencode를 재시작합니다. (스킬은 시작 시점에 로드됩니다)
+   - **opencode**
+     - Linux: `mkdir -p .opencode/skills && cp -r skills-given/daily-report .opencode/skills/`
+     - Windows(PowerShell): `New-Item -Type Directory -Force .opencode\skills | Out-Null; Copy-Item -Recurse skills-given\daily-report .opencode\skills\`
+   - **Claude Code**
+     - Linux: `mkdir -p .claude/skills && cp -r skills-given/daily-report .claude/skills/`
+     - Windows(PowerShell): `New-Item -Type Directory -Force .claude\skills | Out-Null; Copy-Item -Recurse skills-given\daily-report .claude\skills\`
+2. 에이전트가 스킬을 다시 불러오게 합니다.
+   - opencode: 재시작합니다. (스킬은 시작 시점에 로드됩니다)
+   - Claude Code: 대화창에 `/reload-skills`를 입력합니다. 세션 도중에 처음 만든 `.claude/skills` 폴더는 Claude Code가 아직 감시하지 않으므로, 이 레포에서는 **스킬을 넣거나 고칠 때마다 `/reload-skills`를 실행**한다고 기억하세요. `/skills`를 입력하면 `daily-report`가 목록에 보이는지 확인할 수 있습니다.
 3. 에이전트에게 말합니다: **"오늘 일정 브리핑해줘"**
 4. `output/daily-report.md`가 생겼는지 확인합니다.
 
@@ -32,3 +38,5 @@ check: script
 통과하면 성장 코드가 출력됩니다. 웹 보드에 입력하세요.
 
 > 💡 막히면 에이전트에게 물어보세요. 그것도 훌륭한 플레이입니다.
+>
+> ⚠️ Claude Code 사용자: `/daily-report`처럼 슬래시로 스킬을 직접 호출하지 말고 **자연어로 요청**하세요. 이 게임은 에이전트가 description을 보고 스킬을 스스로 골라 발동하는지를 시험합니다.

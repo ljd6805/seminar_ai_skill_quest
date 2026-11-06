@@ -55,6 +55,9 @@ button:active{transform:translateY(3px);box-shadow:none}
 button.ghost{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none}
 .osbtn{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none;padding:9px 16px;font-size:13.5px}
 .osbtn.sel{background:#EAF3FB;border-color:var(--sky);color:#33607F}
+.agbtn{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none;padding:9px 16px;font-size:13.5px}
+.agbtn.sel{background:#EAF3FB;border-color:var(--sky);color:#33607F}
+.ccnote{font-size:12.5px;color:#7A5A2E;background:#FBF4E2;border-left:3px solid var(--sun);border-radius:6px;padding:8px 12px;margin-top:10px}
 .osicon{display:inline-block;vertical-align:-3px;margin-right:5px}
 .lvbadge{display:inline-flex;align-items:center;justify-content:center;min-width:66px;height:36px;
   border-radius:10px;color:#FFF;font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:1px;
@@ -175,7 +178,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
 <div class="wrap">
   <header>
     <h1>SKILL <span class="q">QUEST</span></h1>
-    <div class="tag">opencode 에이전트를 신입에서 고참 동료로 성장시키는 7단계 온보딩 게임</div>
+    <div class="tag"><span id="agentTag">opencode · Claude Code</span> 에이전트를 신입에서 고참 동료로 성장시키는 7단계 온보딩 게임</div>
   </header>
 
   <!-- 등록 (프롤로그 컷신 → 신입 에이전트 이름 짓기) -->
@@ -208,6 +211,11 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
         <button class="osbtn sel" data-os="linux">Linux / SSH</button>
         <button class="osbtn" data-os="windows">Windows</button>
       </div>
+      <div style="margin-bottom:12px">
+        <span style="font-size:13px;color:var(--muted);margin-right:6px">에이전트:</span>
+        <button class="agbtn sel" data-agent="opencode">opencode</button>
+        <button class="agbtn" data-agent="claude">Claude Code</button>
+      </div>
       <div class="coderow">
         <input type="text" id="nick" maxlength="12" placeholder="신입 에이전트 이름 (예: 로비)">
         <button id="regBtn">온보딩 시작</button>
@@ -232,6 +240,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
         <div class="dots" id="dots"></div>
         <div class="skills-line"><b>장착 스킬</b><br><span id="equip"><span class="dogam-empty">없음 (텅 빈 공구벨트)</span></span></div>
         <div class="skills-line" style="margin-top:8px"><b>환경</b> <a href="#" id="osToggle" style="color:var(--sky);text-decoration:none;font-family:var(--mono);font-size:12px"></a></div>
+        <div class="skills-line" style="margin-top:4px"><b>에이전트</b> <a href="#" id="agentToggle" style="color:var(--sky);text-decoration:none;font-family:var(--mono);font-size:12px"></a></div>
       </div>
     </div>
   </div>
@@ -404,6 +413,28 @@ description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제�
    "채점기는 output/ 아래에서 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명을 찾습니다. 스킬 폴더 이름과 서명 속 이름이 정확히 일치해야 하고, 산출물 경로와 서명 둘 다 SKILL.md 본문에 직접 지시해야 합니다.",
    "description은 20자 이상, 실제 트리거 표현을 담아서. 이름은 기존 스킬(daily-report / log-digest / test-report / review-summary)과 다르게 지으세요."]},
 ];
+/* ===== 에이전트별 문구 변환 =====
+   미션 데이터는 opencode 기준 원문입니다. Claude Code를 고르면 렌더 직전에 아래 규칙으로 바꿉니다.
+   - 스킬 위치: .opencode/skills → .claude/skills
+   - 재시작: Claude Code는 세션 시작 때 없던 .claude/skills 폴더를 감시하지 않으므로 /reload-skills 로 다시 불러옵니다. */
+const AGENT_LABEL={opencode:"opencode", claude:"Claude Code"};
+const CC_RULES=[
+  [/opencode <b>재시작<\/b> \(스킬은 시작 시 로드됩니다\)/g, "<code>/reload-skills</code> 실행 (Claude Code가 스킬을 다시 불러옵니다 — <code>/skills</code>로 목록 확인)"],
+  [/→ opencode <b>재시작<\/b>/g, "→ <code>/reload-skills</code>"],
+  [/opencode <b>시작 시점<\/b>에 로드됩니다/g, "<b>/reload-skills</b>로 불러옵니다 (세션 시작 때 없던 스킬 폴더는 Claude Code가 감시하지 않기 때문)"],
+  [/스킬은 opencode 시작 시점에만 로드됩니다\. 복사한 뒤 재시작하지 않았다면/g, "Claude Code는 세션 시작 때 없던 <code>.claude/skills</code> 폴더를 감시하지 않습니다. 복사한 뒤 <code>/reload-skills</code>를 실행하지 않았다면(<code>/skills</code> 목록에 없다면)"],
+  [/스킬은 <b>재시작<\/b> 시점에 로드됩니다/g, "스킬을 넣거나 고치면 <b>/reload-skills</b>로 다시 불러옵니다"],
+  [/재시작입니다 \(Lv\.1\)/g, "<code>/reload-skills</code>입니다 (Lv.1)"],
+  [/재시작하고/g, "<code>/reload-skills</code>를 실행하고"],
+  [/<b>재시작<\/b>/g, "<b>/reload-skills</b>"],
+  [/재시작/g, "<code>/reload-skills</code>"],
+  [/\.opencode([\/\\])skills/g, ".claude$1skills"],
+  [/opencode/g, "Claude Code"],
+];
+function ag(html){
+  if(ST.agent!=="claude") return html;
+  return CC_RULES.reduce((t,[re,to])=>t.replace(re,to), String(html));
+}
 const RANKS=["신입","견습","수습","정식","숙련","베테랑","전문가","마스터"];
 const RANKDESC=["아직 아무 스킬도 모릅니다","첫 스킬 장착 완료! 가슴 램프 점등","고장 수리 성공! 드라이버 획득",
  "첫 제작 완료! 공구벨트 장착","오발동을 막는 법을 압니다","절차와 기준을 분리합니다 — 기준서 번들",
@@ -412,7 +443,7 @@ const PARTNAMES=["","🌱 새싹 안테나가 반짝!","💡 가슴 램프 점�
  "🛡️ 오발동 방지 배지","📘 기준서 카트리지","🥽 진단 고글 + 🎓 수료","🎒 자작 스킬 배낭 + ⭐ 별 안테나 + 🏅 훈장 + 미니 제자"];
 
 /* ===== 상태 ===== */
-let ST = { name:"", level:0, skills:[], os:"linux" };
+let ST = { name:"", level:0, skills:[], os:"linux", agent:"opencode" };
 let JUSTLEVELED=false;
 let VIEW=null; // null=현재 도전 미션, 숫자=열람 중인 완료 미션 인덱스(0-base)
 
@@ -561,6 +592,8 @@ function render(){
   document.getElementById("equip").innerHTML = ST.skills.length
     ? ST.skills.map(x=>`<span class="chip">${fmt(x)}</span>`).join("")
     : `<span class="dogam-empty">없음 (텅 빈 공구벨트)</span>`;
+  document.getElementById("agentToggle").textContent = AGENT_LABEL[ST.agent]+" (클릭해서 변경)";
+  document.getElementById("agentTag").textContent = AGENT_LABEL[ST.agent];
   document.getElementById("osToggle").innerHTML = ST.os==="windows"
     ? OSICON.windows+" Windows (클릭해서 변경)" : OSICON.linux+" Linux / SSH (클릭해서 변경)";
   document.getElementById("dogamAdd").classList.toggle("hidden", ST.level<7);
@@ -582,12 +615,13 @@ function render(){
     body = (VIEW!=null?`<div class="pastbar">📖 완료한 미션 다시 보기 — 열람 전용입니다
         <button class="ghost" id="mnavCur">${doneAll?"완료 화면으로":`현재 미션(Lv.${ST.level+1})으로`}</button></div>`:"")
       +`<h3><span class="lvbadge" style="background:${ACC[vi+1]}">LV ${m.lv}</span>${fmt(m.title)}</h3>
-       <p class="goal">${m.goal}</p>
-       <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
+       <p class="goal">${ag(m.goal)}</p>
+       <div class="steps">${ag((ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps)}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
        ${m.tpl?`<button class="ghost" id="tplBtn">📋 템플릿 보기</button>`:""}
-       ${m.recap?`<details class="recap"><summary>📖 미션 배경</summary><div class="dbody">${m.recap}</div></details>`:""}
-       ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${h}</div></details>`).join("")}
+       ${m.recap?`<details class="recap"><summary>📖 미션 배경</summary><div class="dbody">${ag(m.recap)}</div></details>`:""}
+       ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${ag(h)}</div></details>`).join("")}
+       ${ST.agent==="claude"?`<div class="ccnote">⚠️ Claude Code: <code>/스킬이름</code>으로 직접 호출하지 말고 <b>자연어로 요청</b>하세요. 이 게임은 에이전트가 description을 보고 스킬을 스스로 고르는지 시험합니다. 발동한 스킬은 대화창의 <code>Skill(...)</code> 표시로도 확인할 수 있습니다.</div>`:""}
        <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
   }
   /* 열람 내비게이션: ◀ 지난 미션 / 다음 ▶ */
@@ -720,10 +754,15 @@ document.querySelectorAll(".osbtn").forEach(b=>b.onclick=()=>{
   selOS=b.dataset.os;
   document.querySelectorAll(".osbtn").forEach(x=>x.classList.toggle("sel",x===b));
 });
+let selAgent="opencode";
+document.querySelectorAll(".agbtn").forEach(b=>b.onclick=()=>{
+  selAgent=b.dataset.agent;
+  document.querySelectorAll(".agbtn").forEach(x=>x.classList.toggle("sel",x===b));
+});
 document.getElementById("regBtn").onclick=async()=>{
   const v=document.getElementById("nick").value.trim();
   if(!v) return;
-  ST={name:v,level:0,skills:[],os:selOS};
+  ST={name:v,level:0,skills:[],os:selOS,agent:selAgent};
   await saveState(); render();
 };
 document.getElementById("osToggle").onclick=async(e)=>{
@@ -731,17 +770,22 @@ document.getElementById("osToggle").onclick=async(e)=>{
   ST.os = ST.os==="windows" ? "linux" : "windows";
   await saveState(); render();
 };
+document.getElementById("agentToggle").onclick=async(e)=>{
+  e.preventDefault();
+  ST.agent = ST.agent==="claude" ? "opencode" : "claude";
+  await saveState(); render();
+};
 document.getElementById("codeBtn").onclick=submitCode;
 document.getElementById("dogamAdd").onclick=promptDogam;
 document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitCode();});
 document.getElementById("resetBtn").onclick=async()=>{
   if(!confirm("정말 처음부터 다시 시작할까요? 레벨이 0으로 돌아갑니다.")) return;
-  ST={name:"",level:0,skills:[],os:"linux"}; try{ await store.del("trainer-v1"); }catch(e){}
+  ST={name:"",level:0,skills:[],os:"linux",agent:"opencode"}; try{ await store.del("trainer-v1"); }catch(e){}
   CUT=0; VIEW=null; render();
 };
 
 /* ===== 시작 ===== */
-(async()=>{ await loadState(); if(!ST.os) ST.os="linux"; render(); loadDogam(); })();
+(async()=>{ await loadState(); if(!ST.os) ST.os="linux"; if(!ST.agent) ST.agent="opencode"; render(); loadDogam(); })();
 </script>
 </body>
 </html>
