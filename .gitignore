@@ -1,4 +1,5 @@
 # 참가자 로컬 산출물 (커밋 금지)
 output/
 .opencode/
+.claude/
 .quest-state
