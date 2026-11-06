@@ -136,6 +136,7 @@ details.recap .dbody b{color:var(--ink)}
 .burst .part{font-size:14.5px;color:#5A5347;margin-bottom:16px}
 .burst .part-art{margin:8px 0 6px}
 .burst .part-art:empty{display:none}
+.burst .model-cmd{font-family:var(--mono);font-size:15px;background:#FBF7EE;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:6px 0 4px;display:inline-block}
 .spark{font-size:30px}
 @media (prefers-reduced-motion:reduce){.dot.now{animation:none}.burst .box{animation:none}}
 /* --- 도트 애니메이션 (steps로 프레임 단위 움직임) --- */
@@ -843,7 +844,21 @@ document.getElementById("regBtn").onclick=async()=>{
   if(!v) return;
   ST={name:v,level:0,skills:[],os:selOS,agent:selAgent};
   await saveState(); render();
+  if(ST.agent==="claude") haikuPopup();
 };
+/* Claude Code 선택 시 실습 모델(Haiku) 안내 팝업 */
+function haikuPopup(){
+  const d=document.createElement("div"); d.className="burst";
+  d.innerHTML=`<div class="box"><div class="spark">🤖</div>
+    <div class="big" style="font-size:22px">모델은 Haiku로!</div>
+    <div class="part">Claude Code 실습은 <b>Haiku</b> 모델로 진행합니다.<br>레포 최상위에서 이렇게 실행하세요.</div>
+    <div class="model-cmd">claude --model haiku</div>
+    <div class="part" style="font-size:13px;color:var(--muted)">이미 실행 중이면 대화창에 <code>/model haiku</code></div>
+    <button id="haikuOk">확인</button></div>`;
+  d.addEventListener("click",e=>{ if(e.target===d) d.remove(); });
+  document.body.appendChild(d);
+  d.querySelector("#haikuOk").onclick=()=>d.remove();
+}
 document.getElementById("osToggle").onclick=async(e)=>{
   e.preventDefault();
   ST.os = ST.os==="windows" ? "linux" : "windows";
@@ -855,6 +870,7 @@ document.getElementById("agentToggle").onclick=async(e)=>{
   if(!confirm(`하네스를 ${HARNESS[next].label}(으)로 바꿀까요? 미션 절차와 스킬 폴더가 ${HARNESS[next].dir} 기준으로 바뀝니다. (레벨은 유지됩니다)`)) return;
   ST.agent = next;
   await saveState(); render();
+  if(ST.agent==="claude") haikuPopup();
 };
 document.getElementById("codeBtn").onclick=submitCode;
 document.getElementById("dogamAdd").onclick=promptDogam;
