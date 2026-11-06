@@ -15,6 +15,9 @@ check: script
 제공된 `daily-report` 스킬을 설치하고, 에이전트가 **오늘 일정**(`data/schedule/today.md`, 데모용)을 조회해 일일 브리핑 리포트를 만들게 하세요.
 
 ## 절차 (레시피)
+0. 이 레포 최상위에서 에이전트를 실행합니다.
+   - opencode: `opencode`
+   - Claude Code: `claude --model haiku` — Claude Code 실습은 **Haiku 모델**로 진행합니다. 이미 실행 중이면 대화창에 `/model haiku`를 입력하세요.
 1. 이 레포 최상위에서 스킬을 설치합니다:
    - **opencode**
      - Linux: `mkdir -p .opencode/skills && cp -r skills-given/daily-report .opencode/skills/`

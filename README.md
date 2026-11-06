@@ -7,7 +7,8 @@
 당신의 코딩 에이전트(opencode 또는 Claude Code)를 신입에서 고참 동료로 성장시키는 7단계 온보딩 실습 게임입니다.
 
 ## 시작하기
-1. 이 레포를 clone 하고, 레포 최상위 폴더에서 에이전트를 실행하세요. (`opencode` 또는 `claude`)
+1. 이 레포를 clone 하고, 레포 최상위 폴더에서 에이전트를 실행하세요. (`opencode` 또는 `claude --model haiku`)
+   - Claude Code는 **Haiku 모델**로 실습합니다. 이미 실행 중이면 대화창에 `/model haiku`를 입력하세요.
 2. 웹 보드 등록 화면에서 **작업 환경(Linux/Windows)과 하네스(opencode/Claude Code)를 고르고**, 신입 에이전트의 이름을 지어 등록하면 Lv.1 미션이 열립니다. 하네스는 기본값 없이 반드시 골라야 하며, 고른 하네스에 맞춰 Lv.1부터 미션 절차가 따로 표시됩니다. (진행 중에는 캐릭터 시트에서 바꿀 수 있고, 레벨은 유지됩니다)
 3. 미션 카드는 `missions/lv1/` 부터 순서대로. (웹 보드에도 동일 내용이 표시됩니다)
 
@@ -26,7 +27,8 @@
 
 | 항목 | opencode | Claude Code |
 |---|---|---|
-| 실행 | 레포 최상위에서 `opencode` | 레포 최상위에서 `claude` |
+| 실행 | 레포 최상위에서 `opencode` | 레포 최상위에서 `claude --model haiku` |
+| 실습 모델 | — | **Haiku** (`--model haiku`, 실행 중에는 `/model haiku`) |
 | 스킬 설치 위치 (프로젝트 스코프) | `.opencode/skills/<이름>/SKILL.md` | `.claude/skills/<이름>/SKILL.md` |
 | 스킬을 넣거나 고친 뒤 | opencode **재시작** | 대화창에서 **`/reload-skills`** 실행 |
 | 설치된 스킬 목록 확인 | 에이전트에게 스킬 목록 질문 | **`/skills`** |
