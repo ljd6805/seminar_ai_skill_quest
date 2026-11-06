@@ -57,6 +57,8 @@ button.ghost{background:var(--panel);border-color:var(--line);color:var(--muted)
 .osbtn.sel{background:#EAF3FB;border-color:var(--sky);color:#33607F}
 .agbtn{background:var(--panel);border-color:var(--line);color:var(--muted);box-shadow:none;padding:9px 16px;font-size:13.5px}
 .agbtn.sel{background:#EAF3FB;border-color:var(--sky);color:#33607F}
+.agnote{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.agnote.warn{color:#C75548}
 .ccnote{font-size:12.5px;color:#7A5A2E;background:#FBF4E2;border-left:3px solid var(--sun);border-radius:6px;padding:8px 12px;margin-top:10px}
 .osicon{display:inline-block;vertical-align:-3px;margin-right:5px}
 .lvbadge{display:inline-flex;align-items:center;justify-content:center;min-width:66px;height:36px;
@@ -211,11 +213,12 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
         <button class="osbtn sel" data-os="linux">Linux / SSH</button>
         <button class="osbtn" data-os="windows">Windows</button>
       </div>
-      <div style="margin-bottom:12px">
-        <span style="font-size:13px;color:var(--muted);margin-right:6px">에이전트:</span>
-        <button class="agbtn sel" data-agent="opencode">opencode</button>
+      <div style="margin-bottom:6px">
+        <span style="font-size:13px;color:var(--muted);margin-right:6px">하네스:</span>
+        <button class="agbtn" data-agent="opencode">opencode</button>
         <button class="agbtn" data-agent="claude">Claude Code</button>
       </div>
+      <div class="agnote" id="agNote">사용할 에이전트 하네스를 골라주세요. 고른 하네스에 맞춰 미션 절차가 처음부터 달라집니다.</div>
       <div class="coderow">
         <input type="text" id="nick" maxlength="12" placeholder="신입 에이전트 이름 (예: 로비)">
         <button id="regBtn">온보딩 시작</button>
@@ -240,7 +243,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
         <div class="dots" id="dots"></div>
         <div class="skills-line"><b>장착 스킬</b><br><span id="equip"><span class="dogam-empty">없음 (텅 빈 공구벨트)</span></span></div>
         <div class="skills-line" style="margin-top:8px"><b>환경</b> <a href="#" id="osToggle" style="color:var(--sky);text-decoration:none;font-family:var(--mono);font-size:12px"></a></div>
-        <div class="skills-line" style="margin-top:4px"><b>에이전트</b> <a href="#" id="agentToggle" style="color:var(--sky);text-decoration:none;font-family:var(--mono);font-size:12px"></a></div>
+        <div class="skills-line" style="margin-top:4px"><b>하네스</b> <a href="#" id="agentToggle" style="color:var(--sky);text-decoration:none;font-family:var(--mono);font-size:12px"></a></div>
       </div>
     </div>
   </div>
@@ -413,28 +416,97 @@ description: (❓ 어떤 요청에 발동해야 할까요? 사용자가 실제�
    "채점기는 output/ 아래에서 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명을 찾습니다. 스킬 폴더 이름과 서명 속 이름이 정확히 일치해야 하고, 산출물 경로와 서명 둘 다 SKILL.md 본문에 직접 지시해야 합니다.",
    "description은 20자 이상, 실제 트리거 표현을 담아서. 이름은 기존 스킬(daily-report / log-digest / test-report / review-summary)과 다르게 지으세요."]},
 ];
-/* ===== 에이전트별 문구 변환 =====
-   미션 데이터는 opencode 기준 원문입니다. Claude Code를 고르면 렌더 직전에 아래 규칙으로 바꿉니다.
-   - 스킬 위치: .opencode/skills → .claude/skills
-   - 재시작: Claude Code는 세션 시작 때 없던 .claude/skills 폴더를 감시하지 않으므로 /reload-skills 로 다시 불러옵니다. */
-const AGENT_LABEL={opencode:"opencode", claude:"Claude Code"};
-const CC_RULES=[
-  [/opencode <b>재시작<\/b> \(스킬은 시작 시 로드됩니다\)/g, "<code>/reload-skills</code> 실행 (Claude Code가 스킬을 다시 불러옵니다 — <code>/skills</code>로 목록 확인)"],
-  [/→ opencode <b>재시작<\/b>/g, "→ <code>/reload-skills</code>"],
-  [/opencode <b>시작 시점<\/b>에 로드됩니다/g, "<b>/reload-skills</b>로 불러옵니다 (세션 시작 때 없던 스킬 폴더는 Claude Code가 감시하지 않기 때문)"],
-  [/스킬은 opencode 시작 시점에만 로드됩니다\. 복사한 뒤 재시작하지 않았다면/g, "Claude Code는 세션 시작 때 없던 <code>.claude/skills</code> 폴더를 감시하지 않습니다. 복사한 뒤 <code>/reload-skills</code>를 실행하지 않았다면(<code>/skills</code> 목록에 없다면)"],
-  [/스킬은 <b>재시작<\/b> 시점에 로드됩니다/g, "스킬을 넣거나 고치면 <b>/reload-skills</b>로 다시 불러옵니다"],
-  [/재시작입니다 \(Lv\.1\)/g, "<code>/reload-skills</code>입니다 (Lv.1)"],
-  [/재시작하고/g, "<code>/reload-skills</code>를 실행하고"],
-  [/<b>재시작<\/b>/g, "<b>/reload-skills</b>"],
-  [/재시작/g, "<code>/reload-skills</code>"],
-  [/\.opencode([\/\\])skills/g, ".claude$1skills"],
-  [/opencode/g, "Claude Code"],
-];
-function ag(html){
-  if(ST.agent!=="claude") return html;
-  return CC_RULES.reduce((t,[re,to])=>t.replace(re,to), String(html));
-}
+/* ===== 하네스별 미션 분기 =====
+   MISSIONS 는 opencode 기준 원문입니다. 등록 화면에서 Claude Code 를 고르면
+   아래 CC 의 같은 id 항목이 해당 필드(steps/stepsWin/recap/hints)를 통째로 대체합니다.
+   CC 에 없는 필드는 원문을 그대로 씁니다. 문구를 고칠 때는 두 하네스를 함께 고치세요. */
+const HARNESS={
+  opencode:{label:"opencode", run:"opencode", dir:".opencode/skills", reload:"opencode 재시작"},
+  claude:  {label:"Claude Code", run:"claude", dir:".claude/skills", reload:"/reload-skills"}
+};
+const CC={
+ "core-daily-report":{
+  steps:`0. 레포 최상위에서 <code>claude</code> 실행<br>
+  1. <code>mkdir -p .claude/skills && cp -r skills-given/daily-report .claude/skills/</code><br>
+  2. 대화창에 <code>/reload-skills</code> 입력 → <code>/skills</code> 목록에 <b>daily-report</b>가 보이는지 확인<br>
+  3. 에이전트에게: <b>"오늘 일정 브리핑해줘"</b> (슬래시 명령이 아니라 자연어로)<br>4. <code>output/daily-report.md</code> 확인`,
+  stepsWin:`0. 레포 최상위에서 <code>claude</code> 실행<br>
+  1. PowerShell: <code>New-Item -Type Directory -Force .claude\\skills | Out-Null; Copy-Item -Recurse skills-given\\daily-report .claude\\skills\\</code><br>
+  2. 대화창에 <code>/reload-skills</code> 입력 → <code>/skills</code> 목록에 <b>daily-report</b>가 보이는지 확인<br>
+  3. 에이전트에게: <b>"오늘 일정 브리핑해줘"</b> (슬래시 명령이 아니라 자연어로)<br>4. <code>output\\daily-report.md</code> 확인`,
+  recap:`스킬 = <code>SKILL.md</code>가 든 폴더 하나. frontmatter의 <b>description</b>(언제 발동할지)과 <b>본문</b>(무엇을 할지, 절차)으로 이루어집니다. Claude Code에서는 이 레포의 <code>.claude/skills/</code>에 설치합니다. Claude Code는 스킬 폴더의 변경을 세션 중에도 감지하지만, <b>세션을 시작할 때 없던 폴더</b>는 감시하지 않으므로 <code>/reload-skills</code>로 다시 불러옵니다. (이론 슬라이드 요약)`,
+  hints:["<code>/skills</code> 목록에 daily-report가 없다면 Claude Code가 아직 스킬을 모르는 상태입니다. 세션 시작 뒤에 만든 <code>.claude/skills</code> 폴더는 감시 대상이 아니므로 <code>/reload-skills</code>를 실행하세요.",
+   "발동이 안 되면 요청 문구를 스킬 description과 비슷하게 해보세요 — \"오늘 일정 브리핑해줘\". 에이전트는 요청과 description을 대조해 스킬을 고릅니다. 발동하면 대화창에 <code>Skill(daily-report)</code>가 표시됩니다.",
+   "<code>output/daily-report.md</code>가 있는데도 채점 탈락이라면, 파일 안에 서명(<code>GENERATED-BY: daily-report-skill</code>) 줄이 있는지 보세요. 서명이 없다면 스킬이 아니라 에이전트의 즉흥 답변입니다."]},
+ "core-fix-log-digest":{
+  steps:`1. 스킬 설치: <code>cp -r skills-broken/log-digest .claude/skills/</code> → <code>/reload-skills</code><br>
+  2. 에이전트에게: <b>"리그레션 로그 요약해줘"</b> → 발동 안 됨을 확인 (<code>/log-digest</code>로 직접 부르면 실행은 되지만, 그건 수리가 아닙니다)<br>
+  3. <code>.claude/skills/log-digest/SKILL.md</code>의 <b>description을 읽어보세요.</b> 스킬이 알맞게 작성되어 있나요? 본문과 같은 얘기를 하고 있나요?<br>
+  4. description 수정 → <code>/reload-skills</code> → 다시 <b>자연어로</b> 요청`,
+  stepsWin:`1. 스킬 설치(PowerShell): <code>Copy-Item -Recurse skills-broken\\log-digest .claude\\skills\\</code> → <code>/reload-skills</code><br>
+  2. 에이전트에게: <b>"리그레션 로그 요약해줘"</b> → 발동 안 됨을 확인 (<code>/log-digest</code>로 직접 부르면 실행은 되지만, 그건 수리가 아닙니다)<br>
+  3. <code>.claude\\skills\\log-digest\\SKILL.md</code>의 <b>description을 읽어보세요.</b> 스킬이 알맞게 작성되어 있나요? 본문과 같은 얘기를 하고 있나요?<br>
+  4. description 수정 → <code>/reload-skills</code> → 다시 <b>자연어로</b> 요청`,
+  recap:`Lv.1에서 배운 것 — ① 스킬 설치 = 스킬 폴더를 <code>.claude/skills/</code>에 복사 ② 스킬을 넣거나 고치면 <b>/reload-skills</b> ③ 에이전트는 <b>description</b>을 보고 발동을 결정합니다 ④ 산출물의 <b>서명</b>(GENERATED-BY)과 대화창의 <code>Skill(...)</code> 표시로 스킬이 정말 발동했는지 확인할 수 있습니다.`,
+  hints:["스킬이 침묵하면 의심 1순위는 description입니다. 에이전트는 본문을 읽기 전, description만 보고 \"이 일을 맡을지\"를 정합니다.",
+   "log-digest의 description을 소리 내어 읽어보세요. 본문은 regression 로그 요약인데, description은 전혀 다른 이야기를 하고 있지 않나요?",
+   "description에는 사용자가 실제로 할 말(\"리그레션 로그 요약해줘\" 같은 표현)을 담으세요. 고친 뒤에는? — <code>/reload-skills</code>입니다 (Lv.1)."]},
+ "core-build-report":{
+  steps:`1. 스킬 폴더 생성: <code>mkdir -p .claude/skills/test-report</code><br>
+  2. 아래 <b>📋 템플릿 보기</b> 버튼을 눌러 템플릿을 열고, 그 폴더 안에 <code>SKILL.md</code>를 작성하세요 — ❓ 표시된 <b>빈칸 두 개</b>(description · 집계 절차)만 채우면 됩니다. 4번(<b>결과 스스로 검토</b>)까지 그대로 옮겨 적으세요. (같은 템플릿이 <code>missions/lv3/core-build-report.md</code>에도 있습니다)<br>
+  3. <code>/reload-skills</code> → <b>"테스트 결과 리포트 만들어줘"</b>로 발동 → 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 확인`,
+  stepsWin:`1. 스킬 폴더 생성(PowerShell): <code>New-Item -Type Directory -Force .claude\\skills\\test-report</code><br>
+  2. 아래 <b>📋 템플릿 보기</b> 버튼을 눌러 템플릿을 열고, 그 폴더 안에 <code>SKILL.md</code>를 작성하세요 — ❓ 표시된 <b>빈칸 두 개</b>(description · 집계 절차)만 채우면 됩니다. 4번(<b>결과 스스로 검토</b>)까지 그대로 옮겨 적으세요. (같은 템플릿이 <code>missions\\lv3\\core-build-report.md</code>에도 있습니다)<br>
+  3. <code>/reload-skills</code> → <b>"테스트 결과 리포트 만들어줘"</b>로 발동 → 리포트 끝에 <code>TOTAL_PASS:</code> / <code>TOTAL_FAIL:</code> 줄 확인`,
+  recap:`Lv.2에서 배운 것 — description은 <b>본문과 같은 이야기</b>를, 사용자가 <b>실제로 칠 표현</b>으로 해야 발동합니다. 스킬은 <code>.claude/skills/&lt;이름&gt;/SKILL.md</code> 위치에 있어야 로드되고(Lv.1), 만들거나 고치면 <code>/reload-skills</code>. 이번엔 그 원리로 백지에서 직접 만듭니다.`},
+ "core-scope-guard":{
+  steps:`두 요청을 시켜보고, 각각 <b>어느 스킬이 맡는지</b> 관찰하세요. Claude Code는 발동한 스킬을 대화창에 <code>Skill(이름)</code>으로 표시합니다:<br>
+  <span class="bubble sm">💬 A. "테스트 결과 리포트 만들어줘"</span>
+  → <code>Skill(test-report)</code>가 떠야 정상 ✅<br>
+  <span class="bubble sm">💬 B. "오늘 일정을 리포트로 정리해줘"</span>
+  → <code>Skill(daily-report)</code>가 떠야 정상 ✅ ("리포트"라는 단어만 보고 test-report가 낚이면 오발동 ❌)<br>
+  B에서 낚인다면 — <b>무엇에는 쓰지 않는지</b>를 description에 명시하세요(방어선). 수정 후 <code>/reload-skills</code>, A가 여전히 발동하는지 재확인.`,
+  hints:["B 요청에 test-report가 낚인다면 두 스킬의 description을 나란히 놓고 보세요 — \"리포트\"라는 단어가 양쪽에 다 있지 않나요? 겹치는 단어가 오발동의 씨앗입니다.",
+   "방어선은 \"무엇에는 쓰지 않는지\"를 description에 덧붙이는 것입니다. 예: \"테스트 결과 CSV 집계 전용. 일정 브리핑 등 다른 리포트 작성에는 사용하지 않음.\"",
+   "방어선을 친 뒤 <code>/reload-skills</code>를 실행하고, A 요청이 여전히 잘 발동하는지 꼭 재확인하세요 — 방어선이 과하면 정상 발동까지 막습니다."]},
+ "core-power-up":{
+  steps:`1. 기준서를 스킬 폴더로 복사(=번들):<br>
+  &nbsp;&nbsp;<code>mkdir -p .claude/skills/test-report/references && cp reference-given/quality-bar.md .claude/skills/test-report/references/</code><br>
+  2. SKILL.md 본문의 작업절차를 아래 <b>4가지 지시</b>로 수정합니다:<br>
+  &nbsp;&nbsp;① <b>데이터</b> — 집계 원본은 <code>data/test_results.csv</code>를 사용할 것<br>
+  &nbsp;&nbsp;② <b>판정</b> — 판정 전에 반드시 스킬 내부의 <code>references/quality-bar.md</code>를 읽고 따를 것 (추측 금지)<br>
+  &nbsp;&nbsp;③ <b>출력</b> — 결과물은 <code>output/test-report-v2.md</code>로 저장하고, <code>GRADE:</code> 줄과 기준서의 <code>REF-VERSION:</code> 줄을 그대로 포함할 것<br>
+  &nbsp;&nbsp;④ <b>검토</b> — 작성한 파일을 다시 읽어 GRADE가 기준표와 맞는지, REF-VERSION이 정확한지 검토하고 틀리면 고칠 것<br>
+  3. <code>/reload-skills</code> → 발동 → <code>output/test-report-v2.md</code> 확인<br>
+  💡 REF-VERSION은 기준서 안에만 있는 값 — <b>진짜 읽었다는 증거</b>입니다. 마지막 단서 미션, 다음은 승급 시험.`,
+  stepsWin:`1. 기준서를 스킬 폴더로 복사(=번들, PowerShell):<br>
+  &nbsp;&nbsp;<code>New-Item -Type Directory -Force .claude\\skills\\test-report\\references | Out-Null; Copy-Item reference-given\\quality-bar.md .claude\\skills\\test-report\\references\\</code><br>
+  2. SKILL.md 본문의 작업절차를 아래 <b>4가지 지시</b>로 수정합니다:<br>
+  &nbsp;&nbsp;① <b>데이터</b> — 집계 원본은 <code>data/test_results.csv</code>를 사용할 것<br>
+  &nbsp;&nbsp;② <b>판정</b> — 판정 전에 반드시 스킬 내부의 <code>references/quality-bar.md</code>를 읽고 따를 것 (추측 금지)<br>
+  &nbsp;&nbsp;③ <b>출력</b> — 결과물은 <code>output/test-report-v2.md</code>로 저장하고, <code>GRADE:</code> 줄과 기준서의 <code>REF-VERSION:</code> 줄을 그대로 포함할 것<br>
+  &nbsp;&nbsp;④ <b>검토</b> — 작성한 파일을 다시 읽어 GRADE가 기준표와 맞는지, REF-VERSION이 정확한지 검토하고 틀리면 고칠 것<br>
+  3. <code>/reload-skills</code> → 발동 → <code>output\\test-report-v2.md</code> 확인<br>
+  💡 REF-VERSION은 기준서 안에만 있는 값 — <b>진짜 읽었다는 증거</b>입니다. 마지막 단서 미션, 다음은 승급 시험.`,
+  hints:["기준서 복사 위치는 스킬 폴더 안입니다: <code>.claude/skills/test-report/references/quality-bar.md</code> — <code>reference-given/</code>은 팀 공용 서랍일 뿐, 스킬이 읽을 사본을 폴더에 번들하세요.",
+   "에이전트가 기준서를 읽지 않고 판정을 지어낼 수 있습니다. \"추정 금지, 반드시 기준서를 읽고 따를 것\"을 명시하는 것도 스킬 작성 기술입니다.",
+   "GRADE와 REF-VERSION 줄을 리포트에 포함하라는 지시는 본문에 직접 못박으세요 — Lv.3의 출력 형식 못박기와 같은 기술입니다."]},
+ "core-silent-skill":{
+  recap:`시험 범위 = 지금까지 전부 — ① 설치 위치·파일명, 수정 후 <b>/reload-skills</b>(Lv.1) ② description은 <b>본문과 같은 이야기</b>를 실제 표현으로(Lv.2) ③ 출력 형식은 <b>본문에 못박기</b>(Lv.3) ④ 겹치는 단어엔 <b>방어선</b>(Lv.4) ⑤ 참조 파일은 스킬 폴더에 <b>번들</b> + REF-VERSION(Lv.5)`,
+  hints:["이론의 진단 체크리스트를 순서대로 밟으세요. 첫 항목은 위치와 파일명입니다 — <code>/skills</code> 목록에 review-summary가 보이기는 하나요?",
+   "목록에는 있는데 침묵한다면 description 차례입니다. 본문과 같은 일을, 사용자가 실제로 칠 표현(한글 포함)으로 말하고 있나요? (<code>/review-summary</code>로 직접 부르는 건 정답이 아닙니다)",
+   "발동은 되는데 채점 탈락이라면 — 성공 조건의 TYPE_ 4줄을 본문이 지시하고 있는지 보세요. 출력 형식은 본문에 직접 못박는 것이었죠 (Lv.3).",
+   "본문이 참조하는 파일이 정말 그 자리에 있나요? 전임자는 분류 기준서를 팀 공용 서랍(reference-given/)에 두고 갔습니다 — 번들을 기억하세요 (Lv.5)."]},
+ "core-my-first-skill":{
+  steps:`소재 예시(파일이 남는 일이 좋습니다): 회의 메모 → 회의록 · 로그 → 요약 · 주간 보고 → 초안 — <b>"매번 똑같이 설명하는 일"</b>이 최고의 후보.<br>
+  제약 (채점기가 확인합니다):<br>
+  &nbsp;&nbsp;① 스킬 위치: <code>.claude/skills/&lt;이름&gt;/SKILL.md</code><br>
+  &nbsp;&nbsp;② 결과는 <code>output/</code> 아래 <b>파일</b>로 남길 것<br>
+  &nbsp;&nbsp;③ 마지막 줄에 <code>GENERATED-BY: &lt;스킬이름&gt;</code> 서명 — ②③ 모두 SKILL.md 본문에 직접 지시<br>
+  스스로 점검: 트리거 명확성 · 범위 제한 · 실행 구체성. 발동의 근거를 스스로 남기는 스킬이 좋은 스킬입니다.`},
+};
+/* 현재 하네스에 맞는 미션 객체 (CC 필드가 있으면 그 필드만 대체) */
+function forHarness(m){ return (ST.agent==="claude" && CC[m.id]) ? {...m, ...CC[m.id]} : m; }
 const RANKS=["신입","견습","수습","정식","숙련","베테랑","전문가","마스터"];
 const RANKDESC=["아직 아무 스킬도 모릅니다","첫 스킬 장착 완료! 가슴 램프 점등","고장 수리 성공! 드라이버 획득",
  "첫 제작 완료! 공구벨트 장착","오발동을 막는 법을 압니다","절차와 기준을 분리합니다 — 기준서 번들",
@@ -577,7 +649,7 @@ function render(){
   document.getElementById("regCard").classList.toggle("hidden",reg);
   for(const id of["sheetCard","codeCard","missionCard","dogamCard"])
     document.getElementById(id).classList.toggle("hidden",!reg);
-  if(!reg){ document.body.style.background="var(--bg)"; showCut(CUT); return; }
+  if(!reg){ document.body.style.background="var(--bg)"; document.getElementById("agentTag").textContent="opencode · Claude Code"; showCut(CUT); return; }
   const cur=Math.min(ST.level+1,7), acc=ACC[cur];
   document.body.style.background=BGT[cur];
   document.getElementById("missionCard").style.borderColor=acc;
@@ -592,8 +664,8 @@ function render(){
   document.getElementById("equip").innerHTML = ST.skills.length
     ? ST.skills.map(x=>`<span class="chip">${fmt(x)}</span>`).join("")
     : `<span class="dogam-empty">없음 (텅 빈 공구벨트)</span>`;
-  document.getElementById("agentToggle").textContent = AGENT_LABEL[ST.agent]+" (클릭해서 변경)";
-  document.getElementById("agentTag").textContent = AGENT_LABEL[ST.agent];
+  document.getElementById("agentToggle").textContent = HARNESS[ST.agent].label+" (클릭해서 변경)";
+  document.getElementById("agentTag").textContent = HARNESS[ST.agent].label;
   document.getElementById("osToggle").innerHTML = ST.os==="windows"
     ? OSICON.windows+" Windows (클릭해서 변경)" : OSICON.linux+" Linux / SSH (클릭해서 변경)";
   document.getElementById("dogamAdd").classList.toggle("hidden", ST.level<7);
@@ -611,17 +683,17 @@ function render(){
        다음 단계: Lv.7에서 만든 스킬을 팀 스킬 레포에 공유하고, 자기학습 트랙(self)의 미션을 만들어보세요 —
        미션 제작은 마스터의 특권입니다.</p>`;
   } else {
-    const m=MISSIONS[vi];
+    const m=forHarness(MISSIONS[vi]);
     body = (VIEW!=null?`<div class="pastbar">📖 완료한 미션 다시 보기 — 열람 전용입니다
         <button class="ghost" id="mnavCur">${doneAll?"완료 화면으로":`현재 미션(Lv.${ST.level+1})으로`}</button></div>`:"")
       +`<h3><span class="lvbadge" style="background:${ACC[vi+1]}">LV ${m.lv}</span>${fmt(m.title)}</h3>
-       <p class="goal">${ag(m.goal)}</p>
-       <div class="steps">${ag((ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps)}</div>
+       <p class="goal">${m.goal}</p>
+       <div class="steps">${(ST.os==="windows"&&m.stepsWin)?m.stepsWin:m.steps}</div>
        <div>검증: <span class="cmd">${ST.os==="windows"?`check.bat ${m.id}`:`./check.sh ${m.id}`}</span>${ST.os==="windows"?` <span style="font-size:12px;color:var(--muted)">(check.bat 더블클릭 후 id 입력도 가능)</span>`:""}</div>
        ${m.tpl?`<button class="ghost" id="tplBtn">📋 템플릿 보기</button>`:""}
-       ${m.recap?`<details class="recap"><summary>📖 미션 배경</summary><div class="dbody">${ag(m.recap)}</div></details>`:""}
-       ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${ag(h)}</div></details>`).join("")}
-       ${ST.agent==="claude"?`<div class="ccnote">⚠️ Claude Code: <code>/스킬이름</code>으로 직접 호출하지 말고 <b>자연어로 요청</b>하세요. 이 게임은 에이전트가 description을 보고 스킬을 스스로 고르는지 시험합니다. 발동한 스킬은 대화창의 <code>Skill(...)</code> 표시로도 확인할 수 있습니다.</div>`:""}
+       ${m.recap?`<details class="recap"><summary>📖 미션 배경</summary><div class="dbody">${m.recap}</div></details>`:""}
+       ${m.hints.map((h,i)=>`<details><summary>💡 힌트 ${"①②③④"[i]}</summary><div class="dbody">${h}</div></details>`).join("")}
+       ${ST.agent==="claude"?`<div class="ccnote">⚠️ Claude Code: <code>/스킬이름</code>으로 직접 호출하지 말고 <b>자연어로 요청</b>하세요. 이 게임은 에이전트가 description을 보고 스킬을 스스로 고르는지 시험합니다.</div>`:""}
        <div class="freehint">💬 막히면 에이전트에게 물어보세요. 반칙이 아니라 실무입니다.</div>`;
   }
   /* 열람 내비게이션: ◀ 지난 미션 / 다음 ▶ */
@@ -754,13 +826,20 @@ document.querySelectorAll(".osbtn").forEach(b=>b.onclick=()=>{
   selOS=b.dataset.os;
   document.querySelectorAll(".osbtn").forEach(x=>x.classList.toggle("sel",x===b));
 });
-let selAgent="opencode";
+let selAgent=null;   /* 하네스는 기본값 없이 반드시 고르게 합니다 */
+const AGNOTE={
+  opencode:`레포 최상위에서 <code>opencode</code> 실행 · 스킬 위치 <code>.opencode/skills/</code> · 스킬을 넣거나 고치면 opencode 재시작`,
+  claude:`레포 최상위에서 <code>claude</code> 실행 · 스킬 위치 <code>.claude/skills/</code> · 스킬을 넣거나 고치면 <code>/reload-skills</code>`
+};
 document.querySelectorAll(".agbtn").forEach(b=>b.onclick=()=>{
   selAgent=b.dataset.agent;
   document.querySelectorAll(".agbtn").forEach(x=>x.classList.toggle("sel",x===b));
+  const n=document.getElementById("agNote"); n.classList.remove("warn"); n.innerHTML=AGNOTE[selAgent];
 });
 document.getElementById("regBtn").onclick=async()=>{
   const v=document.getElementById("nick").value.trim();
+  if(!selAgent){ const n=document.getElementById("agNote"); n.classList.add("warn");
+    n.textContent="하네스(opencode / Claude Code)를 먼저 골라주세요."; return; }
   if(!v) return;
   ST={name:v,level:0,skills:[],os:selOS,agent:selAgent};
   await saveState(); render();
@@ -772,7 +851,9 @@ document.getElementById("osToggle").onclick=async(e)=>{
 };
 document.getElementById("agentToggle").onclick=async(e)=>{
   e.preventDefault();
-  ST.agent = ST.agent==="claude" ? "opencode" : "claude";
+  const next = ST.agent==="claude" ? "opencode" : "claude";
+  if(!confirm(`하네스를 ${HARNESS[next].label}(으)로 바꿀까요? 미션 절차와 스킬 폴더가 ${HARNESS[next].dir} 기준으로 바뀝니다. (레벨은 유지됩니다)`)) return;
+  ST.agent = next;
   await saveState(); render();
 };
 document.getElementById("codeBtn").onclick=submitCode;
@@ -781,6 +862,9 @@ document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="
 document.getElementById("resetBtn").onclick=async()=>{
   if(!confirm("정말 처음부터 다시 시작할까요? 레벨이 0으로 돌아갑니다.")) return;
   ST={name:"",level:0,skills:[],os:"linux",agent:"opencode"}; try{ await store.del("trainer-v1"); }catch(e){}
+  selAgent=null; document.querySelectorAll(".agbtn").forEach(x=>x.classList.remove("sel"));
+  const n=document.getElementById("agNote"); n.classList.remove("warn");
+  n.textContent="사용할 에이전트 하네스를 골라주세요. 고른 하네스에 맞춰 미션 절차가 처음부터 달라집니다.";
   CUT=0; VIEW=null; render();
 };
 
